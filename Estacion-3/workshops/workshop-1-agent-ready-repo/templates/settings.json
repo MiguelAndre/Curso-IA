@@ -1,0 +1,75 @@
+{
+  "_comment": "Configuración de Claude Code para este proyecto. La sección 'permissions' define qué puede hacer el agente sin pedir aprobación (allow) y qué tiene prohibido (deny). Regla clave: deny siempre gana sobre allow.",
+
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit(src/**/*)",
+      "Edit(tests/**/*)",
+      "Write(src/**/*)",
+      "Write(tests/**/*)",
+
+      "Bash(npm test)",
+      "Bash(npm run test:*)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build)",
+      "Bash(npm run dev)",
+
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git add *)",
+
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(grep *)",
+      "Bash(find *)"
+    ],
+
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(prisma/migrations/**)",
+      "Edit(.github/workflows/**)",
+
+      "Bash(rm -rf*)",
+      "Bash(rm -fr*)",
+      "Bash(sudo *)",
+      "Bash(git push*)",
+      "Bash(git reset --hard*)",
+      "Bash(git commit --no-verify*)",
+      "Bash(npm install *)",
+      "Bash(npm uninstall *)",
+      "Bash(DROP TABLE*)",
+      "Bash(DROP DATABASE*)"
+    ]
+  },
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-lint.sh"
+          }
+        ]
+      }
+    ]
+  },
+
+  "_notes": [
+    "Personaliza las rutas en allow/deny según tu stack (ej. cambia src/** por app/** si usas otra estructura).",
+    "Si tu proyecto usa pnpm o yarn, reemplaza 'npm' por el manager correspondiente en cada regla.",
+    "El hook PostToolUse asume que .claude/hooks/post-edit-lint.sh existe y es ejecutable (chmod +x).",
+    "Para activar más hooks, agrégalos como entradas adicionales en la sección 'hooks'.",
+    "Claude Code acepta comentarios con _comment y _notes (campos que empiezan con _). El parser los ignora."
+  ]
+}

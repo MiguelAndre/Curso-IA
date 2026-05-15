@@ -1,0 +1,14 @@
+# Archivos que el estudiante puede generar al ejecutar el workshop
+# y que no son parte del kit que se sube al repo público.
+
+.DS_Store
+*.log
+*.tmp
+.idea/
+.vscode/
+
+# Notas y trabajo personal del estudiante
+notes.md
+my-notes.md
+my-feature-scope.md
+my-reflection.md

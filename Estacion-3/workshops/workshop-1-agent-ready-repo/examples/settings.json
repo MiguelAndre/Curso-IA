@@ -1,0 +1,98 @@
+{
+  "_comment": "Configuración de Claude Code para el proyecto Basic CRM 30X. Personalizada para Next.js 16 + Prisma + pnpm. La sección 'permissions' define qué puede hacer el agente sin pedir aprobación (allow) y qué tiene prohibido (deny). Regla clave: deny siempre gana sobre allow.",
+
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit(src/**/*)",
+      "Edit(tests/**/*)",
+      "Edit(prisma/schema.prisma)",
+      "Edit(public/**/*)",
+      "Edit(docs/**/*)",
+      "Write(src/**/*)",
+      "Write(tests/**/*)",
+      "Write(docs/**/*)",
+
+      "Bash(pnpm test)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm lint:fix)",
+      "Bash(pnpm build)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm type-check)",
+      "Bash(pnpm prisma generate)",
+      "Bash(pnpm prisma migrate dev*)",
+
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(git add *)",
+      "Bash(git stash*)",
+      "Bash(git checkout -b *)",
+
+      "Bash(ls *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(find . *)"
+    ],
+
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Read(.next/**)",
+
+      "Edit(.env)",
+      "Edit(.env.*)",
+      "Edit(prisma/migrations/**)",
+      "Edit(.github/workflows/**)",
+      "Edit(package.json)",
+      "Edit(pnpm-lock.yaml)",
+
+      "Bash(rm -rf*)",
+      "Bash(rm -fr*)",
+      "Bash(sudo *)",
+      "Bash(git push*)",
+      "Bash(git reset --hard*)",
+      "Bash(git commit --no-verify*)",
+      "Bash(git push --force*)",
+      "Bash(pnpm install*)",
+      "Bash(pnpm add *)",
+      "Bash(pnpm remove *)",
+      "Bash(pnpm prisma migrate reset*)",
+      "Bash(pnpm prisma db push*)",
+      "Bash(DROP TABLE*)",
+      "Bash(DROP DATABASE*)",
+      "Bash(TRUNCATE*)"
+    ]
+  },
+
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit-lint.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-tool-block.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
