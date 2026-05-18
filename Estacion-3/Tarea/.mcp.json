@@ -1,0 +1,57 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schema/mcp.json",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "C:\\Users\\mihernandez\\Desktop\\Curso IA\\Curso-IA\\Estacion-3\\Tarea"
+      ],
+      "description": "Acceso a archivos del repo: lectura/escritura de FD, TD y .abap generados. Limitado al directorio del piloto."
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "Issues y PRs del repo de la organización. Tracking de requerimientos del piloto y revisión de cambios al Módulo 4 (configuración base)."
+    },
+    "memory": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "description": "Memoria persistente entre sesiones: estándares ABAP de la empresa, decisiones tomadas en revisiones de TD, supuestos validados o rechazados."
+    },
+    "fetch": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-fetch"
+      ],
+      "description": "HTTP fetch para consultar documentación pública de SAP (help.sap.com, community.sap.com) y referencias técnicas de ABAP/S4HANA."
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "description": "Razonamiento estructurado paso a paso para Módulo 2 (FD → TD): descomposición del FD, identificación de objetos SAP, propuesta de arquitectura ABAP OO."
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ],
+      "description": "Documentación actualizada de librerías y APIs (SAP NetWeaver, S/4HANA Cloud SDK). Reduce alucinaciones sobre nombres de clases y métodos."
+    }
+  }
+}

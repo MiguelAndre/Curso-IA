@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash(git status)",
+      "Bash(git status:*)",
+      "Bash(git diff)",
+      "Bash(git diff:*)",
+      "Bash(git log)",
+      "Bash(git log:*)",
+      "Bash(git branch)",
+      "Bash(git show:*)",
+      "Bash(ls:*)",
+      "Bash(pwd)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(mkdir -p .claude/logs)",
+      "Bash(mkdir -p .claude/logs/*)",
+      "WebFetch(domain:help.sap.com)",
+      "WebFetch(domain:learning.sap.com)",
+      "WebFetch(domain:community.sap.com)",
+      "WebFetch(domain:arxiv.org)"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(rm -rf /*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git checkout --:*)",
+      "Bash(git clean -fd:*)",
+      "Bash(git branch -D:*)",
+      "Bash(sudo:*)",
+      "Bash(curl:* sap*)",
+      "Bash(wget:* sap*)",
+      "Bash(ssh:*)",
+      "Bash(scp:*)",
+      "Bash(*RFC_*)",
+      "Bash(*BAPI_*COMMIT*)",
+      "Bash(*--transport*)",
+      "Bash(*sap-prod*)",
+      "Bash(*sap-qa*)",
+      "Write(**/*.tr)",
+      "Write(**/transport-*.xml)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p .claude/logs && printf '%s | %s | %s\\n' \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" \"$CLAUDE_TOOL_NAME\" \"$CLAUDE_FILE_PATHS\" >> .claude/logs/trazabilidad.log"
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "ABAP_AGENT_PHASE": "pilot",
+    "ABAP_AGENT_VERSION": "1.0",
+    "ABAP_TRACE_ENABLED": "true"
+  }
+}
