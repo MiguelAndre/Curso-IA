@@ -4,8 +4,8 @@
 - **Project Name**: Agente IA para Desarrollo ABAP
 - **Project Type**: Greenfield (Estación 4 — implementación nueva basada en PRD aprobado)
 - **Start Date**: 2026-05-19T00:00:00Z
-- **Current Phase**: CLOSED
-- **Current Stage**: Workflow AI-DLC cerrado (2026-05-20) — producto listo para entrega al equipo
+- **Current Phase**: CLOSED (con change request abierto)
+- **Current Stage**: Workflow cerrado el 2026-05-20. Change request sobre U2 abierto el 2026-05-20: Q3 del plan cambió de "B (solo .md/.txt)" a "leer cualquier formato y escribir un .md" → re-ejecución de U2 Functional Design + Code Generation pendiente de re-validación.
 
 ## Workspace State
 - **Existing Code**: No (en este directorio Estación 4)
@@ -50,6 +50,8 @@
 | **Build and Test** | ✅ Completada | 2026-05-20 | 5 documentos + 53 verificaciones manuales documentadas. Aprobado. |
 | **Operations** | ⏸️ Placeholder | — | Per PRD + execution-plan: el producto opera dentro de Claude Code, sin despliegue tradicional |
 | **🏁 Workflow AI-DLC** | ✅ **CERRADO** | 2026-05-20 | Producto listo para entrega al equipo |
+| **🔄 CR-001 U2 multi-formato — Plan** | ✅ Aprobado | 2026-05-20 | Q3 del plan U2 modificado: el Validador debe aceptar `.md`, `.txt`, `.pdf`, `.docx` y normalizar a markdown |
+| **🔄 CR-001 U2 multi-formato — Code** | 🟡 Implementado, re-test pendiente | 2026-05-20 | `validador-fd.md` §1/§5.1/§9 y `validar-fd.md` (slash command, conversión vía pandoc para `.docx`, Read nativo para `.pdf`) actualizados; pendiente re-ejecutar Build and Test sobre los 3 formatos |
 | Functional Design | 🔜 Programada (EXECUTE para U2,U3,U4) | — | Prompts = lógica de negocio |
 | NFR Requirements | 🔜 Programada (EXECUTE para U4) | — | Security en código generado |
 | NFR Design | 🔜 Programada (EXECUTE para U4) | — | Contraparte NFR |
