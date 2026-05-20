@@ -1,0 +1,16 @@
+# Outputs del agente (TDs y códigos por requerimiento)
+# Pueden contener información sensible (datos reales, autorizaciones, lógica interna)
+# No se versionan — el plan de evaluación y la auditoría operan sobre archivos locales
+outputs/
+
+# Dataset de evaluación pre-piloto (FDs y código de producción anonimizados, pero igual sensibles)
+evaluacion/
+
+# Archivos temporales del SO y editores
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*~
+.vscode/
+.idea/
