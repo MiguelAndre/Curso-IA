@@ -69,4 +69,4 @@ B) **El usuario decide caso por caso**: el agente solo muestra el output en el c
 C) **Directorio `outputs/` plano con timestamps**: archivos sueltos con prefijos `td-YYYYMMDD-HHMM.md` y `codigo-YYYYMMDD-HHMM.abap`. Simple, sin organización por requerimiento.
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: A 
+[Answer]: A

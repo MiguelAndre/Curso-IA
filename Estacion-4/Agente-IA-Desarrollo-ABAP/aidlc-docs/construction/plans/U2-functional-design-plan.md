@@ -8,10 +8,10 @@
 
 ## Pasos del plan
 
-- [x] Paso 1 — Recoger respuestas a las 3 preguntas focalizadas (defaults Q1:A, Q2:A, Q3:B aplicados)
-- [x] Paso 2 — Generar `aidlc-docs/construction/U2/functional-design/business-logic-model.md` (flujo de validación, criterios, output)
-- [x] Paso 3 — Generar `aidlc-docs/construction/U2/functional-design/business-rules.md` (reglas de aprobación/rechazo)
-- [x] Paso 4 — Generar `aidlc-docs/construction/U2/functional-design/domain-entities.md` (entidades: FD, Gap, ResultadoValidacion)
+- [ ] Paso 1 — Recoger respuestas a las 3 preguntas focalizadas (abajo)
+- [ ] Paso 2 — Generar `aidlc-docs/construction/U2/functional-design/business-logic-model.md` (flujo de validación, criterios, output)
+- [ ] Paso 3 — Generar `aidlc-docs/construction/U2/functional-design/business-rules.md` (reglas de aprobación/rechazo)
+- [ ] Paso 4 — Generar `aidlc-docs/construction/U2/functional-design/domain-entities.md` (entidades: FD, Gap, ResultadoValidacion)
 - [ ] Paso 5 — Presentar mensaje de completion y esperar aprobación
 
 ---
@@ -26,7 +26,7 @@ B) **JSON estructurado** (estado, gaps[], observaciones[]) + un resumen markdown
 C) **Solo markdown libre**: el validador redacta una respuesta narrativa, sin estructura fija. El estado APROBADO/RECHAZADO aparece destacado pero el resto es prosa.
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: A  *(default aplicado)*
+[Answer]: A
 
 ### Question 2 — Granularidad de los gaps en el rechazo
 ¿Cómo de específicos deben ser los gaps reportados?
@@ -36,7 +36,7 @@ B) **Gap por sección sin recomendación**: "Sección 3 (Reglas de Negocio) — 
 C) **Lista plana de gaps sin agruparlos por sección**: "Faltan reglas para fechas vacías; falta autorización Z explícita; ..." (más simple para parsear, menos contextual)
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: A  *(default aplicado)*
+[Answer]: A
 
 ### Question 3 — Manejo de FDs en formato no-markdown
 Algunos FDs llegan como `.docx`, `.txt` o PDF. ¿Cómo los maneja el validador?
@@ -46,7 +46,7 @@ B) **Aceptar texto plano simple** (`.txt`, `.md`); ignorar otros formatos. Si ll
 C) **Tolerante**: acepta cualquier texto legible y aplica los criterios. La estructura markdown no es obligatoria, sólo facilita el parsing.
 X) Other (please describe after [Answer]: tag below)
 
-[Answer]: B  *(default aplicado)* 
+[Answer]: Debe poder leer cualquier formato y escribir un archivo markdow
 
 ---
 
