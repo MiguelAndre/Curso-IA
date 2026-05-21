@@ -30,11 +30,11 @@ flowchart TD
     G --> H{¿Es reporte ALV<br/>o keywords SALV/CL_GUI_ALV_GRID?}
     H -->|Sí| SK[Cargar skill template-alv<br/>BR-08]
     H -->|No| I
-    SK --> I[Identificar objetos SAP<br/>(tablas, FMs, BAdIs)<br/>§4]
+    SK --> I["Identificar objetos SAP<br/>(tablas, FMs, BAdIs)<br/>§4"]
 
     I --> J[Proponer arquitectura técnica<br/>§5]
     J --> K[Mapear cada RN del FD<br/>a implementación<br/>§6]
-    K --> L[Detectar TBDs<br/>(info no resuelta)<br/>FR-M2-07]
+    K --> L["Detectar TBDs<br/>(info no resuelta)<br/>FR-M2-07"]
     L --> M[Producir TD con<br/>9 secciones obligatorias<br/>§7]
     M --> N[Persistir e imprimir inline<br/>BR-10]
 

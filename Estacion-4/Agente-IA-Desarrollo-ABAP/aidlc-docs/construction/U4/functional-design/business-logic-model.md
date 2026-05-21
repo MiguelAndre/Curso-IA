@@ -24,9 +24,9 @@ flowchart TD
     C --> D{¿REPORTE_ALV?}
     D -->|Sí| SK[Cargar skill template-alv<br/>BR-08, Q4:B]
     D -->|No| E
-    SK --> E[Identificar zonas de riesgo<br/>(autorización, tablas Z, SQL, condiciones borde)<br/>§4]
+    SK --> E["Identificar zonas de riesgo<br/>(autorización, tablas Z, SQL, condiciones borde)<br/>§4"]
     E --> F[Generar estructura del archivo:<br/>cabecera + clase principal + bloques<br/>§5]
-    F --> G[Generar lógica con buenas prácticas SAP<br/>(CLAUDE.md §5)]
+    F --> G["Generar lógica con buenas prácticas SAP<br/>(CLAUDE.md §5)"]
     G --> H[Insertar ⚠️ VERIFICAR donde aplica<br/>BR-04]
     H --> I[Insertar AUTHORITY-CHECK<br/>SECURITY-10, BR-05]
     I --> J[Validar: sin SQL inseguro, sin PII<br/>SECURITY-09, SECURITY-03, BR-06, BR-07]
