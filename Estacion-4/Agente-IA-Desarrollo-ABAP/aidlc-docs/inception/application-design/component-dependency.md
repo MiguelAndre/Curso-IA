@@ -34,7 +34,6 @@
 ## Grafo de dependencias (visual)
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 graph TD
     C11["⚙️ C11 settings.json"]
     C1["📄 C1 CLAUDE.md"]

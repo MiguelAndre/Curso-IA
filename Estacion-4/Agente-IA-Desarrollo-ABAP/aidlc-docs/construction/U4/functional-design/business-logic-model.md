@@ -17,7 +17,6 @@ Generar **código ABAP OO** a partir de un TD aprobado. El output es un archivo 
 ## 2. Flujo principal
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 flowchart TD
     A([TD entrante]) --> B{¿Trae §8<br/>Decisiones y Supuestos?}
     B -->|NO| Z1[RECHAZAR<br/>Mensaje pidiendo regenerar TD<br/>BR-01, Q1:A]

@@ -142,7 +142,6 @@ Entidades conceptuales que M2 maneja. Como U2, son **conceptos** del razonamient
 ## Diagrama de relaciones
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 classDiagram
     class FDAprobado {
         +contenido

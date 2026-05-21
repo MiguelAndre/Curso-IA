@@ -15,7 +15,6 @@ Compuerta de entrada del pipeline. Recibe un Documento Funcional (FD) y decide s
 ## 2. Flujo de validación (algoritmo lógico)
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 flowchart TD
     A(["FD entrante"]) --> B{"¿Formato aceptado?<br/>md/txt/pdf/docx"}
     B -->|No| Z1["RECHAZADO<br/>Gap: formato no soportado"]

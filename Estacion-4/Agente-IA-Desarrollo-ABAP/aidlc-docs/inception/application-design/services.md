@@ -12,7 +12,6 @@
 **Patrón de orquestación**: `Sequential Pipeline with Human Gates`.
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 sequenceDiagram
     actor Dev as Desarrollador ABAP
     participant CMD as /pipeline-abap
@@ -67,7 +66,6 @@ sequenceDiagram
 **Patrón**: `Context-Triggered Skill Activation`.
 
 ```mermaid
-%%{init: {'theme':'default'}}%%
 flowchart LR
     C3["C3 fd-a-td<br/>(o C4 td-a-codigo)"] --> CTX{"Contexto contiene<br/>'ALV', 'SALV',<br/>'CL_GUI_ALV_GRID', etc.?"}
     CTX -->|Sí| C6["C6 Skill template-alv<br/>se activa automáticamente"]
