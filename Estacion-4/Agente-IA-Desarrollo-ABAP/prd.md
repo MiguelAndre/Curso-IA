@@ -191,6 +191,7 @@ Ninguna alternativa combina: (1) pipeline completo FD→TD→Código, (2) cero i
 ### 4.4 Matriz de posicionamiento
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 quadrantChart
     title Cobertura del ciclo vs. Facilidad de implementación
     x-axis "Solo asistencia en código" --> "Pipeline completo FD→TD→Código"
@@ -449,6 +450,7 @@ quadrantChart
 ### Arquitectura funcional de alto nivel
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TD
     CF([Consultor Funcional]) -->|Entrega FD| FD
 
@@ -714,6 +716,7 @@ Calcular desde el Excel histórico:
 ### Timeline
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 gantt
     title Plan de Entrega 30/60/90 Días
     dateFormat  D

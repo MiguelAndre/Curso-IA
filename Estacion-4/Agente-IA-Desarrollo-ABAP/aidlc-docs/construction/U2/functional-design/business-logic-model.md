@@ -2,7 +2,7 @@
 
 **Unidad**: U2 (Módulo 1 del PRD §9)
 **Fecha**: 2026-05-19
-**Decisiones de diseño aplicadas**: Q1:A (output markdown estructurado), Q2:A (gaps con recomendación accionable), Q3:B (sólo md/txt).
+**Decisiones de diseño aplicadas**: Q1:A (output markdown estructurado), Q2:A (gaps con recomendación accionable), Q3:B revisada por **CR-001** (multi-formato: `.md`, `.txt`, `.pdf`, `.docx` con normalización a markdown).
 
 ---
 
@@ -15,23 +15,26 @@ Compuerta de entrada del pipeline. Recibe un Documento Funcional (FD) y decide s
 ## 2. Flujo de validación (algoritmo lógico)
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TD
-    A([FD entrante]) --> B{¿Formato aceptado?<br/>md/txt}
-    B -->|No| Z1[RECHAZADO<br/>Gap: formato no soportado]
-    B -->|Sí| C[Parsear secciones del FD]
-    C --> D[Aplicar reglas de<br/>completitud estructural]
-    D --> E[Aplicar reglas de<br/>calidad semántica]
-    E --> F{¿Hay gaps<br/>bloqueantes?}
-    F -->|Sí| Z2[RECHAZADO<br/>Reporte de gaps con recomendaciones]
-    F -->|No| G{¿Hay observaciones<br/>menores?}
-    G -->|Sí| H[APROBADO<br/>+ observaciones menores]
-    G -->|No| I[APROBADO<br/>limpio]
+    A(["FD entrante"]) --> B{"¿Formato aceptado?<br/>md/txt/pdf/docx"}
+    B -->|No| Z1["RECHAZADO<br/>Gap: formato no soportado"]
+    B -->|Sí| N["Normalizar a markdown<br/>md/txt: passthrough<br/>pdf: Read nativo<br/>docx: pandoc"]
+    N --> C["Parsear secciones del FD"]
+    C --> D["Aplicar reglas de<br/>completitud estructural"]
+    D --> E["Aplicar reglas de<br/>calidad semántica"]
+    E --> F{"¿Hay gaps<br/>bloqueantes?"}
+    F -->|Sí| Z2["RECHAZADO<br/>Reporte de gaps con recomendaciones"]
+    F -->|No| G{"¿Hay observaciones<br/>menores?"}
+    G -->|Sí| H["APROBADO<br/>+ observaciones menores"]
+    G -->|No| I["APROBADO<br/>limpio"]
 
-    style A fill:#BBDEFB,stroke:#1565C0
-    style Z1 fill:#FFCDD2,stroke:#C62828
-    style Z2 fill:#FFCDD2,stroke:#C62828
-    style H fill:#A5D6A7,stroke:#2E7D32
-    style I fill:#A5D6A7,stroke:#2E7D32
+    style A fill:#BBDEFB,stroke:#1565C0,color:#000000
+    style N fill:#FFE0B2,stroke:#E65100,color:#000000
+    style Z1 fill:#FFCDD2,stroke:#C62828,color:#000000
+    style Z2 fill:#FFCDD2,stroke:#C62828,color:#000000
+    style H fill:#A5D6A7,stroke:#2E7D32,color:#000000
+    style I fill:#A5D6A7,stroke:#2E7D32,color:#000000
 ```
 
 ---
@@ -139,15 +142,18 @@ Cuando se invoca standalone con `/validar-fd <ruta-fd>`, imprime en chat únicam
 
 ---
 
-## 7. Formatos de entrada aceptados (Q3:B)
+## 7. Formatos de entrada aceptados (Q3:B revisada por CR-001)
 
-| Extensión | Aceptado | Comportamiento |
+Tras CR-001 el validador acepta multi-formato y **normaliza a markdown** antes de aplicar las reglas CE/CS. La normalización ocurre en el orquestador del skill `/validar-fd`; el sub-agente validador siempre recibe markdown.
+
+| Extensión | Aceptado | Normalización |
 |---|---|---|
-| `.md` | ✅ Sí | Procesamiento normal |
-| `.txt` | ✅ Sí | Se interpreta como markdown plano; encabezados detectados por convención (`# `, `## `, etc.) |
-| `.docx` | ❌ No | RECHAZADO con gap "Formato `.docx` no soportado. Convertir a markdown antes de re-enviar." |
-| `.pdf` | ❌ No | RECHAZADO con gap análogo. |
+| `.md` | ✅ Sí | Passthrough — procesamiento directo |
+| `.txt` | ✅ Sí | Passthrough — se interpreta como markdown plano; encabezados detectados por convención (`# `, `## `, etc.) |
+| `.pdf` | ✅ Sí | La tool `Read` del sub-agente soporta PDF nativamente (hasta 20 páginas por request). Si el PDF supera 20 páginas, se aborta la validación con aviso al usuario. |
+| `.docx` | ✅ Sí | Se convierte a markdown vía `pandoc "<ruta>" -o "<tmp>.md" -t markdown`. Si pandoc no está instalado, se aborta con instrucción al usuario de convertir manualmente. |
 | Inline (pegado en chat) | ✅ Sí | El validador acepta texto pegado directamente si no hay ruta de archivo. |
+| Otras extensiones | ❌ No | RECHAZADO con gap: "Formato `<ext>` no soportado. Aceptados: `.md`, `.txt`, `.pdf`, `.docx`." |
 
 ---
 

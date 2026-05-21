@@ -86,6 +86,7 @@
 ## 4. Workflow Visualization
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TD
     Start(["User Request<br/>(PRD + AI-DLC)"])
 

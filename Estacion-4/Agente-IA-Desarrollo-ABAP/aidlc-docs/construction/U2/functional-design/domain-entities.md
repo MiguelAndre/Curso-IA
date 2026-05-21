@@ -99,6 +99,7 @@ Entidades conceptuales del dominio del Validador. **No** son entidades de base d
 ## Diagrama de relaciones
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 classDiagram
     class FD {
         +origen

@@ -20,6 +20,7 @@ El producto se compone de **11 componentes** organizados en **3 capas** dentro d
 ## 2. Arquitectura visual
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TB
     subgraph WORKSPACE["📂 Workspace Claude Code"]
         subgraph CFG["🟡 Capa 1 — Contexto y Configuración"]

@@ -206,6 +206,7 @@ Si el objeto de autorización no fue declarado en el TD, infiérelo y marca con 
 ## 3. Diagrama de interacción
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TB
     USER([Desarrollador])
     LC2[/generar-abap<br/>slash command/]

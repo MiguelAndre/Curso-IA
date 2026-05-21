@@ -231,6 +231,7 @@
 ## Mapa visual (componentes)
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TB
     subgraph CC["📂 Repositorio (Claude Code workspace)"]
         C1["📄 C1 — CLAUDE.md<br/>Configuración Base"]

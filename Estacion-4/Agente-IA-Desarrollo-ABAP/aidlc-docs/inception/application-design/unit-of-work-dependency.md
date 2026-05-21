@@ -27,6 +27,7 @@
 ## Grafo visual
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 graph TD
     U1["📦 U1<br/>Configuración Base + Documentación<br/>(C1, C7, C8, C9, C10, C11)"]
     U2["🛡️ U2<br/>Módulo 1: Validador FD<br/>(C2)"]
@@ -93,6 +94,7 @@ graph TD
 ## Diagrama de orden de construcción (sequence)
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 gantt
     title Orden de construcción por unidad
     dateFormat X

@@ -135,6 +135,7 @@
 ## Diagrama de relaciones
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 classDiagram
     class TDAprobado {
         +contenido

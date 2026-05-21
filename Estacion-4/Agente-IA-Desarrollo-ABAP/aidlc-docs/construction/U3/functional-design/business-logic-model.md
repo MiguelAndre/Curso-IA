@@ -15,6 +15,7 @@ Transformar un **FD aprobado** en una **Especificación Técnica (TD)** que el M
 ## 2. Flujo principal
 
 ```mermaid
+%%{init: {'theme':'default'}}%%
 flowchart TD
     A([Input recibido]) --> B{¿Input es FD<br/>o código ABAP?}
     B -->|FD| C{¿Invocado por<br/>orquestador?}
