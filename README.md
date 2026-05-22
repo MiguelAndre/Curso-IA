@@ -2,7 +2,7 @@
 
 Repositorio con notas, laboratorios y entregables prácticos de mi formación en **Inteligencia Artificial aplicada al desarrollo de software**.
 
-Programa intensivo organizado en **5 estaciones progresivas** que van desde la concepción de un producto hasta su construcción real con agentes de IA, precedidas por una **Nivelación** de fundamentos.
+Programa intensivo organizado en **6 estaciones progresivas** que van desde la concepción de un producto hasta su implementación con agentes de IA, precedidas por una **Nivelación** de fundamentos.
 
 ---
 
@@ -15,7 +15,8 @@ Programa intensivo organizado en **5 estaciones progresivas** que van desde la c
 | 2 | [`Estacion-2/`](#estación-2--co-crear-el-prd-con-ia) | Co-creación del PRD con IA | `specs/prd.md` |
 | 3 | [`Estacion-3/`](#estación-3--ingeniería-de-software-agéntica) | Claude Code, OpenCode, Antigravity | Repo agent-ready + 1 feature |
 | 4 | [`Estacion-4/`](#estación-4--diseñando-el-qué-ai-dlc-inception) | AI-DLC Inception (Diseñar el QUÉ) | 6 artefactos de Inception |
-| 5 | [`Estacion-5/`](#estación-5--diseñando-el-cómo-construction) | Construction (Diseñar el CÓMO) | Código + tests + deploy |
+| 5 | [`Estacion-5/`](#estación-5--diseñando-el-cómo-construction) | Construction (Diseñar el CÓMO) | Código + tests + deploy de la Unidad 1 |
+| 6 | [`Estacion-6/`](#estación-6--implementando-scaffolding-y-mapa-agencial) | Scaffolding, modelos, arneses y orquestación | `AGENTS.md` + `PRODUCT.md` + `DESIGN.md` |
 
 ---
 
@@ -215,13 +216,106 @@ Agente-IA-Desarrollo-ABAP/
 
 📁 `Estacion-5/`
 
-**Tema:** Fase **Construction** del AI-DLC. Tomar los 6 artefactos de Inception (Estación 4) y convertirlos en **código funcional, pruebas y despliegue**.
+**Tema:** Fase **Construction** del AI-DLC. Tomar los 6 artefactos de Inception (Estación 4) y convertirlos en **código funcional, pruebas y despliegue**, unidad por unidad.
 
-### Archivos
+**Instructor:** Christian Braatz
+
+### Archivos principales
 
 | Archivo | Contenido |
 |---------|-----------|
-| `estacion5-diseñando-el-como.pdf` | Guía de la fase de Construction |
+| `README.md` | Guía general de la estación |
+| `estacion5-runbook.md` | Runbook paso a paso de las 5 actividades de Construction |
+| `estacion5-diseñando-el-como.pdf` | Slides de la sesión |
+| `docs/prompts-ajit-arquitectura.md` | Prompts para diseño arquitectónico (C4, NFRs, ADR) |
+| `docs/adr-template.md` | Template para documentar decisiones arquitectónicas |
+| `aidlc-rules/` | Framework AI-DLC v0.1.8 (no modificar) — `core-workflow.md` se copia como `CLAUDE.md` |
+
+### Las 5 actividades de Construction (por unidad)
+
+| # | Actividad | Artefacto | Regla de oro |
+|---|-----------|-----------|--------------|
+| 01 | Diseño funcional | `domain-entities.md` · `business-rules.md` · `business-logic-model.md` | No generar código antes de aprobar el `business-logic-model.md` |
+| 02 | NFR Requirements | `nfr-requirements.md` | Cada NFR necesita un valor numérico verificable |
+| 03 | NFR Design (ADR) | `nfr-design.md` | Todo ADR debe declarar ⚠️ en Consecuencias |
+| 04 | Infrastructure Design | `infrastructure-design.md` · `deployment-architecture.md` | Todo componente del `application-design.md` debe aparecer en el diagrama |
+| 05 | Code Generation + Tests | Código fuente + suite de tests | Los tests de integración se trazan a escenarios Gherkin de `user-stories.md` |
+
+> **Flujo por unidad:** `Diseño funcional → NFR Requirements → NFR Design (ADR) → Infrastructure Design → Code Generation → Tests`
+
+### Proyecto de ejemplo — EntreVista AI · Unidad 1 (`auth-lambda`)
+
+La carpeta `agentic_interviewer_ai/` contiene Inception completa **más** los artefactos de Construction para la Unidad 1, como referencia de "cómo se ve bien":
+
+| Artefacto | Qué muestra |
+|-----------|-------------|
+| `functional-design/domain-entities.md` | Entities (`Operator`, `RefreshToken`), Value Objects (`HashedPassword`, `JWTAccessToken`), Aggregates |
+| `functional-design/business-rules.md` | 6 reglas numeradas (RULE-AUTH-01 a RULE-AUTH-06) con condición, consecuencia y fuente |
+| `functional-design/business-logic-model.md` | Flujos E2E: Login, Refresh, Logout, Change Password |
+| `nfr-requirements/nfr-requirements.md` | 6 NFRs con valores numéricos (P95 < 500 ms, bcrypt factor 10, 99.5% disponibilidad…) |
+| `nfr-design/nfr-design-patterns.md` | 3 ADRs: degraded mode Redis→MongoDB, JWT RS256 + Secrets Manager, rate limiting granular |
+| `infrastructure-design/infrastructure-design.md` | Mapa de servicios AWS (API Gateway, Lambda, MongoDB Atlas, Secrets Manager, VPC) |
+| `infrastructure-design/deployment-architecture.md` | Diagrama Mermaid completo de despliegue |
+
+**Prompt de re-entrada al framework** (con `CLAUDE.md` en el workspace):
+
+```
+Confírmame en qué fase de AI-DLC nos encontramos, para avanzar.
+```
+
+---
+
+## Estación 6 — Implementando (Scaffolding y mapa agencial)
+
+📁 `Estacion-6/`
+
+**Tema:** Cambia el nivel de zoom. AI-DLC ya entregó el contrato; ahora se construye el **scaffolding operativo** alrededor de la implementación: arneses, modelos, proveedores de inferencia, skills de diseño, estándares visuales y orquestación general. La implementación con AI-DLC queda como ejercicio aplicado.
+
+**Instructor:** Leonardo González · **Duración:** ~2 h
+
+### Archivos principales
+
+| Archivo | Contenido |
+|---------|-----------|
+| `README.md` | Guía general de la estación |
+| `estacion6-runbook.md` | Runbook para preparar el repo para ejecución con agentes |
+| `design-standards-live-demo.md` | Guion del live coding: convertir `PRODUCT.md` + `DESIGN.md` + storyboard en slides HTML/PDF |
+| `prompts.md` | Prompts para instalar skills de diseño y crear `PRODUCT.md` / `DESIGN.md` |
+| `slides/estacion6-slides.md` | Storyboard Markdown que alimenta los slides generados en vivo |
+
+### Estructura del módulo (5 bloques)
+
+| # | Bloque | Duración | Foco |
+|---|--------|----------|------|
+| 1 | Scaffolding y diseño UX agencial | 25 min | Live coding: skills de diseño + `PRODUCT.md` + `DESIGN.md` → slides HTML/PDF |
+| 2 | Modelos, proveedores e inferencia | 20 min | Separar modelo, proveedor, API y superficie de trabajo; comparar contexto, cache, multimodalidad, tool calling |
+| 3 | Benchmarks y señales de capacidad | 15 min | Leer Terminal Bench y Artificial Analysis como señales parciales |
+| 4 | Arneses y agent labs | 25 min | Ubicar Claude Code, Codex, OpenHands, Factory, OpenCode, Antigravity 2 y Pi |
+| 5 | Orquestación general | 25 min | Alcance, contexto, dependencias, ejecución y evidencia — puente conceptual a Estación 7 |
+
+### Concepto clave: la pila de diseño agencial
+
+- **Skills** → dan hábitos al agente (accesibilidad, performance, anti-patrones).
+- **`PRODUCT.md`** → da criterio (audiencia, propósito, tono, contexto).
+- **`DESIGN.md`** → da memoria visual (tokens, roles, componentes, racional).
+- **Lint** (`npx @google/design.md lint DESIGN.md`) → hace revisable el estándar.
+
+Skills de diseño instaladas en el demo: **Impeccable**, **Make Interfaces Feel Better**, **Web Design Guidelines**, **Userinterface Wiki**, **Accessibility / Best Practices / Core Web Vitals / Performance / SEO**, **React Best Practices**, **Imagegen** y el estándar **Google DESIGN.md**.
+
+### Entregable
+
+Scaffolding operativo del repo:
+
+1. Ficha del arnés y modelo(s) con características relevantes (contexto, permisos, validación, evidencia).
+2. `AGENTS.md` / `CLAUDE.md` o equivalente actualizado.
+3. `PRODUCT.md` y `DESIGN.md` si hay UI, slides o material visual.
+4. Lista de validaciones disponibles (tests, lint, build, demo, revisión manual).
+
+### Recursos clave
+
+- Artículo: [Fixing Visual AI Slop](https://trilogyai.substack.com/p/fixing-visual-ai-slop)
+- Demo site: [design.trilogyai.co](https://design.trilogyai.co/) — Repo: [trilogy-group/design](https://github.com/trilogy-group/design)
+- Estándar: [Google DESIGN.md](https://github.com/google-labs-code/design.md)
 
 ---
 
@@ -234,7 +328,8 @@ Agente-IA-Desarrollo-ABAP/
 | **Estación 2** | Co-creas PRD con IA | `specs/prd.md` |
 | **Estación 3** | Configuras agente + implementas feature | `AGENTS.md`, `CLAUDE.md`, rama feature |
 | **Estación 4** | Especificación con AI-DLC Inception | 6 artefactos ejecutables |
-| **Estación 5** | Construcción real | Código + tests + deploy |
+| **Estación 5** | Construcción real (Construction) | Código + tests + deploy de la Unidad 1 |
+| **Estación 6** | Scaffolding y mapa agencial | `AGENTS.md` + `PRODUCT.md` + `DESIGN.md` + ficha de arnés |
 
 ---
 
