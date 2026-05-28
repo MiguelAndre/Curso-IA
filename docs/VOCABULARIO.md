@@ -8,7 +8,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 
 ## Siglas
 
-| Sigla | Significado | Una línea |
+| Sigla | Significado | Descripción |
 |---|---|---|
 | **ADR** | Architecture Decision Record | Documento corto con *Contexto · Decisión · Consecuencias* por cada decisión arquitectónica relevante. |
 | **AI-DLC** | Artificial Intelligence Development Lifecycle | Framework de AWS Labs (v0.1.8) para especificación + construcción co-creada con agentes. |
@@ -28,7 +28,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **JTBD** | Jobs To Be Done | Marco que pregunta "¿qué trabajo contrata el usuario al producto?". |
 | **KPI** | Key Performance Indicator | Métrica con baseline + target. |
 | **LLM** | Large Language Model | Modelo neural que predice el siguiente token. Claude, GPT, etc. |
-| **LSP** | Language Server Protocol | Análogo a MCP pero para editores ↔ language servers. Inspiración técnica de MCP. |
+| **LSP** | Language Server Protocol | Protocolo estándar entre editores y language servers. Predecesor histórico e inspiración técnica de MCP. |
 | **MCP** | Model Context Protocol | Protocolo abierto (JSON-RPC) que conecta hosts (Claude Code, Cursor) con servers de tools. |
 | **MoSCoW** | Must · Should · Could · Won't | Priorización del MVP en el PRD. |
 | **MVP** | Minimum Viable Product | Versión mínima entregable que valida la hipótesis. |
@@ -60,15 +60,20 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 
 | Término | Para qué sirve / qué significa |
 |---|---|
-| **Aggregate** | Grupo de entidades con una raíz que garantiza consistencia transaccional (DDD). |
 | **Agente** | Sistema autónomo que recibe un objetivo, planifica, ejecuta tools, observa y corrige hasta converger en un artefacto verificable (no en texto). |
-| **Arnés** | Capa estable que envuelve el modelo: loop, permisos, tools, UI, contexto repo-local. Claude Code, OpenHands, Factory son arneses. El modelo (Opus, GPT) hace inferencia; el arnés decide cuándo y con qué. |
+| **Aggregate** | Grupo de entidades con una raíz que garantiza consistencia transaccional (DDD). |
+| **Application Design** | Cuarta actividad de Inception (AI-DLC). Produce el contrato técnico de alto nivel: C4 model, componentes, servicios, métodos, dependencias. Insumo directo de Units Generation. |
+| **Arnés** *(también: Harness)* | Capa estable que envuelve el modelo: loop, permisos, tools, UI, contexto repo-local. Claude Code, OpenHands, Factory son arneses. El modelo (Opus, GPT) hace inferencia; el arnés decide cuándo y con qué. |
 | **Audit trail** | Rastro auditable de qué decidió el agente y por qué. En este proyecto: `aidlc-state.md` + `audit.md` + sección "Decisiones y Supuestos" en cada output. |
 | **Bounded Context** | Límite donde un modelo de dominio es válido (DDD). Previene la corrupción del modelo entre contextos diferentes. |
+| **Brownfield** | Modo de entrada de AI-DLC cuando existe código previo. Activa la actividad de **Reverse engineering** para reconstruir specs antes de seguir. |
+| **Build & Test** | Actividad de cierre de Construction (AI-DLC). Ejecuta unit/integration/security tests y deja `build-and-test-summary.md` con la evidencia. En productos sin tests automatizados degrada a checklist humano riguroso (53 verificaciones en este proyecto). |
 | **Business Logic Model** | Flujos E2E (login, refresh, etc.) con estados transicionales explícitos. Producido en Functional Design (AI-DLC). |
 | **Business Rule** | Regla numerada (`RULE-AUTH-01..N`) con condición · consecuencia · fuente. |
 | **Capsule** | Unidad de memoria de un issue cerrado. Contiene decisión validada, invariant aparecido, validación útil, review feedback, docs impactadas. |
+| **Code review automatizado** | Capa advisory que revisa cada PR antes del merge humano. Detecta bugs de correctness, regresiones, problemas de seguridad, migraciones incompletas, deuda técnica. En este proyecto: OpenHands PR Review vía `.github/workflows/ai-pr-review.yml`. |
 | **Codebase understanding** | Base de conocimiento viva sobre el repo. Construida con memory capsules + docs evolutivos. |
+| **Construction** | Segunda fase del workflow AI-DLC (después de Inception). 5 actividades por unidad: Functional Design · NFR Requirements · NFR Design · Infrastructure Design · Code Generation + Tests. |
 | **Context Engineering** | Diseñar el entorno (CLAUDE.md, AGENTS.md, hooks, permisos) en lugar de optimizar prompts individuales. Regla 80/20: el contexto produce 80% del resultado. |
 | **Definition of Ready / Done** | Criterios objetivos para que una tarea pueda empezar (DoR) o cerrarse (DoD). |
 | **Domain Entity** | Objeto con identidad única que persiste (ej. `Operator`). Concepto DDD. |
@@ -76,9 +81,12 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Evals** | Golden set de casos + rúbricas para medir calidad agentic (planning, tool selection, output format). |
 | **Evidence section** | Sección obligatoria del PR que documenta intención, comandos, output, AC cumplidos, riesgos. Sin ella, el AI PR Review falla. |
 | **Foundation model** | Modelo base masivo entrenado en datos generales (Claude, GPT, Gemini). Sirve para múltiples tareas. |
+| **Functional Design** | Primera actividad de Construction (AI-DLC). Produce `domain-entities.md` + `business-rules.md` + `business-logic-model.md`. Regla de oro: no se genera código antes de aprobar el business-logic-model. |
 | **Gherkin** | Sintaxis de BDD: `Given <contexto> / When <acción> / Then <resultado>`. |
+| **Greenfield** | Modo de entrada de AI-DLC cuando no hay código previo. Se omite el Reverse engineering. Este proyecto operó en greenfield. |
 | **Harness** | Sinónimo en inglés de "Arnés". Ver entrada Arnés. |
 | **Hook** | Script en `.claude/hooks/` que ejecuta código real automáticamente tras una acción del agente (PostToolUse, PreToolUse). Garantía determinista, no recomendación. |
+| **Inception** | Primera fase del workflow AI-DLC. 6 actividades: Workspace Detection · Requirements Analysis · User Stories · Workflow Planning · Application Design · Units Generation. Salida: contrato ejecutable para Construction. |
 | **Instructor advisory** | Línea en CLAUDE.md que el agente *interpreta* ("debería tener en cuenta"). Recomendación, no garantía. Lo opuesto a un hook. |
 | **Insumo (IS)** | En AI-DLC: item específico del PRD que se trackea con ID a lo largo de toda la documentación. |
 | **Linear** | Gestor de tareas externo donde se publica la planning wave de OpenSymphony. |
