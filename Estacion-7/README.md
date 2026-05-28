@@ -101,7 +101,7 @@ Linear issue → arnés → PR (con Evidence) → AI PR Review → merge → mem
 | `opensymphony-linear-demo.md` | Demo paso a paso: AI-DLC → `task-package.yaml` → validate → dry-run → Linear → memory dry-run. |
 | `code-review-and-memory.md` | Guía conceptual: por qué importa el review automatizado, qué pedir al sistema, OpenSymphony como ejemplo, codebase understanding. |
 | `prompts.md` | Prompts reutilizables: crear plan, convertir a Linear, revisar PR con OpenHands, usar memoria, capturar memoria + docs sync. |
-| `slides/` | Storyboard de slides. |
+| `slide/estacion7-slides.md` | Storyboard de slides. |
 
 ---
 
