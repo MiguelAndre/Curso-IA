@@ -8,9 +8,9 @@
 - **Current Stage**: Workflow cerrado el 2026-05-20. Change request sobre U2 abierto el 2026-05-20: Q3 del plan cambió de "B (solo .md/.txt)" a "leer cualquier formato y escribir un .md" → re-ejecución de U2 Functional Design + Code Generation pendiente de re-validación.
 
 ## Workspace State
-- **Existing Code**: No (en este directorio Estación 4)
+- **Existing Code**: No (greenfield al iniciar el workflow)
 - **Reverse Engineering Needed**: No (Greenfield)
-- **Workspace Root**: C:\Users\mihernandez\Desktop\Curso IA\Curso-IA\Estacion-4\Agente-IA-Desarrollo-ABAP
+- **Workspace Root**: C:\Users\mihernandez\Desktop\Curso IA\Curso-IA\Agente-IA-Desarrollo-ABAP (movido a raíz del repo el 2026-05-27; previamente en Estacion-4/)
 - **Input Artifact**: prd.md (PRD v1.0 aprobado, co-creado segmento por segmento)
 - **AI-DLC Rules**: aidlc-rules/aws-aidlc-rules/core-workflow.md
 

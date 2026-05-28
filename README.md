@@ -6,6 +6,28 @@ Programa intensivo organizado en **6 estaciones progresivas** que van desde la c
 
 ---
 
+## 🎯 Proyecto central del curso
+
+📁 [`Agente-IA-Desarrollo-ABAP/`](Agente-IA-Desarrollo-ABAP/)
+
+A lo largo de las 7 estaciones se construyó **un único producto real**: un **Agente IA para Desarrollo ABAP** que toma documentos funcionales (FD) y los transforma en código ABAP listo para auditoría humana, dentro de Claude Code.
+
+Cada estación aportó una capa al mismo producto:
+
+| Estación | Aporte al producto |
+|---|---|
+| 1 | Problema y contexto (ISB) |
+| 2 | PRD v1.0 |
+| 3 | Repo agent-ready: `AGENTS.md`, `CLAUDE.md`, skills, MCPs |
+| 4 | AI-DLC Inception completo |
+| 5 | AI-DLC Construction (U1–U6 + build & test) |
+| 6 | Scaffolding, ficha de arnés, contrato multi-tool |
+| 7 | Orquestación OpenSymphony, AI PR Review, memoria evolutiva |
+
+El proyecto está en la raíz del repo porque es transversal a todo el curso. Las carpetas `Estacion-N/` contienen el material didáctico de cada sesión.
+
+---
+
 ## Índice rápido
 
 | # | Carpeta | Tema | Entregable principal |
@@ -191,24 +213,11 @@ Tarea/
 
 Contiene PRD y todos los artefactos de Inception en `aidlc-docs/inception/` (requirements, user-stories, application-design con C4 model, plans).
 
-#### `Agente-IA-Desarrollo-ABAP/` — Proyecto real del equipo
-Aplicación completa del framework AI-DLC al **Agente IA para desarrollo ABAP** (transforma documentos funcionales validados en código ABAP listo para revisión humana).
+#### Proyecto real del equipo: `Agente-IA-Desarrollo-ABAP/` (en la raíz del repo)
 
-```
-Agente-IA-Desarrollo-ABAP/
-├── CLAUDE.md
-├── prd.md
-├── docs/
-│   ├── formato-fd-generico.md
-│   ├── checklist-auditoria-codigo-ia.md
-│   ├── plan-evaluacion.md
-│   └── adr/ADR-001-claude-code-como-plataforma.md
-├── aidlc-docs/
-│   ├── inception/ (requirements, user-stories, application-design, plans)
-│   ├── construction/ (U1–U6, functional-design, code, nfr, build-and-test)
-│   └── audit.md
-└── entregables/ (c4-model.md, nfr-matrix.md, ADR-001)
-```
+> **Importante**: el proyecto se promovió a la raíz del repo el 2026-05-27 porque es transversal a todas las estaciones (1–7), no solo a Estación 4. Ver [`../Agente-IA-Desarrollo-ABAP/`](../Agente-IA-Desarrollo-ABAP/).
+
+Aplicación completa del framework AI-DLC al **Agente IA para desarrollo ABAP** (transforma documentos funcionales validados en código ABAP listo para revisión humana). Estación 4 aportó la fase Inception completa.
 
 ---
 

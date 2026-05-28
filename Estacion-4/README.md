@@ -2,7 +2,10 @@
 
 **Hardcore AI | 30X · Fase Inception · Spec-Driven Development con IA**
 
-Este repositorio es la guía práctica de la **Estación 4** del programa Hardcore AI 30X. Contiene el framework AI-DLC, recursos de apoyo y un proyecto de ejemplo completo con todos los artefactos de la fase Inception generados.
+> 📦 **El proyecto real que se construyó durante esta estación (Agente IA para Desarrollo ABAP) vive ahora en la raíz del repo**: [`../Agente-IA-Desarrollo-ABAP/`](../Agente-IA-Desarrollo-ABAP/).
+> Se promovió a la raíz el 2026-05-27 porque es transversal a todas las estaciones (1–7), no solo a esta. Esta carpeta `Estacion-4/` mantiene únicamente el material didáctico de la sesión.
+
+Esta carpeta contiene la guía práctica de la **Estación 4** del programa Hardcore AI 30X: el framework AI-DLC, recursos de apoyo y un proyecto de ejemplo (EntreVista AI) con todos los artefactos de la fase Inception generados.
 
 ---
 

@@ -61,6 +61,7 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   ├── checklist-auditoria-codigo-ia.md   # Checklist post-generación
 │   ├── plan-evaluacion.md                 # Plan de evaluación pre-piloto
 │   ├── ai-pr-review-human-setup.md        # Pasos manuales para activar el AI review
+│   ├── arnes/ficha-claude-code.md         # Ficha del arnés (entregable Estación 6)
 │   ├── orquestacion/                      # Mapa de orquestación de trabajo
 │   ├── tasks/                             # Planning waves OpenSymphony
 │   ├── memory/                            # Capsules y propuestas de docs evolutivos
@@ -235,9 +236,10 @@ Cada tarea cerrada deja una capsule consultable en futuras tareas. Los aprendiza
 - `docs/memory/memory-dry-run.md` — formato de capsules + dry-run.
 - `docs/memory/docs-evolution-proposal.md` — backlog de propuestas de docs sync pendientes.
 
-### 7.4 Contrato neutral del arnés
+### 7.4 Contrato neutral del arnés y ficha de operación
 
 - `AGENTS.md` — contrato neutral que cualquier arnés (Claude Code, Codex, OpenHands, etc.) debe leer al entrar al repo. `CLAUDE.md` queda como la configuración específica de Claude Code.
+- `docs/arnes/ficha-claude-code.md` — ficha del arnés (entregable de Estación 6): modelo, contexto, permisos, validación y evidencia en una sola página.
 
 ---
 
@@ -257,6 +259,7 @@ Cada tarea cerrada deja una capsule consultable en futuras tareas. Los aprendiza
 - [docs/orquestacion/orquestacion-de-trabajo.md](docs/orquestacion/orquestacion-de-trabajo.md)
 - [docs/tasks/task-package.yaml](docs/tasks/task-package.yaml) · [milestones.md](docs/tasks/milestones.md) · [validation-evidence.md](docs/tasks/validation-evidence.md) · [linear-publish.yaml](docs/tasks/linear-publish.yaml) · [pr-evidence-example.md](docs/tasks/pr-evidence-example.md)
 - [docs/ai-pr-review-human-setup.md](docs/ai-pr-review-human-setup.md)
+- [docs/arnes/ficha-claude-code.md](docs/arnes/ficha-claude-code.md)
 - [.agents/skills/custom-codereview-guide.md](.agents/skills/custom-codereview-guide.md)
 - [docs/memory/memory-dry-run.md](docs/memory/memory-dry-run.md) · [docs-evolution-proposal.md](docs/memory/docs-evolution-proposal.md)
 

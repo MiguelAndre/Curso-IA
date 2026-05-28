@@ -19,7 +19,7 @@ Registro completo de inputs del usuario y respuestas del modelo durante la ejecu
 - Programming Languages: N/A (proyecto de configuración de agente Claude Code)
 - Build System: N/A
 - Project Structure: Vacío (solo prd.md y aidlc-rules/)
-- Workspace Root: C:\Users\mihernandez\Desktop\Curso IA\Curso-IA\Estacion-4\Agente-IA-Desarrollo-ABAP
+- Workspace Root: C:\Users\mihernandez\Desktop\Curso IA\Curso-IA\Agente-IA-Desarrollo-ABAP  (movido a raíz del repo el 2026-05-27; previamente en Estacion-4/)
 - Brownfield: false → No se requiere Reverse Engineering
 - Next Phase: Requirements Analysis
 **AI Response**: Workspace marcado como greenfield. State file creado. Procediendo a Requirements Analysis.
