@@ -1,165 +1,133 @@
-# Estación 5 — Diseñando el CÓMO con AI-DLC
+# Estación 5 — Diseñando el CÓMO con AI-DLC (Construction)
 
-**Hardcore AI | 30X · Fase Construction · Spec-Driven Development con IA**
+> Tomar los 6 artefactos de Inception (Estación 4) y convertirlos en **código funcional + tests + deploy**, unidad por unidad. Es la fase Construction de AI-DLC.
 
-Este repositorio es la guía práctica de la **Estación 5** del programa Hardcore AI 30X. Contiene el framework AI-DLC, recursos de apoyo y un proyecto de ejemplo con los artefactos de la fase Construction generados para la primera unidad.
-
----
-
-## ¿Qué encontrarás aquí?
-
-| Propósito | Qué resuelve |
-| :--- | :--- |
-| **Runbook paso a paso** | Cómo ejecutar las 5 actividades de Construction con un agente de IA |
-| **Framework AI-DLC listo para usar** | Las reglas del framework en la versión `v0.1.8` |
-| **Proyecto de ejemplo con Construction** | EntreVista AI con los artefactos de la Unidad 1 (auth-lambda) completamente generados |
-| **Templates y prompts** | ADR template y prompts de arquitectura listos para copiar |
+> 📦 Mi entrega vive en el proyecto en raíz: [`../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/`](../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/). Esta carpeta `Estacion-5/` conserva solo el material didáctico.
 
 ---
 
-## Estructura del repositorio
+## 1. Metadatos
 
-```
-estacion-5/
-│
-├── estacion5-runbook.md          ← EMPIEZA AQUÍ — guía de trabajo de la clase
-│
-├── docs/
-│   ├── prompts-ajit-arquitectura.md   ← Prompts para diseño arquitectónico (C4, NFRs, ADR)
-│   └── adr-template.md                ← Template para documentar decisiones arquitectónicas
-│
-├── aidlc-rules/                  ← Framework AI-DLC v0.1.8 (no modificar)
-│   ├── aws-aidlc-rules/
-│   │   └── core-workflow.md      ← Cerebro del framework (se copia como CLAUDE.md)
-│   └── aws-aidlc-rule-details/   ← Instrucciones detalladas de cada fase
-│
-└── agentic_interviewer_ai/       ← Proyecto de ejemplo: EntreVista AI
-    ├── CLAUDE.md                 ← Agente de contexto del proyecto (core-workflow copiado)
-    ├── PRD_agentic_interviewer_ai.md  ← PRD de entrada del ejemplo
-    └── aidlc-docs/               ← Artefactos generados por el framework
-        ├── inception/            ← Fase Inception completa (6 artefactos)
-        │   ├── requirements/
-        │   ├── user-stories/
-        │   ├── application-design/
-        │   └── plans/
-        └── construction/         ← Fase Construction — Unidad 1 completa
-            └── auth-lambda/
-                ├── functional-design/     ← domain-entities, business-rules, business-logic-model
-                ├── nfr-requirements/      ← nfr-requirements con 6 atributos de calidad
-                ├── nfr-design/            ← ADRs por NFR significativo
-                └── infrastructure-design/ ← mapa de servicios + deployment-architecture
-```
+| Campo | Valor |
+|---|---|
+| Instructor | Christian Braatz |
+| Fase AI-DLC | Construction (Diseñar el CÓMO) |
+| Modalidad | Autoestudio + runbook (no clase magistral nueva — continuidad de Estación 4) |
+| Prerequisitos | 6 artefactos de Inception completos (Estación 4) |
+| Commits relevantes | `2f55aff` · `58205cf` · `368ec96` |
 
 ---
 
-## Cómo usar este repositorio
+## 2. Tema y objetivo de aprendizaje
 
-### Requisito previo
-
-La Estación 5 es la continuación directa de la Estación 4. Necesitas tener los **6 artefactos de Inception** completos en tu workspace antes de empezar:
-
-```
-tu-producto/
-├── CLAUDE.md                          ✅ Reglas del framework
-├── PRD_tu_producto.md                 ✅ PRD de Inception
-├── .aidlc-rule-details/               ✅ Detalles de fases
-└── aidlc-docs/
-    └── inception/
-        ├── requirements/              ✅
-        ├── user-stories/              ✅
-        ├── application-design/        ✅
-        └── plans/                     ✅ (incluye units-generation.md)
-```
-
-> Si alguno de estos artefactos falta o está incompleto, vuelve a la Estación 4 primero. El agente construirá código sin contrato si los artefactos de Inception están incompletos.
-
-### Paso 1 — Lee el runbook
-
-Abre [`estacion5-runbook.md`](estacion5-runbook.md). Es tu guía de trabajo activo: explica cada actividad, qué artefacto genera, qué debes validar y qué prompt usar en cada momento.
-
-### Paso 2 — Abre tu workspace de Inception en Cursor o Claude Code
-
-```sh
-# Abre el workspace donde tienes tus artefactos de Inception
-cd nombre_de_tu_producto
-cursor .
-# o en Claude Code: abre la carpeta directamente
-```
-
-### Paso 3 — Envía el prompt de re-entrada
-
-Con el workspace abierto en el mismo directorio donde está `CLAUDE.md`, envía este prompt para que el framework confirme la fase activa:
-
-```
-Confírmame en qué fase de AI-DLC nos encontramos, para avanzar.
-```
-
-El framework leerá `aidlc-docs/aidlc-state.md`, confirmará que Inception está completa y entrará directamente en Construction. Tú validas los artefactos y apruebas antes de que avance a la siguiente actividad.
+Convertir las decisiones de Inception en software entregable, **unidad por unidad**, con un flujo secuencial que evita el "saltar a codificar". Cada actividad tiene una **regla de oro**: si no se cumple, el agente no avanza.
 
 ---
 
-## Las 5 actividades de la Fase Construction
+## 3. Conceptos clave
 
-Cada unidad de trabajo pasa por las mismas 5 actividades en el mismo orden. El agente espera tu aprobación al final de cada una antes de continuar.
+### 3.1 Las 5 actividades de Construction por unidad
 
-| # | Actividad | Artefacto que genera | Regla de oro |
-| :--- | :--- | :--- | :--- |
-| 01 | Diseño funcional | `domain-entities.md` · `business-rules.md` · `business-logic-model.md` | No generes código antes de tener el `business-logic-model.md` aprobado |
-| 02 | NFR Requirements | `nfr-requirements.md` | Cada NFR necesita un valor numérico verificable — sin él no es un NFR |
-| 03 | NFR Design (ADR) | `nfr-design.md` | Todo ADR debe tener ⚠️ en Consecuencias — toda decisión tiene un costo |
-| 04 | Infrastructure Design | `infrastructure-design.md` · `deployment-architecture.md` | Todos los componentes del `application-design.md` deben aparecer en el diagrama |
-| 05 | Code Generation + Tests | Código fuente completo + suite de tests | Los tests de integración deben trazarse a escenarios Gherkin del `user-stories.md` |
+| # | Actividad | Artefactos generados | Regla de oro |
+|---|---|---|---|
+| 01 | **Diseño funcional** | `domain-entities.md` · `business-rules.md` · `business-logic-model.md` | No generar código antes de aprobar el `business-logic-model.md`. |
+| 02 | **NFR Requirements** | `nfr-requirements.md` | Cada NFR debe tener un valor numérico verificable. |
+| 03 | **NFR Design (ADR)** | `nfr-design.md` con ADRs | Todo ADR declara ⚠️ en Consecuencias (los trade-offs aceptados). |
+| 04 | **Infrastructure Design** | `infrastructure-design.md` · `deployment-architecture.md` | Todo componente del `application-design.md` debe aparecer en el diagrama. |
+| 05 | **Code Generation + Tests** | Código fuente + suite de tests | Los tests de integración se trazan a escenarios Gherkin de `user-stories.md`. |
 
-> **Flujo completo por unidad:**
-> `Diseño funcional → NFR Requirements → NFR Design (ADR) → Infrastructure Design → Code Generation → Tests`
+**Orden estricto**: Functional Design → NFR Requirements → NFR Design → Infrastructure Design → Code Generation → Tests. Saltar pasos rompe trazabilidad.
+
+### 3.2 Conceptos DDD aplicados en Functional Design
+
+- **Domain Entity**: objeto con identidad única que persiste (ej. `Operator`).
+- **Value Object**: objeto sin identidad, definido por su valor (ej. `HashedPassword`, `JWTAccessToken`).
+- **Aggregate**: grupo de entidades con una raíz que garantiza consistencia transaccional.
+- **Business Rule**: regla numerada (`RULE-AUTH-01..N`) con condición, consecuencia y fuente en historias.
+- **Business Logic Model**: flujos E2E (login, refresh, logout, change-password) con estados transicionales explícitos.
+
+### 3.3 NFRs con valor numérico
+
+No vale "rápido". Vale: *P95 < 500 ms en login* · *bcrypt factor 10* · *uptime 99.5%* · *UX hasta 30s sin feedback* · *escalabilidad +300% sin rediseño*.
+
+### 3.4 ADR con ⚠️ en Consecuencias
+
+Toda decisión arquitectónica tiene costo. Si el ADR no incluye al menos un ⚠️ en Consecuencias, está incompleto: significa que no se pensaron los trade-offs conscientemente.
 
 ---
 
-## Proyecto de ejemplo: EntreVista AI — Unidad 1 (auth-lambda)
+## 4. Material del curso
 
-La carpeta [`agentic_interviewer_ai/`](agentic_interviewer_ai/) contiene un proyecto real con la fase Inception completa **y** los artefactos de Construction generados para la Unidad 1. Úsala como referencia para ver cómo se ven los artefactos bien generados antes de hacerlos con tu propio producto.
+| Archivo | Contenido |
+|---|---|
+| `estacion5-runbook.md` | 831 líneas, paso a paso. Actividad 0 (re-entrada al framework) + actividades 1–6 + checklists + recursos. |
+| `estacion5-diseñando-el-como.pdf` | Slides de la sesión. |
+| `Tarea/README.md` | Stub que redirige a [`../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/`](../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/) como ubicación canónica. |
 
-**¿Qué es EntreVista AI?** Una plataforma de screenings conversacionales vía Telegram para el mercado LATAM. El agente razona, repregunta y entrega evidencia estructurada al reclutador — sin chatbots de reglas estáticas.
+---
 
-**Arquitectura del sistema (7 microservicios):**
+## 5. Proyecto de ejemplo (`agentic_interviewer_ai/`)
 
-```
-telegram-bot → conversation-lambda (Claude Agent SDK)
-                    ├── evaluation-lambda
-                    ├── campaign-lambda (RAG + Pinecone)
-                    └── compliance-lambda
-
-dashboard (React) → auth-lambda + todos los lambdas anteriores
-
-Almacenamiento: MongoDB Atlas · AWS S3 · Pinecone · AWS Secrets Manager
-```
-
-**Unidad 1 — auth-lambda (ejemplo de Construction completo):**
+Referencia del instructor: EntreVista AI · **Unidad 1 `auth-lambda`** con Construction completa. Sirve para ver "cómo se ve bien" antes de hacerlo sobre tu producto.
 
 | Artefacto | Qué muestra |
-| :--- | :--- |
-| `functional-design/domain-entities.md` | Entities (`Operator`, `RefreshToken`), Value Objects (`HashedPassword`, `JWTAccessToken`), Aggregates |
-| `functional-design/business-rules.md` | 6 reglas numeradas (RULE-AUTH-01 a RULE-AUTH-06) con condición, consecuencia y fuente |
-| `functional-design/business-logic-model.md` | Flujos E2E: Login, Refresh, Logout, Change Password con estados posibles |
-| `nfr-requirements/nfr-requirements.md` | 6 NFRs con valores numéricos (P95 < 500ms, bcrypt factor 10, 99.5% disponibilidad…) |
-| `nfr-design/nfr-design-patterns.md` | 3 ADRs: degraded mode Redis→MongoDB, JWT RS256 + Secrets Manager, rate limiting granular |
-| `infrastructure-design/infrastructure-design.md` | Mapa de servicios AWS: API Gateway, Lambda, MongoDB Atlas, Secrets Manager, VPC |
-| `infrastructure-design/deployment-architecture.md` | Diagrama Mermaid completo de despliegue |
+|---|---|
+| `functional-design/domain-entities.md` | Entities (`Operator`, `RefreshToken`), Value Objects (`HashedPassword`, `JWTAccessToken`), Aggregates. |
+| `functional-design/business-rules.md` | 6 reglas (`RULE-AUTH-01..06`) con condición · consecuencia · fuente. |
+| `functional-design/business-logic-model.md` | 4 flujos E2E: Login · Refresh · Logout · ChangePassword. |
+| `nfr-requirements/nfr-requirements.md` | 6 NFRs numéricos (P95 < 500ms · bcrypt 10 · 99.5% uptime · 30s UX · 1 componente impactado · +300% sin rediseño). |
+| `nfr-design/nfr-design-patterns.md` | 3 ADRs: degraded mode Redis→MongoDB · JWT RS256 + Secrets Manager · rate limiting granular. |
+| `infrastructure-design/infrastructure-design.md` | Mapa AWS: API Gateway, Lambda, MongoDB Atlas, Secrets Manager, VPC. |
+| `infrastructure-design/deployment-architecture.md` | Diagrama Mermaid completo del despliegue. |
 
 ---
 
-## Recursos clave
+## 6. Mi entrega — Construction sobre el proyecto ABAP
 
-| Recurso | Para qué |
-| :--- | :--- |
-| [AI-DLC Framework (AWS Labs)](https://github.com/awslabs/aidlc-workflows) | Repositorio oficial del framework |
-| [Versión v0.1.8](https://github.com/awslabs/aidlc-workflows/tree/v0.1.8) | Versión incluida en este repo |
-| [DDD Reference (Evans)](https://www.domainlanguage.com/ddd/reference/) | Patrones tácticos: Entities, Value Objects, Aggregates, Domain Services |
-| [ADR Examples](https://adr.github.io) | Referencia y formatos de Architecture Decision Records |
-| [MADR Template](https://github.com/adr/madr) | Template ligero de ADR recomendado para equipos ágiles |
-| [C4 Model](https://c4model.com) | Diagramas de despliegue — Nivel 3 Component |
-| [FastAPI + Mangum (Lambda)](https://mangum.io) | ASGI adapter para deploy de FastAPI en AWS Lambda |
+La fase Construction se ejecutó dentro del proyecto en raíz, **no** en `Estacion-5/Tarea/`. Razón: Construction es parte integral del producto. Duplicarla abriría divergencia.
+
+### 6.1 Mapa de entregables
+
+`../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/`:
+
+| Unidad | Carpetas | Contenido principal |
+|---|---|---|
+| **U1** | `code/` | `U1-summary.md` — Configuración base: `CLAUDE.md`, `README.md`, `docs/formato-fd-generico.md`, `checklist-auditoria-codigo-ia.md`, `plan-evaluacion.md`, `.claude/settings.json`, `.gitignore`. |
+| **U2** | `functional-design/`, `code/` | `domain-entities.md` + `business-rules.md` + `business-logic-model.md` + `U2-summary.md`. Genera el sub-agente `validador-fd` + slash command `/validar-fd`. |
+| **U3** | `functional-design/`, `code/` | Análogo a U2 → sub-agente `fd-a-td` + `/generar-td`. |
+| **U4** | `functional-design/`, `nfr-requirements/`, `nfr-design/`, `code/` | Único módulo con NFR Requirements y NFR Design (porque toca seguridad del código ABAP generado: SECURITY-03, -09, -10). 3 archivos NFR + `U4-summary.md`. Genera sub-agente `td-a-codigo` + `/generar-abap`. |
+| **U5** | `code/` | Orquestador `/pipeline-abap` con gates humanos M1→M2→M3. |
+| **U6** | `code/` | Skill `template-alv` para reportes ALV. |
+| **plans/** | — | `U1..U6-code-generation-plan.md` + `U2..U4-functional-design-plan.md` + `U4-nfr-*-plan.md`. |
+| **build-and-test/** | — | `build-instructions.md` + `unit-test-instructions.md` + `integration-test-instructions.md` + `security-test-instructions.md` + `build-and-test-summary.md` (53 verificaciones manuales documentadas). |
+
+### 6.2 Decisiones clave de Construction
+
+- **Infrastructure Design omitido** para U1, U2, U3, U5, U6: el producto vive dentro de Claude Code, sin infraestructura cloud propia.
+- **NFR Requirements + NFR Design solo en U4** (el generador de código ABAP): es el único módulo que entrega artefactos que correrán en producción SAP, por lo que la matriz SECURITY-N aplica plena.
+- **Build & Test con 53 verificaciones manuales**: el producto no tiene tests automatizados ejecutables (es configuración de Claude Code), así que la suite es un checklist humano riguroso documentado.
+
+### 6.3 Cierre del workflow
+
+`aidlc-state.md` registra el workflow **CERRADO** el 2026-05-20. CR-001 (Validador multi-formato) quedó abierto y se cerrará via la planning wave de Estación 7.
 
 ---
 
-**Programa:** Hardcore AI | 30X · **Instructor:** Christian Braatz
+## 7. Lecciones / takeaways
+
+1. **Especificación antes que código.** Los artefactos de Construction (domain model + NFRs + ADRs + infrastructure) **son** el producto. El código es consecuencia. Sin esa especificación, el agente genera código técnicamente correcto pero funcionalmente errado.
+
+2. **ADRs con trade-offs explícitos.** Toda decisión arquitectónica tiene costo. La regla de "⚠️ en Consecuencias" obliga a pensar el trade-off; sin esa marca, el ADR esconde un supuesto no negociado.
+
+3. **Trazabilidad total al dominio.** Business rules numeradas (`RULE-[ID]`) + tests mapeados a escenarios Gherkin de Inception garantizan que el código responde a requisitos reales, no a supuestos técnicos del desarrollador.
+
+---
+
+## Referencias rápidas
+
+- Runbook completo: [`estacion5-runbook.md`](estacion5-runbook.md)
+- Stub de Tarea: [`Tarea/README.md`](Tarea/README.md)
+- Mi Construction: [`../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/`](../Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/)
+- Estado AI-DLC: [`../Agente-IA-Desarrollo-ABAP/aidlc-docs/aidlc-state.md`](../Agente-IA-Desarrollo-ABAP/aidlc-docs/aidlc-state.md)
+- Sub-agentes resultantes: [`../Agente-IA-Desarrollo-ABAP/.claude/agents/`](../Agente-IA-Desarrollo-ABAP/.claude/agents/)
+- Slash commands resultantes: [`../Agente-IA-Desarrollo-ABAP/.claude/commands/`](../Agente-IA-Desarrollo-ABAP/.claude/commands/)
