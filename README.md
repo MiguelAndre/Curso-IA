@@ -56,6 +56,7 @@ El proyecto está en la raíz porque es transversal a todo el curso. Las carpeta
 - **Para entender cómo opera Claude Code en el proyecto** → [`Agente-IA-Desarrollo-ABAP/CLAUDE.md`](Agente-IA-Desarrollo-ABAP/CLAUDE.md) + [`Agente-IA-Desarrollo-ABAP/docs/arnes/ficha-claude-code.md`](Agente-IA-Desarrollo-ABAP/docs/arnes/ficha-claude-code.md).
 - **Para ver el estado AI-DLC** → [`Agente-IA-Desarrollo-ABAP/aidlc-docs/aidlc-state.md`](Agente-IA-Desarrollo-ABAP/aidlc-docs/aidlc-state.md).
 - **Para ver la cola de trabajo pendiente (CR-001)** → [`Agente-IA-Desarrollo-ABAP/docs/tasks/`](Agente-IA-Desarrollo-ABAP/docs/tasks/).
+- **Para incorporar una estación nueva** → en Claude Code, abrir este repo y ejecutar `/cerrar-estacion <N> "<tema>"`. El flujo está en [`docs/CHECKLIST-NUEVA-ESTACION.md`](docs/CHECKLIST-NUEVA-ESTACION.md) y la plantilla en [`docs/PLANTILLA-ESTACION-README.md`](docs/PLANTILLA-ESTACION-README.md).
 
 ---
 
