@@ -1,0 +1,82 @@
+# Linear publish mapping — produced by convert-tasks-to-linear apply
+# Planning Wave: cr-001-u2-multiformato-revalidacion
+# Status: PLANTILLA — completar identifier/url/issueId despues de ejecutar `apply`
+
+planningWave: cr-001-u2-multiformato-revalidacion
+projectSlug: agente-ia-abap         # placeholder; ajustar al slug real del workspace Linear
+teamKey: TBD                        # placeholder; ej. "DEV" si Linear tiene varios teams
+publishedAt: TBD                    # ISO timestamp tras ejecutar apply
+publishedBy: TBD                    # email del operador (ej. mihernandez@patprimo.com.co)
+
+tasks:
+  - localId: TASK-001
+    title: Preparar dataset multi-formato para re-test del Validador
+    milestone: "M1: Preparacion y verificacion de dependencias"
+    identifier: TBD                 # ej. DEV-101
+    url: TBD                        # ej. https://linear.app/patprimo/issue/DEV-101
+    issueId: TBD                    # UUID interno de Linear
+    parent: null
+    blockedBy: []
+    blocks: [TASK-004]
+
+  - localId: TASK-002
+    title: Verificar conversion pandoc para .docx en el entorno local
+    milestone: "M1: Preparacion y verificacion de dependencias"
+    identifier: TBD
+    url: TBD
+    issueId: TBD
+    parent: null
+    blockedBy: []
+    blocks: [TASK-004]
+
+  - localId: TASK-003
+    title: Verificar lectura nativa de .pdf por Claude Code
+    milestone: "M1: Preparacion y verificacion de dependencias"
+    identifier: TBD
+    url: TBD
+    issueId: TBD
+    parent: null
+    blockedBy: []
+    blocks: [TASK-004]
+
+  - localId: TASK-004
+    title: Re-ejecutar /validar-fd sobre los 4 formatos del dataset
+    milestone: "M2: Re-validacion funcional y cierre del CR"
+    identifier: TBD
+    url: TBD
+    issueId: TBD
+    parent: null
+    blockedBy: [TASK-001, TASK-002, TASK-003]
+    blocks: [TASK-005]
+
+  - localId: TASK-005
+    title: Actualizar build-and-test-summary con seccion CR-001
+    milestone: "M2: Re-validacion funcional y cierre del CR"
+    identifier: TBD
+    url: TBD
+    issueId: TBD
+    parent: null
+    blockedBy: [TASK-004]
+    blocks: [TASK-006]
+
+  - localId: TASK-006
+    title: Marcar CR-001 como cerrado en aidlc-state
+    milestone: "M2: Re-validacion funcional y cierre del CR"
+    identifier: TBD
+    url: TBD
+    issueId: TBD
+    parent: null
+    blockedBy: [TASK-005]
+    blocks: []
+
+# Comando de publicacion (no se ejecuta automaticamente; documental)
+# uv run --script .agents/skills/convert-tasks-to-linear/scripts/convert_tasks_to_linear.py \
+#   apply \
+#   --manifest docs/tasks/task-package.yaml \
+#   --project-slug agente-ia-abap
+#
+# Si Linear tiene multiples teams:
+#   --team-key DEV
+#
+# Despues del apply, el script regenera este archivo reemplazando los TBD por
+# los valores reales devueltos por el API de Linear (identifier, url, issueId).

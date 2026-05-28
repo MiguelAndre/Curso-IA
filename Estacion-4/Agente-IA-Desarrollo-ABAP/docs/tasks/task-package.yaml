@@ -1,0 +1,32 @@
+# OpenSymphony Planning Wave manifest
+# Generado: 2026-05-27
+# Origen: CR-001 abierto sobre U2 (multi-formato) en aidlc-docs/aidlc-state.md
+# Contrato: kumanday/OpenSymphony-template/.agents/skills/create-implementation-plan
+
+planningWave: cr-001-u2-multiformato-revalidacion
+tasksDir: docs/tasks
+
+milestones:
+  - "M1: Preparacion y verificacion de dependencias"
+  - "M2: Re-validacion funcional y cierre del CR"
+
+tasks:
+  - id: TASK-001
+    file: docs/tasks/001-preparar-dataset-multiformato.md
+  - id: TASK-002
+    file: docs/tasks/002-verificar-conversion-pandoc-docx.md
+  - id: TASK-003
+    file: docs/tasks/003-verificar-lectura-pdf-nativa.md
+  - id: TASK-004
+    file: docs/tasks/004-reejecutar-validar-fd-cuatro-formatos.md
+  - id: TASK-005
+    file: docs/tasks/005-actualizar-build-and-test-summary.md
+  - id: TASK-006
+    file: docs/tasks/006-cerrar-cr-001-aidlc-state.md
+
+# Notas de scope
+#   - Esta wave NO toca el codigo de los sub-agentes; el CR-001 ya implemento
+#     los cambios en .claude/agents/validador-fd.md y .claude/commands/validar-fd.md
+#   - El objetivo es producir la evidencia de re-test pendiente y cerrar el ciclo
+#   - Si una tarea descubre un defecto, abrir un sub-issue bajo el parent correspondiente
+#     en lugar de extender el scope de la tarea original

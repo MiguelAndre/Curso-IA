@@ -1,0 +1,18 @@
+# Índice local de memory capsules
+# Plantilla inicial — se llena a medida que se cierren issues
+# Cuando se adopte opensymphony, este archivo migra a .opensymphony/memory/memory.yaml
+
+planningWave: cr-001-u2-multiformato-revalidacion
+capsules: []
+
+# Ejemplo de entrada (descomentar y rellenar al cerrar el primer issue):
+#
+# capsules:
+#   - issueId: TASK-001
+#     linearId: DEV-101
+#     file: docs/memory/capsules/TASK-001.md
+#     closedAt: 2026-MM-DD
+#     areas:
+#       - validador-fd
+#       - formato-fd
+#     pr: https://github.com/<org>/<repo>/pull/<n>

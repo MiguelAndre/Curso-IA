@@ -2,7 +2,7 @@
 
 > Producto interno del equipo de desarrollo. Pipeline FD → TD → Código ABAP basado en Claude Code. Acompaña al desarrollador; no lo reemplaza.
 
-**Documentos de referencia**: [`prd.md`](prd.md) (visión y métricas) · [`CLAUDE.md`](CLAUDE.md) (configuración del agente) · [`docs/`](docs/) (formato FD, checklist, plan de evaluación).
+**Documentos de referencia**: [`prd.md`](prd.md) (visión y métricas) · [`CLAUDE.md`](CLAUDE.md) (configuración del agente) · [`AGENTS.md`](AGENTS.md) (contrato del arnés) · [`docs/`](docs/) (formato FD, checklist, plan de evaluación, orquestación, memoria).
 
 ---
 
@@ -43,6 +43,7 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 ```
 .
 ├── CLAUDE.md                              # Configuración del agente (Módulo 4)
+├── AGENTS.md                              # Contrato neutral del arnés (multi-tool)
 ├── README.md                              # Este documento
 ├── prd.md                                 # Product Requirements Document
 ├── .claude/
@@ -50,10 +51,21 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   ├── agents/                            # Sub-agentes M1, M2, M3
 │   ├── commands/                          # Slash commands
 │   └── skills/template-alv/               # Skill activable para reportes ALV
+├── .agents/
+│   └── skills/custom-codereview-guide.md  # Guía custom para el AI PR Review
+├── .github/
+│   ├── workflows/ai-pr-review.yml         # Workflow AI PR Review (advisory)
+│   └── pull_request_template.md           # Plantilla de PR con Evidence obligatoria
 ├── docs/
 │   ├── formato-fd-generico.md             # Contrato de entrada del pipeline
 │   ├── checklist-auditoria-codigo-ia.md   # Checklist post-generación
-│   └── plan-evaluacion.md                 # Plan de evaluación pre-piloto
+│   ├── plan-evaluacion.md                 # Plan de evaluación pre-piloto
+│   ├── ai-pr-review-human-setup.md        # Pasos manuales para activar el AI review
+│   ├── orquestacion/                      # Mapa de orquestación de trabajo
+│   ├── tasks/                             # Planning waves OpenSymphony
+│   ├── memory/                            # Capsules y propuestas de docs evolutivos
+│   └── adr/                               # ADRs del producto
+├── entregables/                           # C4 model, NFR matrix, ADRs maestros
 ├── outputs/                               # ⚠️ ignorado por git — outputs por requerimiento
 └── aidlc-docs/                            # Documentación AI-DLC del proceso de construcción
 ```
@@ -192,18 +204,71 @@ Mantén actualizado el Excel del piloto (PRD §10) con cada requerimiento proces
 
 ---
 
-## 7. Referencias
+## 7. Orquestación de tareas, review automatizado y memoria
+
+Para cambios sustantivos (Change Requests, features nuevas) el flujo no se queda en el pipeline FD→TD→Código: se descompone en una cola revisable.
+
+### 7.1 De AI-DLC a tareas publicables
+
+- `docs/orquestacion/orquestacion-de-trabajo.md` — mapa del sistema (arnés, gestor de tareas, workflow, cola, review, memoria) aplicado a este producto.
+- `docs/tasks/task-package.yaml` — manifest OpenSymphony de la planning wave activa (`cr-001-u2-multiformato-revalidacion`).
+- `docs/tasks/milestones.md` — milestones de la wave.
+- `docs/tasks/00X-*.md` — task files con contrato OpenSymphony (Summary, Scope, Deliverables, Acceptance Criteria, Test Plan, Context, Definition of Ready).
+- `docs/tasks/validation-evidence.md` — evidencia de la validación humana y del dry-run previo a publicar.
+- `docs/tasks/linear-publish.yaml` — mapping local `TASK-*` ↔ Linear issue (identifier, URL, issueId).
+- `docs/tasks/pr-evidence-example.md` — guía + ejemplo completo de cómo abrir un PR de tarea con la sección Evidence que exige el AI review.
+
+### 7.2 AI PR Review (advisory)
+
+Sobre cada PR corre un AI PR Review **advisory**. La aprobación humana sigue siendo el gate de merge (Principio #1 del PRD).
+
+- `.github/workflows/ai-pr-review.yml` — workflow.
+- `.github/pull_request_template.md` — plantilla con sección Evidence obligatoria.
+- `.agents/skills/custom-codereview-guide.md` — guía custom (foco en Principios del PRD y zonas sensibles del repo).
+- `docs/ai-pr-review-human-setup.md` — pasos manuales para activarlo (secrets, variables, label `review-this`, branch protection, SHA pinning).
+
+### 7.3 Memoria evolutiva
+
+Cada tarea cerrada deja una capsule consultable en futuras tareas. Los aprendizajes estables sincronizan a docs canónicos vía propuestas explícitas.
+
+- `docs/memory/memory.yaml` — índice de capsules.
+- `docs/memory/memory-dry-run.md` — formato de capsules + dry-run.
+- `docs/memory/docs-evolution-proposal.md` — backlog de propuestas de docs sync pendientes.
+
+### 7.4 Contrato neutral del arnés
+
+- `AGENTS.md` — contrato neutral que cualquier arnés (Claude Code, Codex, OpenHands, etc.) debe leer al entrar al repo. `CLAUDE.md` queda como la configuración específica de Claude Code.
+
+---
+
+## 8. Referencias
+
+### Operación
 
 - [PRD v1.0](prd.md) — visión, métricas, casos de uso.
 - [CLAUDE.md](CLAUDE.md) — configuración del agente y restricciones operativas.
+- [AGENTS.md](AGENTS.md) — contrato neutral del arnés.
 - [docs/formato-fd-generico.md](docs/formato-fd-generico.md) — contrato de entrada.
 - [docs/checklist-auditoria-codigo-ia.md](docs/checklist-auditoria-codigo-ia.md) — checklist de auditoría.
 - [docs/plan-evaluacion.md](docs/plan-evaluacion.md) — plan de evaluación pre-piloto (diseño).
+
+### Orquestación, review y memoria
+
+- [docs/orquestacion/orquestacion-de-trabajo.md](docs/orquestacion/orquestacion-de-trabajo.md)
+- [docs/tasks/task-package.yaml](docs/tasks/task-package.yaml) · [milestones.md](docs/tasks/milestones.md) · [validation-evidence.md](docs/tasks/validation-evidence.md) · [linear-publish.yaml](docs/tasks/linear-publish.yaml) · [pr-evidence-example.md](docs/tasks/pr-evidence-example.md)
+- [docs/ai-pr-review-human-setup.md](docs/ai-pr-review-human-setup.md)
+- [.agents/skills/custom-codereview-guide.md](.agents/skills/custom-codereview-guide.md)
+- [docs/memory/memory-dry-run.md](docs/memory/memory-dry-run.md) · [docs-evolution-proposal.md](docs/memory/docs-evolution-proposal.md)
+
+### Diseño y AI-DLC
+
+- [entregables/ADR-001-claude-code-como-plataforma.md](entregables/ADR-001-claude-code-como-plataforma.md)
+- [entregables/c4-model.md](entregables/c4-model.md) · [entregables/nfr-matrix.md](entregables/nfr-matrix.md)
 - [aidlc-docs/](aidlc-docs/) — documentación AI-DLC del proceso de construcción.
 
 ---
 
-## 8. Contribuciones y mantenimiento
+## 9. Contribuciones y mantenimiento
 
 - Cambios a `CLAUDE.md`, sub-agentes, comandos o skills se versionan vía git.
 - El **Configurador** (Jefe de Tecnología + Desarrollador líder) mantiene la configuración. Los demás desarrolladores la consumen.

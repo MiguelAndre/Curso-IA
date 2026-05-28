@@ -1,0 +1,108 @@
+name: AI PR Review
+
+# Modelo de referencia: OpenHands PR Review (OpenSymphony)
+# Rol: advisory. La decisión de merge sigue siendo humana (branch protection).
+# Same-repo only por defecto (PRs desde forks requieren rediseño de seguridad explícito).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  guard-fork:
+    runs-on: ubuntu-latest
+    outputs:
+      same_repo: ${{ steps.check.outputs.same_repo }}
+    steps:
+      - id: check
+        name: Reject fork PRs unless explicitly enabled
+        run: |
+          if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "same_repo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PR proviene de un fork. AI review desactivado por seguridad. Ver docs/ai-pr-review-human-setup.md"
+            exit 0
+          fi
+          echo "same_repo=true" >> "$GITHUB_OUTPUT"
+
+  ai-review:
+    needs: guard-fork
+    if: needs.guard-fork.outputs.same_repo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect rerun label
+        id: rerun
+        run: |
+          LABEL_NAMES="${{ join(github.event.pull_request.labels.*.name, ',') }}"
+          if echo "$LABEL_NAMES" | grep -q "review-this"; then
+            echo "rerun=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "rerun=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify PR has Evidence section
+        run: |
+          BODY=$(cat <<'PR_BODY'
+          ${{ github.event.pull_request.body }}
+          PR_BODY
+          )
+          REQUIRE="${{ vars.AI_REVIEW_REQUIRE_EVIDENCE }}"
+          if [ "$REQUIRE" = "true" ]; then
+            if ! echo "$BODY" | grep -qi "^## Evidence"; then
+              echo "::error::El PR no incluye la sección obligatoria '## Evidence'. Ver .github/pull_request_template.md"
+              exit 1
+            fi
+          fi
+
+      # Acción OpenHands fijada a SHA completo (ver docs/ai-pr-review-human-setup.md)
+      # Reemplazar @<sha> por el SHA real al instalar.
+      - name: Run OpenHands PR Review
+        uses: All-Hands-AI/openhands-pr-review-action@REPLACE_WITH_FULL_SHA
+        with:
+          api_key: ${{ secrets.AI_REVIEW_API_KEY }}
+          provider_kind: ${{ vars.AI_REVIEW_PROVIDER_KIND }}
+          model_id: ${{ vars.AI_REVIEW_MODEL_ID }}
+          base_url: ${{ vars.AI_REVIEW_BASE_URL }}
+          style: ${{ vars.AI_REVIEW_STYLE }}
+          custom_guide_path: .agents/skills/custom-codereview-guide.md
+          repo_principles_path: AGENTS.md
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RERUN: ${{ steps.rerun.outputs.rerun }}
+
+      - name: Comment instructions if action missing
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = [
+              'AI PR Review no se ejecutó.',
+              '',
+              'Acciones a verificar:',
+              '- `secrets.AI_REVIEW_API_KEY` configurado.',
+              '- Variables `AI_REVIEW_PROVIDER_KIND`, `AI_REVIEW_MODEL_ID`, `AI_REVIEW_BASE_URL`, `AI_REVIEW_STYLE`, `AI_REVIEW_REQUIRE_EVIDENCE`.',
+              '- SHA de la acción `All-Hands-AI/openhands-pr-review-action` fijado en el workflow.',
+              '- Sección `## Evidence` presente en el cuerpo del PR.',
+              '',
+              'Ver `docs/ai-pr-review-human-setup.md` para detalle.'
+            ].join('\n');
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });
