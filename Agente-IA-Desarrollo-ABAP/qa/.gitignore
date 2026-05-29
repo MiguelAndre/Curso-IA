@@ -1,0 +1,9 @@
+node_modules/
+playwright-report/
+test-results/
+.bdd/
+dist/
+*.log
+.env
+.env.local
+reporte-demo.md

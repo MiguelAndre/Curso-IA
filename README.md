@@ -2,7 +2,7 @@
 
 Repositorio con notas, laboratorios y entregables prácticos de mi formación en **Inteligencia Artificial aplicada al desarrollo de software**.
 
-Programa intensivo organizado en **7 estaciones progresivas** que van desde la concepción de un producto hasta su orquestación con agentes, precedidas por una **Nivelación** de fundamentos.
+Programa intensivo organizado en **8 estaciones progresivas** que van desde la concepción de un producto hasta su aseguramiento de calidad con IA, precedidas por una **Nivelación** de fundamentos.
 
 ---
 
@@ -10,7 +10,7 @@ Programa intensivo organizado en **7 estaciones progresivas** que van desde la c
 
 📁 [`Agente-IA-Desarrollo-ABAP/`](Agente-IA-Desarrollo-ABAP/)
 
-A lo largo de las 7 estaciones se construyó **un único producto real**: un **Agente IA para Desarrollo ABAP** que toma documentos funcionales (FD — el documento de especificación de negocio que entrega el consultor funcional) y los transforma en código ABAP listo para auditoría humana, dentro de Claude Code.
+A lo largo de las 8 estaciones se construyó **un único producto real**: un **Agente IA para Desarrollo ABAP** que toma documentos funcionales (FD — el documento de especificación de negocio que entrega el consultor funcional) y los transforma en código ABAP listo para auditoría humana, dentro de Claude Code.
 
 El proyecto está en la raíz porque es transversal a todo el curso. Las carpetas `Estacion-N/` contienen el material didáctico de cada sesión más el README detallado de mi recorrido.
 
@@ -28,6 +28,7 @@ El proyecto está en la raíz porque es transversal a todo el curso. Las carpeta
 | 5 | [`Estacion-5/`](Estacion-5/) | AI-DLC Construction — Diseñar el CÓMO | [Estacion-5/README.md](Estacion-5/README.md) |
 | 6 | [`Estacion-6/`](Estacion-6/) | Scaffolding y mapa agencial (ficha de arnés, AGENTS.md) | [Estacion-6/README.md](Estacion-6/README.md) |
 | 7 | [`Estacion-7/`](Estacion-7/) | Orquestación, AI PR Review y memoria evolutiva | [Estacion-7/README.md](Estacion-7/README.md) |
+| 8 | [`Estacion-8/`](Estacion-8/) | QA con IA: BDD, Persona + Juez y reporte consolidado | [Estacion-8/README.md](Estacion-8/README.md) |
 
 > Cada `Estacion-N/README.md` tiene la misma estructura: metadatos · tema y objetivo · conceptos clave · material del curso · mi entrega · aporte al proyecto central · lecciones.
 
@@ -45,6 +46,7 @@ El proyecto está en la raíz porque es transversal a todo el curso. Las carpeta
 | 5 | AI-DLC Construction (functional design, NFR, build & test con 53 verificaciones) | [`Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/`](Agente-IA-Desarrollo-ABAP/aidlc-docs/construction/) | Christian Braatz |
 | 6 | Ficha de arnés Claude Code + `AGENTS.md` neutral multi-tool | [`Agente-IA-Desarrollo-ABAP/docs/arnes/`](Agente-IA-Desarrollo-ABAP/docs/arnes/) | Leonardo González |
 | 7 | Planning wave OpenSymphony + AI PR Review advisory + memoria evolutiva | [`Agente-IA-Desarrollo-ABAP/docs/tasks/`](Agente-IA-Desarrollo-ABAP/docs/tasks/) | Leonardo González |
+| 8 | Suite QA: 3 feature files BDD (24 escenarios) + 3 rúbricas + Jueces M1/M2/M3 + Persona Consultor + reporte consolidado go/no-go | [`Agente-IA-Desarrollo-ABAP/qa/`](Agente-IA-Desarrollo-ABAP/qa/) | Andrés Caicedo |
 
 ---
 
@@ -83,7 +85,8 @@ El curso combina material teórico (PDFs), manuales prácticos (Markdown), ejerc
 | Sub-agentes | ✅ `validador-fd`, `fd-a-td`, `td-a-codigo` |
 | AI PR Review | ✅ Setup creado · ⚠️ secrets/vars/SHA pinning en GitHub pendientes |
 | Memoria evolutiva | ✅ Plantillas y dry-run · capsules reales al cerrar primer issue |
-| Plan de evaluación pre-piloto | ✅ Diseñado (ejecución en Día 1–30 del PRD) |
+| Plan de evaluación pre-piloto | ✅ Diseñado · ✅ Operativizado (suite QA ejecutable en `qa/` — Estación 8) |
+| Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ⚠️ Pendiente: correr con LLM real, golden dataset real, CI workflow |
 
 ---
 
@@ -96,6 +99,7 @@ Solo herramientas y plataformas usadas en el repo. Los frameworks/metodologías 
 - **IDE / Editor**: VS Code, Cursor, Eclipse for ABAP Development Tools.
 - **Stack del caso ABAP** (producto central): SAP S/4HANA Cloud, ABAP OO, ALV (`CL_SALV_TABLE`), BAdI, SmartForms.
 - **Stack del caso EntreVista AI** (ejemplo del instructor): AWS Lambda, MongoDB Atlas, Pinecone, Telegram Bot API.
+- **Stack de QA** (Estación 8): Playwright + playwright-bdd, Anthropic SDK (Persona + Juez ejecutables), tsx, golden datasets en JSON.
 - **Control de versiones**: Git, GitHub.
 
 ---
@@ -104,8 +108,8 @@ Solo herramientas y plataformas usadas en el repo. Los frameworks/metodologías 
 
 Para no inflar este README, el material de referencia vive en archivos dedicados:
 
-- 📖 **[Vocabulario IA / agentic](docs/VOCABULARIO.md)** — 42 siglas + 44 términos del dominio IA, agentes, especificación y orquestación, ordenados alfabéticamente. Vocabulario SAP/ABAP del producto vive en [`Agente-IA-Desarrollo-ABAP/CLAUDE.md`](Agente-IA-Desarrollo-ABAP/CLAUDE.md).
-- 🧰 **[Frameworks y metodologías](docs/FRAMEWORKS.md)** — qué es, para qué sirve y cuándo elegir cada framework usado en el curso: PVB · ISB · PRD prompt-driven · AI-DLC · Open Spec · Spec Kit · C4 Model · ADR · DDD · BDD · TDD · MoSCoW · JTBD · ReAct · Context Engineering · SDD · OpenSymphony · MCP. Cierra con tabla *"qué framework usar en cada momento"*.
+- 📖 **[Vocabulario IA / agentic](docs/VOCABULARIO.md)** — 42 siglas + 62 términos del dominio IA, agentes, especificación, orquestación y QA, ordenados alfabéticamente. Vocabulario SAP/ABAP del producto vive en [`Agente-IA-Desarrollo-ABAP/CLAUDE.md`](Agente-IA-Desarrollo-ABAP/CLAUDE.md).
+- 🧰 **[Frameworks y metodologías](docs/FRAMEWORKS.md)** — qué es, para qué sirve y cuándo elegir cada framework usado en el curso: PVB · ISB · PRD prompt-driven · AI-DLC · Open Spec · Spec Kit · C4 Model · ADR · DDD · BDD · TDD · Persona + Juez · MoSCoW · JTBD · ReAct · Context Engineering · SDD · OpenSymphony · MCP. Cierra con tabla *"qué framework usar en cada momento"*.
 
 ---
 

@@ -1,0 +1,37 @@
+{
+  "name": "agente-abap-qa",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Suite de QA del Agente IA ABAP — feature files BDD, persona/juez y rúbricas para evaluar M1/M2/M3.",
+  "type": "module",
+  "scripts": {
+    "bddgen": "bddgen",
+    "typecheck": "tsc --noEmit",
+    "test": "bddgen && playwright test",
+    "test:m1": "bddgen && playwright test --project=bdd --grep @m1",
+    "test:m2": "bddgen && playwright test --project=bdd --grep @m2",
+    "test:m3": "bddgen && playwright test --project=bdd --grep @m3",
+    "test:pipeline": "bddgen && playwright test --project=bdd --grep @pipeline",
+    "test:juez:m1": "playwright test --project=agents tests/agents/juez-m1.spec.ts",
+    "test:juez:m2": "playwright test --project=agents tests/agents/juez-m2.spec.ts",
+    "test:juez:m3": "playwright test --project=agents tests/agents/juez-m3.spec.ts",
+    "test:juez": "playwright test --project=agents tests/agents/juez-m1.spec.ts tests/agents/juez-m2.spec.ts tests/agents/juez-m3.spec.ts",
+    "test:persona": "playwright test --project=agents tests/agents/persona-consultor.spec.ts",
+    "test:agents": "playwright test --project=agents",
+    "test:lib": "playwright test --project=lib",
+    "reporte": "tsx scripts/reporte-consolidado.ts",
+    "reporte:demo": "tsx scripts/reporte-consolidado.ts --demo",
+    "report": "playwright show-report"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.40.0",
+    "dotenv": "^16.4.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.0.0",
+    "playwright-bdd": "^8.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

@@ -1,0 +1,276 @@
+[
+  {
+    "req_id": "REQ-DEMO-001-ALV-MATERIALES",
+    "ground_truth_m1": "SIN_DEVOLUCION",
+    "veredicto_m1": "APROBADO",
+    "scorecard_m1": {
+      "fd_id": "REQ-DEMO-001-ALV-MATERIALES",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_correccion_veredicto": 5,
+        "D2_completitud_gaps": 4,
+        "D3_precision_gaps": 5,
+        "D4_accionabilidad": 5,
+        "D5_formato": 5,
+        "D6_lenguaje": 5
+      },
+      "score_ponderado": 4.85,
+      "razonamiento": "Veredicto correcto. Observación menor sobre CS-09 razonable.",
+      "gaps_omitidos": [],
+      "gaps_inventados": [],
+      "tono_acusatorio": false
+    },
+    "scorecard_m2": {
+      "fd_id": "REQ-DEMO-001-ALV-MATERIALES",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_tipo_objeto": 5,
+        "D2_factualidad": 5,
+        "D3_completitud_rn": 5,
+        "D4_decisiones_supuestos": 5,
+        "D5_tbds": 5,
+        "D6_estructura": 5,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 5.0,
+      "razonamiento": "TD ejemplar: 9 secciones, tablas verificables, RN mapeadas, TBDs específicos.",
+      "objetos_no_verificables": [],
+      "rn_omitidas": [],
+      "decisiones_count": 3,
+      "tbds_count": 1,
+      "contiene_codigo_abap": false
+    },
+    "scorecard_m3": {
+      "td_id": "REQ-DEMO-001-ALV-MATERIALES",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_compilabilidad": 5,
+        "D2_seguridad": 5,
+        "D3_adherencia_estandares": 5,
+        "D4_factualidad": 5,
+        "D5_implementacion_rn": 4,
+        "D6_trazabilidad": 5,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 4.85,
+      "razonamiento": "Código compilable, AUTH-CHECK con sy-subrc, SALV moderno, RN3 cubierta parcialmente.",
+      "rn_omitidas": [],
+      "objetos_no_verificables": [],
+      "tablas_sensibles_sin_auth_check": [],
+      "contiene_select_star": false,
+      "contiene_for_all_entries_sin_guarda": false,
+      "contiene_pii": false,
+      "contiene_transporte": false,
+      "contiene_tests_unitarios": false,
+      "cabecera_completa": true,
+      "verificar_count": 2
+    },
+    "ciclos_m3": 1,
+    "escalado": false
+  },
+  {
+    "req_id": "REQ-DEMO-002-FD-FALTANTE",
+    "ground_truth_m1": "CON_DEVOLUCION",
+    "veredicto_m1": "RECHAZADO",
+    "scorecard_m1": {
+      "fd_id": "REQ-DEMO-002-FD-FALTANTE",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_correccion_veredicto": 5,
+        "D2_completitud_gaps": 5,
+        "D3_precision_gaps": 5,
+        "D4_accionabilidad": 4,
+        "D5_formato": 5,
+        "D6_lenguaje": 5
+      },
+      "score_ponderado": 4.8,
+      "razonamiento": "Detectó CE-04, CE-06, CE-07 correctamente con recomendaciones accionables.",
+      "gaps_omitidos": [],
+      "gaps_inventados": [],
+      "tono_acusatorio": false
+    }
+  },
+  {
+    "req_id": "REQ-DEMO-003-CONTRADICCION",
+    "ground_truth_m1": "SIN_DEVOLUCION",
+    "veredicto_m1": "APROBADO",
+    "scorecard_m1": {
+      "fd_id": "REQ-DEMO-003-CONTRADICCION",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_correccion_veredicto": 5,
+        "D2_completitud_gaps": 5,
+        "D3_precision_gaps": 5,
+        "D4_accionabilidad": 4,
+        "D5_formato": 5,
+        "D6_lenguaje": 5
+      },
+      "score_ponderado": 4.8,
+      "razonamiento": "FD estructuralmente completo. La contradicción interna no aplica a M1 — debió surgir como TBD en M2.",
+      "gaps_omitidos": [],
+      "gaps_inventados": [],
+      "tono_acusatorio": false
+    },
+    "scorecard_m2": {
+      "fd_id": "REQ-DEMO-003-CONTRADICCION",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_tipo_objeto": 5,
+        "D2_factualidad": 5,
+        "D3_completitud_rn": 4,
+        "D4_decisiones_supuestos": 4,
+        "D5_tbds": 2,
+        "D6_estructura": 5,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 4.2,
+      "razonamiento": "M2 ignoró la contradicción RN1 vs CB1; §9 dice 'Ninguno' — castigo en D5.",
+      "objetos_no_verificables": [],
+      "rn_omitidas": [],
+      "decisiones_count": 2,
+      "tbds_count": 0,
+      "contiene_codigo_abap": false
+    },
+    "scorecard_m3": {
+      "td_id": "REQ-DEMO-003-CONTRADICCION",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_compilabilidad": 4,
+        "D2_seguridad": 3,
+        "D3_adherencia_estandares": 4,
+        "D4_factualidad": 5,
+        "D5_implementacion_rn": 3,
+        "D6_trazabilidad": 3,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 3.7,
+      "razonamiento": "AUTHORITY-CHECK presente pero sin IF sy-subrc; SELECT * en kna1; cabecera presente con bloque 3 vacío.",
+      "rn_omitidas": [],
+      "objetos_no_verificables": [],
+      "tablas_sensibles_sin_auth_check": [],
+      "contiene_select_star": true,
+      "contiene_for_all_entries_sin_guarda": false,
+      "contiene_pii": false,
+      "contiene_transporte": false,
+      "contiene_tests_unitarios": false,
+      "cabecera_completa": true,
+      "verificar_count": 0
+    },
+    "ciclos_m3": 2,
+    "escalado": false
+  },
+  {
+    "req_id": "REQ-DEMO-004-PII-LEAK",
+    "ground_truth_m1": "SIN_DEVOLUCION",
+    "veredicto_m1": "APROBADO",
+    "scorecard_m1": {
+      "fd_id": "REQ-DEMO-004-PII-LEAK",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_correccion_veredicto": 5,
+        "D2_completitud_gaps": 4,
+        "D3_precision_gaps": 5,
+        "D4_accionabilidad": 4,
+        "D5_formato": 5,
+        "D6_lenguaje": 5
+      },
+      "score_ponderado": 4.65,
+      "razonamiento": "Veredicto correcto, FD limpio.",
+      "gaps_omitidos": [],
+      "gaps_inventados": [],
+      "tono_acusatorio": false
+    },
+    "scorecard_m2": {
+      "fd_id": "REQ-DEMO-004-PII-LEAK",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_tipo_objeto": 5,
+        "D2_factualidad": 4,
+        "D3_completitud_rn": 5,
+        "D4_decisiones_supuestos": 4,
+        "D5_tbds": 4,
+        "D6_estructura": 5,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 4.5,
+      "razonamiento": "TD razonable; una tabla no marcada con VERIFICAR.",
+      "objetos_no_verificables": ["ZTBL_HISTORICO"],
+      "rn_omitidas": [],
+      "decisiones_count": 2,
+      "tbds_count": 1,
+      "contiene_codigo_abap": false
+    },
+    "scorecard_m3": {
+      "td_id": "REQ-DEMO-004-PII-LEAK",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_compilabilidad": 4,
+        "D2_seguridad": 1,
+        "D3_adherencia_estandares": 4,
+        "D4_factualidad": 4,
+        "D5_implementacion_rn": 4,
+        "D6_trazabilidad": 4,
+        "D7_limpieza": 3
+      },
+      "score_ponderado": 3.15,
+      "razonamiento": "Hard-fail: literal con email real en comentario. AUTH-CHECK presente pero PII visible.",
+      "rn_omitidas": [],
+      "objetos_no_verificables": [],
+      "tablas_sensibles_sin_auth_check": [],
+      "contiene_select_star": false,
+      "contiene_for_all_entries_sin_guarda": false,
+      "contiene_pii": true,
+      "contiene_transporte": false,
+      "contiene_tests_unitarios": false,
+      "cabecera_completa": true,
+      "verificar_count": 1
+    },
+    "ciclos_m3": 1,
+    "escalado": false
+  },
+  {
+    "req_id": "REQ-DEMO-005-ESCALADO",
+    "ground_truth_m1": "SIN_DEVOLUCION",
+    "veredicto_m1": "APROBADO",
+    "scorecard_m1": {
+      "fd_id": "REQ-DEMO-005-ESCALADO",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_correccion_veredicto": 5,
+        "D2_completitud_gaps": 4,
+        "D3_precision_gaps": 5,
+        "D4_accionabilidad": 4,
+        "D5_formato": 5,
+        "D6_lenguaje": 5
+      },
+      "score_ponderado": 4.65,
+      "razonamiento": "Veredicto correcto.",
+      "gaps_omitidos": [],
+      "gaps_inventados": [],
+      "tono_acusatorio": false
+    },
+    "scorecard_m2": {
+      "fd_id": "REQ-DEMO-005-ESCALADO",
+      "modelo_evaluado": "claude-sonnet-4-6",
+      "scores": {
+        "D1_tipo_objeto": 5,
+        "D2_factualidad": 5,
+        "D3_completitud_rn": 5,
+        "D4_decisiones_supuestos": 5,
+        "D5_tbds": 4,
+        "D6_estructura": 5,
+        "D7_limpieza": 5
+      },
+      "score_ponderado": 4.9,
+      "razonamiento": "TD correcto.",
+      "objetos_no_verificables": [],
+      "rn_omitidas": [],
+      "decisiones_count": 3,
+      "tbds_count": 1,
+      "contiene_codigo_abap": false
+    },
+    "scorecard_m3": null,
+    "ciclos_m3": 3,
+    "escalado": true
+  }
+]

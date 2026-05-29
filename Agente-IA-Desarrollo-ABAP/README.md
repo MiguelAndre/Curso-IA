@@ -50,7 +50,9 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   ├── settings.json
 │   ├── agents/                            # Sub-agentes M1, M2, M3
 │   ├── commands/                          # Slash commands
-│   └── skills/template-alv/               # Skill activable para reportes ALV
+│   └── skills/
+│       ├── template-alv/                  # Skill activable para reportes ALV
+│       └── testing/                       # Steering file de QA (Estación 8)
 ├── .agents/
 │   └── skills/custom-codereview-guide.md  # Guía custom para el AI PR Review
 ├── .github/
@@ -67,7 +69,9 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   ├── memory/                            # Capsules y propuestas de docs evolutivos
 │   └── adr/                               # ADRs del producto
 ├── entregables/                           # C4 model, NFR matrix, ADRs maestros
+├── qa/                                    # Suite de QA (Playwright + BDD + Persona/Juez)
 ├── outputs/                               # ⚠️ ignorado por git — outputs por requerimiento
+├── evaluacion/                            # ⚠️ ignorado por git — dataset pre-piloto anonimizado
 └── aidlc-docs/                            # Documentación AI-DLC del proceso de construcción
 ```
 

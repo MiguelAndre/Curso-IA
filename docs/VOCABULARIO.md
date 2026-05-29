@@ -35,6 +35,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **NFR** | Non-Functional Requirement | Requerimiento no funcional (performance, seguridad, escalabilidad). Debe tener valor numérico verificable. |
 | **PBT** | Property-Based Testing | Testing basado en propiedades en lugar de ejemplos. Extensión opcional de AI-DLC. |
 | **PII** | Personally Identifiable Information | Datos personales. Sensibles para seguridad y compliance. |
+| **POM** | Page Object Model | Patrón de diseño para testing E2E web: la UI se encapsula en clases (`HomePage`, `LoginPage`). Los tests llaman métodos del page object, no selectores inline — la suite escala sin volverse frágil. |
 | **PR** | Pull Request | Propuesta de merge revisable en GitHub. |
 | **PRD** | Product Requirements Document | Documento de producto co-creado con 13 segmentos. |
 | **PVB** | Product Vision Board | Plantilla de 9 segmentos para productos de mercado. |
@@ -83,25 +84,35 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Foundation model** | Modelo base masivo entrenado en datos generales (Claude, GPT, Gemini). Sirve para múltiples tareas. |
 | **Functional Design** | Primera actividad de Construction (AI-DLC). Produce `domain-entities.md` + `business-rules.md` + `business-logic-model.md`. Regla de oro: no se genera código antes de aprobar el business-logic-model. |
 | **Gherkin** | Sintaxis de BDD: `Given <contexto> / When <acción> / Then <resultado>`. |
+| **Golden dataset** | Conjunto de inputs + outputs de referencia humano-aprobados que se usa para calibrar al **Juez** antes de usarlo para decisiones go/no-go. Si la correlación humano↔Juez sobre el golden dataset es < 0.8, la rúbrica necesita ajuste. |
 | **Greenfield** | Modo de entrada de AI-DLC cuando no hay código previo. Se omite el Reverse engineering. Este proyecto operó en greenfield. |
+| **Hard-fail** | Bandera booleana del scorecard que fuerza no-go independientemente del score ponderado. Ejemplos: llamada a transporte SAP en código generado, PII visible en literales, acceso a tabla sensible sin AUTHORITY-CHECK. Compliance no admite promedios. |
 | **Harness** | Sinónimo en inglés de "Arnés". Ver entrada Arnés. |
 | **Hook** | Script en `.claude/hooks/` que ejecuta código real automáticamente tras una acción del agente (PostToolUse, PreToolUse). Garantía determinista, no recomendación. |
+| **Ice Cream Cone** | Anti-patrón de testing: pocos unitarios + muchos E2E. Suite frágil, lenta, costosa. Lo opuesto a la **pirámide de pruebas**. Si tu CI tarda 40 min en una app mediana, probablemente estás acá. |
 | **Inception** | Primera fase del workflow AI-DLC. 6 actividades: Workspace Detection · Requirements Analysis · User Stories · Workflow Planning · Application Design · Units Generation. Salida: contrato ejecutable para Construction. |
 | **Instructor advisory** | Línea en CLAUDE.md que el agente *interpreta* ("debería tener en cuenta"). Recomendación, no garantía. Lo opuesto a un hook. |
 | **Insumo (IS)** | En AI-DLC: item específico del PRD que se trackea con ID a lo largo de toda la documentación. |
+| **Juez (LLM-as-Judge)** | LLM que evalúa la conversación o el output de otro agente contra una **rúbrica** con dimensiones puntuadas 1–5. Devuelve un **scorecard** JSON estructurado. Debe calibrarse contra un **golden dataset** antes de usarse para decisiones go/no-go. |
 | **Linear** | Gestor de tareas externo donde se publica la planning wave de OpenSymphony. |
 | **Memory capture** | Acción de convertir un issue cerrado en capsule consultable. `opensymphony memory capture --dry-run` para previsualizar. |
 | **Milestone** | Hito que agrupa varias tareas dentro de una planning wave. Tiene Definition of Done propia. |
 | **Moat** | Ventaja defensible que perdura aunque alguien copie la idea. Tres tipos: Data Moat (datos únicos), Distribution Moat (canal embebido), Trust Moat (compliance/reliability). |
+| **Mutation testing** | Técnica de QA que genera variantes con defectos deliberados del input (omisiones, vaguedades, contradicciones) y verifica que el agente bajo prueba los detecta. En el patrón Persona + Juez la **Persona** introduce las mutaciones; el agente las procesa; el **Juez** confirma la detección. |
 | **OpenSymphony** | Sistema de orquestación que convierte AI-DLC artifacts en planning waves publicables (Linear, GitHub Issues, etc.). |
+| **Persona (testing)** | LLM con system prompt de "rol de usuario" (consultor funcional, desarrollador, cliente) que genera inputs naturales multi-turno para estresar al agente bajo prueba. Cierra el loop end-to-end junto con el **Juez**: Persona genera → agente procesa → Juez califica. |
+| **Pirámide de pruebas** | Distribución ideal del esfuerzo de testing: base ancha de unitarios (lógica aislada, sin I/O), medio de integración (contratos entre módulos), cima estrecha de E2E (usuario final ejerciendo el sistema completo). Anti-patrón opuesto: **Ice Cream Cone**. |
 | **Planning wave** | Paquete de trabajo coherente (manifest + milestones + task files) que se ejecuta como bloque. |
 | **Proveedor** | Quién sirve la inferencia (Anthropic API, AWS Bedrock, OpenAI). Distinto del modelo y del arnés. |
 | **Reverse engineering** | Modo de AI-DLC para entrar a un código existente (brownfield) y producir specs desde él. No usado en este proyecto (greenfield). |
+| **Rúbrica** | Documento markdown con dimensiones evaluables (1–5), pesos por dimensión, anclas verbales por nivel y ejemplos del dataset. La consume el **Juez** como system prompt. Es la única fuente de verdad — los pesos los aplica el harness en código, no el LLM (evita gaming). |
 | **Same-repo only** | Política de seguridad del AI PR Review: solo PRs internos disparan el workflow; PRs de forks no, para evitar exfiltración de secrets. |
 | **Sandbox** | Entorno aislado donde correr el agente sin afectar producción. |
+| **Scorecard** | JSON estructurado que devuelve el **Juez**: scores 1–5 por dimensión + razonamiento + listas auditables (objetos no verificables, RN omitidas, etc.) + banderas booleanas hard-fail. Permite reportes consolidados sin parsear prosa. |
 | **Sesión paralela** | Dos agentes en el mismo repo, en ramas/workspaces independientes. Antigravity soporta esto nativamente. |
 | **Skill** | Módulo procedimental versionable que encapsula un patrón recurrente. Vive en `.claude/skills/<nombre>/SKILL.md` con frontmatter (`name`, `description`, `tools`). |
 | **Slash command** | Trigger en Claude Code que invoca una skill o sub-agente: `/validar-fd`, `/generar-td`, `/pipeline-abap`. |
+| **Steering file** | Archivo de convenciones del proyecto que el coding agent lee sin repetirlas en cada prompt. En Kiro: `.kiro/skills/testing.md`. En Claude Code: una skill bajo `.claude/skills/<nombre>/SKILL.md`. Acelera la generación al evitar reaprender convenciones en cada sesión. |
 | **Sub-agente** | Agente especializado con rol, tools y modelo propios. Reside en `.claude/agents/<nombre>.md`. Permite delegación. |
 | **Superficie de trabajo** | Dónde corre el arnés (CLI, IDE, web, cloud). |
 | **Task file** | Archivo `00X-*.md` con frontmatter (id, milestone, blockedBy, etc.) y secciones Summary/Scope/Deliverables/AC/Test Plan/Context/DoR. |

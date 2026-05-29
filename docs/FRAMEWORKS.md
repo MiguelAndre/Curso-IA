@@ -142,6 +142,16 @@ Ciclo **Red → Green → Refactor**: test fallido → código mínimo que pasa 
 
 **Cuándo usarlo**: en Code Generation (Estación 5) y en cualquier feature donde el comportamiento sea verificable.
 
+### Persona + Juez (LLM-as-Judge) — Estación 8
+
+Patrón de evaluación de agentes generativos: una **Persona** (LLM con rol de usuario) genera inputs naturales contra el agente bajo prueba; un **Juez** (LLM con rúbrica como system prompt) evalúa el output y devuelve un **scorecard** JSON con scores 1–5 por dimensión + banderas hard-fail. La rúbrica versionada es la única fuente de verdad — los pesos los aplica el harness en código, no el LLM (evita gaming). Antes de usar al Juez para decisiones go/no-go, debe **calibrarse** contra un **golden dataset** (correlación humano↔Juez ≥ 0.8).
+
+**Para qué sirve**: medir calidad continua de outputs de agentes (que no son pass/fail binarios). Reemplaza tests pass/fail con evaluación multi-dimensional.
+
+**Cuándo usarlo**: cuando el output del sistema es generado por LLM (texto, código, decisiones razonadas) y la pirámide de pruebas tradicional no captura calidad — agentes inteligentes, chatbots, asistentes especializados.
+
+**Referencias**: Anthropic — Evaluating LLM Agents (https://www.anthropic.com/research) · Playwright + playwright-bdd para el harness ejecutable.
+
 ---
 
 ## Frameworks de priorización y planificación
@@ -238,6 +248,7 @@ Especificación legacy   → OpenSpec / Spec Kit                          · Est
 Modelado de dominio     → DDD                                          · Estación 5
 Acceptance criteria     → BDD + Gherkin                                · Estación 4 (user stories)
 Tests                   → TDD                                          · Estación 5
+QA de agentes LLM       → Persona + Juez (rúbrica + golden dataset)    · Estación 8
 Priorización del MVP    → MoSCoW                                       · Estación 2
 Bootstrap del agente    → Context Engineering (AGENTS.md+CLAUDE.md)    · Estación 3
 Loop del agente         → ReAct                                        · Estación 3 (implícito)
