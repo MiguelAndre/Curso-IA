@@ -50,8 +50,12 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          if ! printf '%s\n' "$PR_BODY" | grep -qi "^## Evidence"; then
-            echo "::error::El PR no incluye la sección obligatoria '## Evidence'. Ver .github/pull_request_template.md"
+          # Regex permisivo: busca una línea cuyo header sea "Evidence",
+          # con o sin prefijo `#`/`##`/`###`, con o sin leading whitespace
+          # (la UI de GitHub a veces strippea los `#` al renderizar el editor).
+          # Match tolerante a CR (`\r` antes de `\n` en Windows clipboards) via [^\S\n].
+          if ! printf '%s\n' "$PR_BODY" | grep -qiE "^[[:space:]]*#*[[:space:]]*Evidence[[:space:]]*\r?$"; then
+            echo "::error::El PR no incluye una sección 'Evidence'. Asegurate de que el cuerpo del PR tenga una línea con solo 'Evidence' (con o sin '##'). Ver .github/pull_request_template.md"
             exit 1
           fi
 
