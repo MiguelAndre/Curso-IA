@@ -123,3 +123,4 @@ Para no inflar este README, el material de referencia vive en archivos dedicados
 - ADR examples: https://adr.github.io
 - Gherkin: https://cucumber.io/docs/gherkin/reference/
 - Antigravity: https://antigravity.google/docs
+- `anthropics/claude-code-action` (action oficial usada por `.github/workflows/ai-pr-review.yml` y `qa.yml`): https://github.com/anthropics/claude-code-action
