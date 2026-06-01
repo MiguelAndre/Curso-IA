@@ -127,6 +127,26 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
+### PROP-010 — Eliminar doble canal de comentado en `ai-pr-review.yml`
+
+- **Origen**: el propio AI PR Review en PR #1 (capsule `2026-06-01-ai-pr-review-smoke-test.md`)
+- **Doc destino**: `.github/workflows/ai-pr-review.yml`
+- **Cambio propuesto**: remover `use_sticky_comment: true` y mantener `gh pr comment` como único canal para postear el review (opción B del feedback del bot). El sticky de la action y la instrucción `gh pr comment` en el prompt son mecanismos independientes que en futuras corridas podrían duplicar el comentario.
+- **Evidencia**: comentario del bot `claude[bot]` en https://github.com/MiguelAndre/Curso-IA/pull/1 — la observación `[correctness · minor]` está documentada con justificación.
+- **Riesgo de no hacerlo**: en PRs reales con comentarios más sustanciales podría aparecer un comentario "log verboso" sticky + un comentario "curado" del review, duplicando el ruido.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
+### PROP-011 — Reescribir `docs/ai-pr-review-human-setup.md` con los 5 pasos completos
+
+- **Origen**: capsule `2026-06-01-ai-pr-review-smoke-test.md` (los 5 hallazgos del smoke)
+- **Doc destino**: `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md`
+- **Cambio propuesto**: el setup doc actual lista 4 pasos (secret, vars, SHA pin, branch protection). El smoke real reveló 5 pasos críticos: además de los anteriores, **instalar la GitHub App `claude`** explícitamente. Agregar sección numerada con los 5 pasos en orden estricto, cada uno con su test de verificación. Incluir los gotchas de copy-paste del cuerpo del PR en la UI.
+- **Evidencia**: 5 iteraciones de smoke en PR #1; cada hallazgo está enumerado en la capsule §"Validación útil".
+- **Riesgo de no hacerlo**: el próximo developer que use el setup doc va a repetir las 5 iteraciones.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
 ### PROP-007 — Regla: workflows productivos siempre en `.github/workflows/` de la raíz
 
 - **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (invariant)

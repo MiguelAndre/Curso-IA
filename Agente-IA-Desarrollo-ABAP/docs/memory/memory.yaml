@@ -36,6 +36,24 @@ capsules:
       - 1673444
     pr: null
 
+  - issueId: ai-pr-review-smoke-test
+    linearId: null
+    title: Smoke test del AI PR Review productivo — postmortem y 5 hallazgos
+    planningWave: ai-pr-review-setup
+    file: docs/memory/capsules/2026-06-01-ai-pr-review-smoke-test.md
+    closedAt: 2026-06-01
+    areas:
+      - github-actions
+      - ai-pr-review
+      - claude-code-action
+      - smoke-test
+    commits:
+      - 445af00
+      - 0448b5a
+      - 0bb31b3
+      - 1fa5c24
+    pr: https://github.com/MiguelAndre/Curso-IA/pull/1
+
 # Planning waves abiertas (sin capsules aún):
 #   - cr-001-u2-multiformato-revalidacion
 #     Pendiente: instalar pandoc + ejecutar TASK-001..006.
