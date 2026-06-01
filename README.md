@@ -83,7 +83,7 @@ El curso combina material teórico (PDFs), manuales prácticos (Markdown), ejerc
 | CR-001 (Validador multi-formato) | 🟡 Implementado, re-test pendiente — planning wave creada |
 | Pipeline funcional | ✅ M1 → M2 → M3 + orquestador `/pipeline-abap` |
 | Sub-agentes | ✅ `validador-fd`, `fd-a-td`, `td-a-codigo` |
-| AI PR Review | ✅ Setup creado · ⚠️ secrets/vars/SHA pinning en GitHub pendientes |
+| AI PR Review | ✅ Workflow productivo en `.github/workflows/ai-pr-review.yml` con `anthropics/claude-code-action@v1` (SHA pinned) · ⚠️ Pendiente sólo configuración en GitHub UI: secret `CLAUDE_CODE_OAUTH_TOKEN`, branch protection, label `review-this` ([guía](Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md)) |
 | Memoria evolutiva | ✅ Plantillas y dry-run · capsules reales al cerrar primer issue |
 | Plan de evaluación pre-piloto | ✅ Diseñado · ✅ Operativizado (suite QA ejecutable en `qa/` — Estación 8) |
 | Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ⚠️ Pendiente: correr con LLM real, golden dataset real, CI workflow |

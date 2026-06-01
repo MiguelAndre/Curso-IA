@@ -1,21 +1,19 @@
 name: AI PR Review
 
-# Modelo de referencia: OpenHands PR Review (OpenSymphony)
-# Rol: advisory. La decisión de merge sigue siendo humana (branch protection).
-# Same-repo only por defecto (PRs desde forks requieren rediseño de seguridad explícito).
+# Modelo: review advisory con anthropics/claude-code-action (acción oficial).
+# Autenticación por suscripción Pro/Max vía CLAUDE_CODE_OAUTH_TOKEN.
+# La decisión de merge sigue siendo humana (branch protection).
+# Same-repo only: PRs desde forks no disparan el review (guard explícito).
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-  pull_request_review:
-    types: [submitted]
-  issue_comment:
-    types: [created]
+    types: [opened, synchronize, reopened, ready_for_review, labeled]
 
 permissions:
   contents: read
   pull-requests: write
   issues: write
+  id-token: write
 
 jobs:
   guard-fork:
@@ -35,7 +33,11 @@ jobs:
 
   ai-review:
     needs: guard-fork
-    if: needs.guard-fork.outputs.same_repo == 'true'
+    # Corre en eventos de PR. En el evento `labeled`, sólo si la label fue `review-this`
+    # (evita reejecutar el review cada vez que alguien aplica una label cualquiera).
+    if: >
+      needs.guard-fork.outputs.same_repo == 'true' &&
+      (github.event.action != 'labeled' || github.event.label.name == 'review-this')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -44,65 +46,48 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Detect rerun label
-        id: rerun
-        run: |
-          LABEL_NAMES="${{ join(github.event.pull_request.labels.*.name, ',') }}"
-          if echo "$LABEL_NAMES" | grep -q "review-this"; then
-            echo "rerun=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "rerun=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Verify PR has Evidence section
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          BODY=$(cat <<'PR_BODY'
-          ${{ github.event.pull_request.body }}
-          PR_BODY
-          )
-          REQUIRE="${{ vars.AI_REVIEW_REQUIRE_EVIDENCE }}"
-          if [ "$REQUIRE" = "true" ]; then
-            if ! echo "$BODY" | grep -qi "^## Evidence"; then
-              echo "::error::El PR no incluye la sección obligatoria '## Evidence'. Ver .github/pull_request_template.md"
-              exit 1
-            fi
+          if ! printf '%s\n' "$PR_BODY" | grep -qi "^## Evidence"; then
+            echo "::error::El PR no incluye la sección obligatoria '## Evidence'. Ver .github/pull_request_template.md"
+            exit 1
           fi
 
-      # Acción OpenHands fijada a SHA completo (ver docs/ai-pr-review-human-setup.md)
-      # Reemplazar @<sha> por el SHA real al instalar.
-      - name: Run OpenHands PR Review
-        uses: All-Hands-AI/openhands-pr-review-action@REPLACE_WITH_FULL_SHA
+      - name: Run Claude Code PR Review
+        uses: anthropics/claude-code-action@787c5a0ce96a9a6cfb050ea0c8f4c05f2447c251 # v1 — 2025-08-26
         with:
-          api_key: ${{ secrets.AI_REVIEW_API_KEY }}
-          provider_kind: ${{ vars.AI_REVIEW_PROVIDER_KIND }}
-          model_id: ${{ vars.AI_REVIEW_MODEL_ID }}
-          base_url: ${{ vars.AI_REVIEW_BASE_URL }}
-          style: ${{ vars.AI_REVIEW_STYLE }}
-          custom_guide_path: .agents/skills/custom-codereview-guide.md
-          repo_principles_path: AGENTS.md
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          RERUN: ${{ steps.rerun.outputs.rerun }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            Sos el revisor automatizado de este Pull Request. Tu rol es advisory:
+            comentás, no aprobás merges.
 
-      - name: Comment instructions if action missing
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const body = [
-              'AI PR Review no se ejecutó.',
-              '',
-              'Acciones a verificar:',
-              '- `secrets.AI_REVIEW_API_KEY` configurado.',
-              '- Variables `AI_REVIEW_PROVIDER_KIND`, `AI_REVIEW_MODEL_ID`, `AI_REVIEW_BASE_URL`, `AI_REVIEW_STYLE`, `AI_REVIEW_REQUIRE_EVIDENCE`.',
-              '- SHA de la acción `All-Hands-AI/openhands-pr-review-action` fijado en el workflow.',
-              '- Sección `## Evidence` presente en el cuerpo del PR.',
-              '',
-              'Ver `docs/ai-pr-review-human-setup.md` para detalle.'
-            ].join('\n');
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body,
-            });
+            INSUMOS OBLIGATORIOS A LEER ANTES DE COMENTAR:
+            1. `Agente-IA-Desarrollo-ABAP/AGENTS.md` — contrato del arnés y principios.
+            2. `Agente-IA-Desarrollo-ABAP/.agents/skills/custom-codereview-guide.md` — guía
+               de review específica del producto (categorías, severidades, señales rojas
+               ABAP, formato de comentario en §6).
+            3. `Agente-IA-Desarrollo-ABAP/prd.md` §6 — los 6 Principios No Negociables.
+
+            TAREA:
+            - Revisá el diff del PR aplicando la guía custom.
+            - Verificá los 6 Principios del PRD (§2 de la guía).
+            - Marcá zonas sensibles del repo (§3 de la guía): `CLAUDE.md`,
+              `.claude/agents/*`, `.claude/commands/pipeline-abap.md`,
+              `docs/formato-fd-generico.md`, `.github/workflows/`, etc.
+            - Señales rojas universales (§4) y ABAP-específicas (§5).
+            - Verificá la sección `## Evidence` (§7): comandos, output, AC marcados.
+
+            FORMATO DE CADA COMENTARIO SUSTANTIVO (estricto, §6 de la guía):
+            `[<categoría> · <severidad>] <archivo>:<línea>` + qué está mal + sugerencia
+            accionable + referencia (principio PRD, sección CLAUDE.md, doc).
+
+            REGLAS:
+            - Señal alta, ruido bajo. Mejor 3 comentarios accionables que 30 nitpicks.
+            - Si el PR es trivial, un comentario aprobatorio basta.
+            - No reescribas el PR. No marques approved. No comentes estilo subjetivo.
+            - Si tenés dudas, marcá `[needs-human · minor]` con la pregunta.
+            - Idioma: español.
+          claude_args: |
+            --allowed-tools "Read,Glob,Grep,Bash(gh pr view:*),Bash(gh pr diff:*)"
