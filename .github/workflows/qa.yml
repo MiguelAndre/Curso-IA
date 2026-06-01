@@ -1,0 +1,124 @@
+name: QA Suite (Persona + Juez)
+
+# Corre la suite QA del Agente IA ABAP contra LLM real usando la CLI `claude -p`
+# (patrón W1). La autenticación va por la suscripción Pro/Max/Enterprise vía
+# `CLAUDE_CODE_OAUTH_TOKEN` — no factura API tokens.
+#
+# Triggers:
+# - pull_request con cambios en `Agente-IA-Desarrollo-ABAP/qa/**`: garantiza que
+#   tocar la suite o el wrapper no rompa la calibración.
+# - workflow_dispatch: corrida manual on-demand.
+
+on:
+  pull_request:
+    paths:
+      - 'Agente-IA-Desarrollo-ABAP/qa/**'
+      - '.github/workflows/qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard-fork:
+    runs-on: ubuntu-latest
+    outputs:
+      same_repo: ${{ steps.check.outputs.same_repo }}
+    steps:
+      - id: check
+        name: Reject fork PRs (no access to secrets)
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ] \
+             && [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+            echo "same_repo=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PR proviene de un fork. QA suite desactivada por seguridad (no hay acceso a CLAUDE_CODE_OAUTH_TOKEN)."
+            exit 0
+          fi
+          echo "same_repo=true" >> "$GITHUB_OUTPUT"
+
+  test-agents:
+    needs: guard-fork
+    if: needs.guard-fork.outputs.same_repo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: Agente-IA-Desarrollo-ABAP/qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Agente-IA-Desarrollo-ABAP/qa/package-lock.json
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Install Playwright (chromium + system deps)
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Verify CLI is logged in
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: |
+          if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+            echo "::error::CLAUDE_CODE_OAUTH_TOKEN no está configurado en Settings → Secrets. Ver Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md §2.1."
+            exit 1
+          fi
+          claude --version
+
+      - name: Run agents suite (Persona + Juez M1/M2/M3)
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+        run: npm run test:agents
+
+      - name: Upload Playwright HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-agents
+          path: Agente-IA-Desarrollo-ABAP/qa/playwright-report/
+          retention-days: 30
+
+      - name: Upload test-results (traces, videos en fallos)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: Agente-IA-Desarrollo-ABAP/qa/test-results/
+          retention-days: 7
+
+  test-lib:
+    needs: guard-fork
+    if: needs.guard-fork.outputs.same_repo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: Agente-IA-Desarrollo-ABAP/qa
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Agente-IA-Desarrollo-ABAP/qa/package-lock.json
+
+      - name: Install npm deps
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lib tests (puros, sin LLM)
+        run: npx playwright test --project=lib --reporter=list

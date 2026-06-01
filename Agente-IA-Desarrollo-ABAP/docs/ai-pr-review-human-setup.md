@@ -19,7 +19,7 @@
 
 | Nombre | Valor | Notas |
 |---|---|---|
-| `CLAUDE_CODE_OAUTH_TOKEN` | Token OAuth de tu suscripción Claude Pro/Max | **Recomendado**. Usa la suscripción existente — sin costo por token. Generación en §2.1. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Token OAuth de tu suscripción Claude Pro/Max | **Recomendado**. Usa la suscripción existente — sin costo por token. Generación en §2.1. **El mismo secret lo reutiliza** `.github/workflows/qa.yml` (suite QA); configurarlo una vez sirve para ambos workflows. |
 
 ### 2.1 Cómo generar `CLAUDE_CODE_OAUTH_TOKEN`
 

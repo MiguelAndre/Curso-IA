@@ -86,7 +86,7 @@ El curso combina material teórico (PDFs), manuales prácticos (Markdown), ejerc
 | AI PR Review | ✅ Workflow productivo en `.github/workflows/ai-pr-review.yml` con `anthropics/claude-code-action@v1` (SHA pinned) · ⚠️ Pendiente sólo configuración en GitHub UI: secret `CLAUDE_CODE_OAUTH_TOKEN`, branch protection, label `review-this` ([guía](Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md)) |
 | Memoria evolutiva | ✅ Plantillas + dry-run + **primera capsule real** (`ai-pr-review-setup`, 2026-06-01) · backlog de docs sync con PROP-001..007 · capsules de CR-001 pendientes (bloqueado por pandoc) |
 | Plan de evaluación pre-piloto | ✅ Diseñado · ✅ Operativizado (suite QA ejecutable en `qa/` — Estación 8) |
-| Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ✅ **Corrida real contra LLM** (2026-06-01, 22/23 verdes, $0 USD vía CLI con suscripción — ver [capsule](Agente-IA-Desarrollo-ABAP/docs/memory/capsules/2026-06-01-qa-llm-real-w1.md)) · ⚠️ Pendiente: golden dataset real + CI workflow |
+| Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ✅ **Corrida real contra LLM** (2026-06-01, 22/23 verdes, $0 USD vía CLI con suscripción — ver [capsule](Agente-IA-Desarrollo-ABAP/docs/memory/capsules/2026-06-01-qa-llm-real-w1.md)) · ✅ **CI workflow** ([`.github/workflows/qa.yml`](.github/workflows/qa.yml)) — 2 jobs (`test-agents` con LLM real + `test-lib` puro) · ⚠️ Pendiente: golden dataset real anonimizado |
 
 ---
 

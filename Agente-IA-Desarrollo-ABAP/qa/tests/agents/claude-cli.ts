@@ -54,6 +54,14 @@ export async function invokeClaudeCli(args: InvokeArgs): Promise<string> {
   writeFileSync(tmpFile, args.systemPrompt, 'utf8');
 
   try {
+    // En Windows la CLI requiere `CLAUDE_CODE_GIT_BASH_PATH` apuntando a Git bash.
+    // En Linux/macOS no aplica — el env var queda fuera para no contaminar el subprocess.
+    const env: NodeJS.ProcessEnv = { ...process.env };
+    if (process.platform === 'win32' && !env.CLAUDE_CODE_GIT_BASH_PATH) {
+      env.CLAUDE_CODE_GIT_BASH_PATH =
+        'C:\\Users\\mihernandez\\AppData\\Local\\Programs\\Git\\bin\\bash.exe';
+    }
+
     const proc = spawn(
       'claude',
       [
@@ -71,12 +79,7 @@ export async function invokeClaudeCli(args: InvokeArgs): Promise<string> {
       {
         stdio: ['pipe', 'pipe', 'pipe'],
         shell: false,
-        env: {
-          ...process.env,
-          CLAUDE_CODE_GIT_BASH_PATH:
-            process.env.CLAUDE_CODE_GIT_BASH_PATH ??
-            'C:\\Users\\mihernandez\\AppData\\Local\\Programs\\Git\\bin\\bash.exe',
-        },
+        env,
       },
     );
 

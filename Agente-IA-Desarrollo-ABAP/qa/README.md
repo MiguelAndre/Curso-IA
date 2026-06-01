@@ -75,6 +75,23 @@ Pre-requisito: estar logueado en Claude Code (`claude` interactivo) con tu cuent
 
 Esto evita facturar tokens API contra una tarjeta separada. Ver capsule [`docs/memory/capsules/2026-06-01-qa-llm-real-w1.md`](../docs/memory/capsules/2026-06-01-qa-llm-real-w1.md).
 
+### CI (GitHub Actions)
+
+El workflow [`.github/workflows/qa.yml`](../../.github/workflows/qa.yml) corre la suite en cada PR que toca `Agente-IA-Desarrollo-ABAP/qa/**` y también puede dispararse manualmente (`workflow_dispatch`).
+
+Dos jobs:
+
+| Job | Qué corre | Duración típica | Requiere LLM |
+|---|---|---|---|
+| `test-lib` | `npm run typecheck` + tests puros de `tests/lib/` | ~2-3 min | No |
+| `test-agents` | Persona + Juez M1/M2/M3 con `npm run test:agents` | ~12 min | Sí (vía CLI) |
+
+Secret requerido en GitHub UI: `CLAUDE_CODE_OAUTH_TOKEN`. Es el **mismo secret** que usa el AI PR Review (`.github/workflows/ai-pr-review.yml`); configurarlo una vez sirve para ambos workflows. Cómo generarlo: `claude setup-token` local + paste en `Settings → Secrets and variables → Actions`. Ver [`docs/ai-pr-review-human-setup.md §2.1`](../docs/ai-pr-review-human-setup.md).
+
+PRs desde forks están bloqueados por `guard-fork` (no tienen acceso a secrets).
+
+Reporte HTML queda como artifact del run (`playwright-report-agents`, retención 30 días).
+
 ---
 
 ## 4. Convenciones del proyecto que la suite respeta
