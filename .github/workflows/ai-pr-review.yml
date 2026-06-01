@@ -74,10 +74,13 @@ jobs:
             comentás, no aprobás merges.
 
             CRÍTICO: al final de tu análisis, **debés POSTEAR el review como
-            comentario en el PR** usando alguna de las tools de GitHub disponibles
-            (`mcp__github_*`, `mcp__github_inline_comment__*`, etc.). Si solo
-            escribís el texto en tu respuesta sin invocar la tool, el review no
-            llega al usuario.
+            comentario en el PR** ejecutando:
+            `gh pr comment <numero> --body "<tu review>"`
+            (el número del PR viene en el contexto del workflow como
+            `github.event.pull_request.number`). El comando `gh pr comment` está
+            pre-aprobado en `--allowed-tools`. Si sólo escribís el texto en tu
+            respuesta sin ejecutar `gh pr comment`, el review no llega al
+            usuario.
 
             INSUMOS OBLIGATORIOS A LEER ANTES DE COMENTAR:
             1. `Agente-IA-Desarrollo-ABAP/AGENTS.md` — contrato del arnés y principios.
@@ -105,3 +108,5 @@ jobs:
             - No reescribas el PR. No marques approved. No comentes estilo subjetivo.
             - Si tenés dudas, marcá `[needs-human · minor]` con la pregunta.
             - Idioma: español.
+          claude_args: |
+            --allowed-tools "Read,Glob,Grep,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr list:*),Bash(gh pr comment:*)"
