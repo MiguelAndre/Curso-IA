@@ -68,7 +68,9 @@ jobs:
           # postear el review en el PR. Restringir a tools de lectura permite leer
           # el diff pero deja al agente sin manera de emitir el comentario.
           show_full_output: true  # logs detallados del agente (útil para auditoría)
-          use_sticky_comment: true  # un único comentario sticky en el PR con el review
+          # `use_sticky_comment` deshabilitado a propósito (PROP-010 de docs-evolution-proposal.md):
+          # el agente postea via `gh pr comment` y activar el sticky generaba doble comentario
+          # — observación que dejó el propio bot en el smoke PR #1.
           prompt: |
             Sos el revisor automatizado de este Pull Request. Tu rol es advisory:
             comentás, no aprobás merges.

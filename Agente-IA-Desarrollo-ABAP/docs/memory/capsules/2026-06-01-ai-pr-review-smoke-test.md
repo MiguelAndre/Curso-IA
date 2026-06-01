@@ -90,29 +90,22 @@ sistema: el bot detectó el bug del doble canal antes que ningún humano.)
 
 ## Acción pendiente
 
-**Bug detectado por el propio bot en su primer review productivo** (severidad
-`minor`):
+(N/A — todo aplicado.)
 
-El workflow combina dos mecanismos de comentado que pueden duplicar el output:
-- `use_sticky_comment: true` en la action → sticky comment con output del agente
-- Instrucción `gh pr comment` en el prompt → comentario via CLI
-
-En el smoke test sólo apareció un comentario (probablemente el de `gh pr comment`,
-ya que el sticky requiere otro modo de la action). Pero el diseño es ambiguo.
-
-**Fix propuesto** (opción B sugerida por el bot): remover `use_sticky_comment: true`
-del workflow y mantener `gh pr comment` como único canal. PROP-010 en
-`docs/memory/docs-evolution-proposal.md`.
+El bug del doble canal detectado por el propio bot durante su primer review
+productivo (PROP-010) fue aplicado en el commit posterior a esta capsule.
+También se reescribió el setup doc completo con los 5 pasos críticos (PROP-011).
+Ambas propuestas figuran como `merged` en `docs/memory/docs-evolution-proposal.md` §5.
 
 ## Docs impactadas
 
 - [x] `.github/workflows/ai-pr-review.yml` — 4 cambios en main (regex permisivo,
       tools default + show_full_output, sticky + prompt fix, allowed-tools con
-      `gh pr comment`).
-- [ ] `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md` — falta
-      incorporar los 5 pasos descubiertos (PROP-011).
-- [ ] `Agente-IA-Desarrollo-ABAP/docs/memory/docs-evolution-proposal.md` —
-      PROP-010 (fix doble canal) y PROP-011 (sync de setup doc).
+      `gh pr comment`) + PROP-010 aplicado (sticky removido).
+- [x] `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md` — reescrito
+      con los 5 pasos críticos en orden + guía síntoma→causa (PROP-011).
+- [x] `Agente-IA-Desarrollo-ABAP/docs/memory/docs-evolution-proposal.md` —
+      PROP-010 y PROP-011 movidas a §5 Histórico con estado `merged`.
 
 ## Snippets / artefactos
 
