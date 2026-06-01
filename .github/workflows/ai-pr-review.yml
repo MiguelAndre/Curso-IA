@@ -50,6 +50,14 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
+          echo "=== DEBUG: PR_BODY (con cat -A para ver whitespace) ==="
+          printf '%s\n' "$PR_BODY" | cat -A | head -30 || true
+          echo "=== DEBUG: grep candidates (líneas que empiezan con ##) ==="
+          printf '%s\n' "$PR_BODY" | grep -nE "^[[:space:]]*##" || echo "(ninguna línea matchea)"
+          echo "=== DEBUG: grep target final ==="
+          printf '%s\n' "$PR_BODY" | grep -iE "^[[:space:]]*##[[:space:]]+Evidence" || echo "(no match para Evidence)"
+          echo "=== END DEBUG ==="
+
           # Regex tolerante a leading whitespace (copy-paste desde IDEs/markdown
           # con frecuencia agrega 2 espacios) y a múltiples espacios entre `##`
           # y `Evidence`. El header sigue siendo case-insensitive.
