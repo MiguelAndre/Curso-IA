@@ -1,18 +1,29 @@
 # Índice local de memory capsules
-# Plantilla inicial — se llena a medida que se cierren issues
-# Cuando se adopte opensymphony, este archivo migra a .opensymphony/memory/memory.yaml
+# Plantilla inicial — se llena a medida que se cierren issues.
+# Cuando se adopte opensymphony, este archivo migra a .opensymphony/memory/memory.yaml.
 
-planningWave: cr-001-u2-multiformato-revalidacion
-capsules: []
+# Cada capsule referencia su propio planningWave en el frontmatter.
+# Este índice agrega capsules de todas las waves del repo.
 
-# Ejemplo de entrada (descomentar y rellenar al cerrar el primer issue):
-#
-# capsules:
-#   - issueId: TASK-001
-#     linearId: DEV-101
-#     file: docs/memory/capsules/TASK-001.md
-#     closedAt: 2026-MM-DD
-#     areas:
-#       - validador-fd
-#       - formato-fd
-#     pr: https://github.com/<org>/<repo>/pull/<n>
+capsules:
+  - issueId: ai-pr-review-setup
+    linearId: null
+    title: AI PR Review productivo con claude-code-action (oficial, SHA pinned, OAuth)
+    planningWave: ai-pr-review-setup
+    file: docs/memory/capsules/2026-06-01-ai-pr-review-setup.md
+    closedAt: 2026-06-01
+    areas:
+      - github-actions
+      - ai-pr-review
+      - claude-code-action
+    commits:
+      - 3a58e2e
+      - d3bd5b4
+    pr: null  # cambios commiteados directo a main
+
+# Planning waves abiertas (sin capsules aún):
+#   - cr-001-u2-multiformato-revalidacion
+#     Pendiente: instalar pandoc + ejecutar TASK-001..006.
+#     Producirá capsules para TASK-001 (dataset), TASK-002 (pandoc),
+#     TASK-003 (PDF nativo), TASK-004 (re-test), TASK-005 (summary),
+#     TASK-006 (cierre del CR) cuando se resuelva el bloqueo.

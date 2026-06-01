@@ -84,7 +84,7 @@ El curso combina material teórico (PDFs), manuales prácticos (Markdown), ejerc
 | Pipeline funcional | ✅ M1 → M2 → M3 + orquestador `/pipeline-abap` |
 | Sub-agentes | ✅ `validador-fd`, `fd-a-td`, `td-a-codigo` |
 | AI PR Review | ✅ Workflow productivo en `.github/workflows/ai-pr-review.yml` con `anthropics/claude-code-action@v1` (SHA pinned) · ⚠️ Pendiente sólo configuración en GitHub UI: secret `CLAUDE_CODE_OAUTH_TOKEN`, branch protection, label `review-this` ([guía](Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md)) |
-| Memoria evolutiva | ✅ Plantillas y dry-run · capsules reales al cerrar primer issue |
+| Memoria evolutiva | ✅ Plantillas + dry-run + **primera capsule real** (`ai-pr-review-setup`, 2026-06-01) · backlog de docs sync con PROP-001..007 · capsules de CR-001 pendientes (bloqueado por pandoc) |
 | Plan de evaluación pre-piloto | ✅ Diseñado · ✅ Operativizado (suite QA ejecutable en `qa/` — Estación 8) |
 | Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ⚠️ Pendiente: correr con LLM real, golden dataset real, CI workflow |
 

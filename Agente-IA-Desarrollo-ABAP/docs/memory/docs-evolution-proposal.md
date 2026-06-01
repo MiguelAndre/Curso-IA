@@ -87,6 +87,36 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
+### PROP-005 — Documentar SHA pinning de GitHub Actions como práctica del repo
+
+- **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (decisión #1)
+- **Doc destino**: `AGENTS.md` §8 (contrato del review) o sección nueva sobre operación CI
+- **Cambio propuesto**: dejar explícito que cualquier `uses:` en workflows del repo debe pinear a SHA completo + comentario `# vX — YYYY-MM-DD`, nunca a tag móvil (`@v1`, `@main`). Incluir el patrón de verificación previo (`WebFetch` o `gh api repos/...`) para asegurar que el action existe antes de pinear.
+- **Evidencia**: el placeholder `All-Hands-AI/openhands-pr-review-action` no existía (404) y nadie lo había verificado; el SHA pinning fue el cambio clave del setup productivo.
+- **Riesgo de no hacerlo**: futuros workflows pueden volver a usar tags móviles (riesgo supply-chain) o pinear a actions inexistentes.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
+### PROP-006 — Documentar generación de OAuth token para CI con suscripción Pro/Max
+
+- **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (decisión #2)
+- **Doc destino**: `README.md` §2 (Prerrequisitos) o nuevo `docs/operacion/secrets-ci.md`
+- **Cambio propuesto**: documentar `claude setup-token` como el método default para que cualquier workflow del repo que necesite invocar Claude reuse la suscripción del owner en lugar de facturar por token. Incluir período de rotación recomendado y referencia al setup doc del AI PR Review.
+- **Evidencia**: `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md` §2.1.
+- **Riesgo de no hacerlo**: el próximo workflow (ej. CI de QA con LLM real) puede defaultear a API key y consumir tokens facturables sin necesidad.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
+### PROP-007 — Regla: workflows productivos siempre en `.github/workflows/` de la raíz
+
+- **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (invariant)
+- **Doc destino**: `AGENTS.md` (sección operativa) o `Agente-IA-Desarrollo-ABAP/AGENTS.md` cuando el producto migre a su repo propio
+- **Cambio propuesto**: documentar que GitHub Actions descubre workflows **únicamente** en `.github/workflows/` de la raíz del repo; cualquier workflow productivo del producto vive ahí, no en subdirectorios. Cuando el producto migre a repo propio, los workflows se mueven con él.
+- **Evidencia**: durante toda la etapa post-Estación 7 el workflow vivió en `Agente-IA-Desarrollo-ABAP/.github/workflows/` y nunca se disparó hasta el `git mv` a raíz (commit 3a58e2e).
+- **Riesgo de no hacerlo**: futuros workflows (ej. `qa.yml` para Estación 8) pueden volver a quedar invisibles si se colocan en subdirectorio.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
 ---
 
 ## 4. Cierre de propuestas
