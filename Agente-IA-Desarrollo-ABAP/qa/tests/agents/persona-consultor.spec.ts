@@ -163,7 +163,11 @@ test.describe('Persona Consultor → M1 → Juez M1 (mutation testing)', () => {
     });
   }
 
-  test('la Persona aplica las mutaciones de forma determinista (temperature=0)', async () => {
+  // El wrapper W1 (invocación CLI `claude -p`) no expone `--temperature`; la CLI usa
+  // su muestreo por defecto (no `temperature=0`). Por eso los outputs no son bit-a-bit
+  // idénticos entre llamadas. Cuando se vuelva al SDK (con créditos API) o aparezca un
+  // flag de temperature en la CLI, volver a habilitar este test removiendo el `.skip`.
+  test.skip('la Persona aplica las mutaciones de forma determinista (temperature=0)', async () => {
     const solicitud: SolicitudFd = {
       dominio: 'logística',
       titulo: 'Reporte de entregas atrasadas',
@@ -172,7 +176,6 @@ test.describe('Persona Consultor → M1 → Juez M1 (mutation testing)', () => {
       req_id: 'REQ-DETERMINISMO',
     };
     const [fd1, fd2] = await Promise.all([generarFd(solicitud), generarFd(solicitud)]);
-    // Con temperature=0 y mismos inputs, los dos outputs deben ser idénticos.
     expect(fd1).toBe(fd2);
   });
 });

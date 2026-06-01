@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
+import { invokeClaudeCli } from './claude-cli';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -120,19 +120,6 @@ function buildUserMessage(solicitud: SolicitudFd): string {
   return partes.join('\n');
 }
 
-let cachedClient: Anthropic | null = null;
-function client(): Anthropic {
-  if (!cachedClient) {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error(
-        'ANTHROPIC_API_KEY no está configurada. Copia qa/.env.example a qa/.env y completa la llave.',
-      );
-    }
-    cachedClient = new Anthropic();
-  }
-  return cachedClient;
-}
-
 function stripCodeFences(s: string): string {
   let t = s.trim();
   if (t.startsWith('```')) {
@@ -150,16 +137,11 @@ export async function generarFd(
   solicitud: SolicitudFd,
   perfil: PerfilConsultor = PERFIL_DEFAULT,
 ): Promise<string> {
-  const response = await client().messages.create({
+  const texto = await invokeClaudeCli({
+    systemPrompt: buildSystemPrompt(perfil),
+    userMessage: buildUserMessage(solicitud),
     model: process.env.QA_PERSONA_MODEL ?? process.env.QA_MODEL ?? 'claude-sonnet-4-6',
-    max_tokens: 2048,
-    temperature: 0,
-    system: buildSystemPrompt(perfil),
-    messages: [{ role: 'user', content: buildUserMessage(solicitud) }],
+    stripFences: false,
   });
-  const texto = response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n');
   return stripCodeFences(texto);
 }

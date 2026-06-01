@@ -61,9 +61,19 @@ Variables de entorno relevantes (en `.env`, gitignored):
 
 | Variable | Para qué | Default |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | Llamadas del agente Juez/Persona vía SDK | (requerida) |
-| `CLAUDE_CLI` | Ruta al ejecutable de Claude Code para invocar slash commands headless | `claude` |
+| `CLAUDE_CODE_GIT_BASH_PATH` | Ruta a `bash.exe` de Git for Windows (requerido en Windows para invocar `claude` desde Node) | `C:\Users\<u>\AppData\Local\Programs\Git\bin\bash.exe` |
+| `QA_MODEL` | Modelo para el sub-agente bajo prueba (Persona / Validador) | `claude-sonnet-4-6` |
+| `QA_JUDGE_MODEL` | Modelo del Juez (más capaz para calibración) | `claude-opus-4-7` |
 | `DATASET_DIR` | Carpeta del golden dataset | `../evaluacion/dataset` |
+| `ANTHROPIC_API_KEY` | (Opcional · fallback) Sólo si se revierte al SDK directo. Hoy la suite no la lee. | — |
+
+### Auth: CLI en lugar de SDK (W1)
+
+Desde 2026-06-01 la suite **no usa `@anthropic-ai/sdk` ni `ANTHROPIC_API_KEY`**. Invoca la CLI `claude -p` como subprocess (wrapper en `tests/agents/claude-cli.ts`), que usa la suscripción Claude Pro/Max/Enterprise del usuario logueado localmente.
+
+Pre-requisito: estar logueado en Claude Code (`claude` interactivo) con tu cuenta empresarial. La sesión OAuth/keychain queda guardada y los subprocesses la heredan.
+
+Esto evita facturar tokens API contra una tarjeta separada. Ver capsule [`docs/memory/capsules/2026-06-01-qa-llm-real-w1.md`](../docs/memory/capsules/2026-06-01-qa-llm-real-w1.md).
 
 ---
 
@@ -99,7 +109,9 @@ Variables de entorno relevantes (en `.env`, gitignored):
 - [x] Feature file de pipeline (`tests/features/pipeline-abap.feature`) — 8 escenarios sobre las invariantes del orquestador: argumentos obligatorios, Principio #2 (rechazo M1 detiene), Gates 1 y 2, regeneración versionada (`td-v2.md`), escalamiento BR-12, estructura `outputs/<fecha>/<req-id>/`
 - [x] Orquestador stub (`tests/steps/orchestrator.ts`) + step definitions (`tests/steps/pipeline.steps.ts`) — simulador rápido y gratis que rutea outputs canónicos por la lógica del slash command
 - [x] Agente Persona Consultor (`tests/agents/persona-consultor.ts`) — genera FDs con mutaciones deliberadas (omitir-autorizaciones, objetivo-vago, ca-no-verificables, tablas-descriptivas-no-tecnicas, contradiccion-rn-cb, etc.)
-- [x] Spec end-to-end **Persona → M1 → Juez M1** (`tests/agents/persona-consultor.spec.ts`) — 4 casos de mutation testing + test de determinismo (temperature=0)
+- [x] Spec end-to-end **Persona → M1 → Juez M1** (`tests/agents/persona-consultor.spec.ts`) — 4 casos de mutation testing (test de determinismo `temperature=0` skipped bajo W1: la CLI no expone `--temperature`)
+- [x] **Wrapper CLI** (`tests/agents/claude-cli.ts`) — invoca `claude -p` como subprocess. Usa la suscripción Pro/Max/Enterprise sin facturar API tokens.
+- [x] **Ejecución contra LLM real** (2026-06-01): 22/23 tests verdes, 1 skipped — primera corrida completa de Persona + 3 Jueces fuera del modo demo.
 - [x] **Módulo de métricas** (`tests/lib/metrics.ts`) — funciones puras que computan sensibilidad/especificidad/factualidad/seguridad/etc. y aplican el go/no-go de `plan-evaluacion.md §6`
 - [x] **Tests del módulo de métricas** (`tests/lib/metrics.spec.ts`) — 9 tests sin LLM con scorecards sintéticos
 - [x] **CLI de reporte consolidado** (`scripts/reporte-consolidado.ts`) — genera reporte markdown desde JSON de casos o desde golden dataset. Demo offline con `npm run reporte:demo`

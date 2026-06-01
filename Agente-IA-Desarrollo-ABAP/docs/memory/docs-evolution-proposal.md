@@ -107,6 +107,26 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
+### PROP-008 — Documentar la decisión W1 (CLI como motor) en plan-evaluacion.md
+
+- **Origen**: capsule `docs/memory/capsules/2026-06-01-qa-llm-real-w1.md` (decisión #1)
+- **Doc destino**: `docs/plan-evaluacion.md` (sección de "Stack de ejecución")
+- **Cambio propuesto**: agregar sección explicando que la suite Persona+Juez se ejecuta vía CLI `claude -p` (no SDK) para usar la suscripción Pro/Max/Enterprise; documentar `--temperature` como limitación conocida (test de determinismo skipped); registrar las opciones W2 (claude-agent-sdk) y W3 (API key) como alternativas si W1 se vuelve insuficiente.
+- **Evidencia**: ejecución del 2026-06-01 con 22/23 tests verdes en 11.4 min, costo $0 USD.
+- **Riesgo de no hacerlo**: futuros lectores del plan-evaluacion no entienden por qué el README de qa habla de CLI mientras el plan original (Estación 8) describía SDK.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
+### PROP-009 — Patrón "CLI como motor" en AGENTS.md
+
+- **Origen**: capsule `docs/memory/capsules/2026-06-01-qa-llm-real-w1.md` (invariant)
+- **Doc destino**: `Agente-IA-Desarrollo-ABAP/AGENTS.md` (sección operativa)
+- **Cambio propuesto**: documentar que cualquier script Node del repo que necesite invocar Claude **debe** usar el wrapper `qa/tests/agents/claude-cli.ts` (o equivalente) en lugar de `@anthropic-ai/sdk`, salvo justificación explícita. Razón: alinear todo el repo a usar la suscripción sin facturar API tokens.
+- **Evidencia**: `claude-cli.ts` ya existe y está probado; PROP-006 propone el mismo patrón para CI.
+- **Riesgo de no hacerlo**: futuros scripts pueden defaultear al SDK por costumbre y romper el contrato implícito de "este repo no factura tokens API".
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder
+
 ### PROP-007 — Regla: workflows productivos siempre en `.github/workflows/` de la raíz
 
 - **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (invariant)

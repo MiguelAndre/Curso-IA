@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
+import { invokeClaudeCli } from './claude-cli';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -125,19 +125,6 @@ function buildUserMessage(entrada: EntradaJuezM1): string {
   ].join('\n');
 }
 
-let cachedClient: Anthropic | null = null;
-function client(): Anthropic {
-  if (!cachedClient) {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error(
-        'ANTHROPIC_API_KEY no está configurada. Copia qa/.env.example a qa/.env y completa la llave.',
-      );
-    }
-    cachedClient = new Anthropic();
-  }
-  return cachedClient;
-}
-
 function parseScorecard(rawJson: string, entrada: EntradaJuezM1): ScorecardM1 {
   let texto = rawJson.trim();
   if (texto.startsWith('```')) {
@@ -172,21 +159,10 @@ function parseScorecard(rawJson: string, entrada: EntradaJuezM1): ScorecardM1 {
 export async function juzgarOutputValidador(entrada: EntradaJuezM1): Promise<ScorecardM1> {
   const system = buildSystemPrompt();
   const userMsg = buildUserMessage(entrada);
-  const response = await client().messages.create({
+  const texto = await invokeClaudeCli({
+    systemPrompt: system,
+    userMessage: userMsg,
     model: process.env.QA_JUDGE_MODEL ?? 'claude-opus-4-7',
-    max_tokens: 2048,
-    temperature: 0,
-    system,
-    messages: [
-      { role: 'user', content: userMsg },
-      { role: 'assistant', content: '{' },
-    ],
   });
-  const texto =
-    '{' +
-    response.content
-      .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-      .map((b) => b.text)
-      .join('');
   return parseScorecard(texto, entrada);
 }

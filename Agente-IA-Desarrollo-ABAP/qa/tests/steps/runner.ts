@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import 'dotenv/config';
+import { invokeClaudeCli } from '../agents/claude-cli';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,19 +20,6 @@ export interface RespuestaAgente {
 export interface MensajeChat {
   role: 'user' | 'assistant';
   content: string;
-}
-
-let cachedClient: Anthropic | null = null;
-function client(): Anthropic {
-  if (!cachedClient) {
-    if (!process.env.ANTHROPIC_API_KEY) {
-      throw new Error(
-        'ANTHROPIC_API_KEY no está configurada. Copia qa/.env.example a qa/.env y completa la llave.',
-      );
-    }
-    cachedClient = new Anthropic();
-  }
-  return cachedClient;
 }
 
 /** Strip YAML frontmatter de un agente Claude Code; devuelve solo el body como system prompt. */
@@ -61,22 +48,39 @@ function inferirVeredicto(text: string): Veredicto {
   return 'SIN_VEREDICTO';
 }
 
+/**
+ * Serializa un historial multi-turno en un único user message para la CLI `claude -p`
+ * (que no acepta historial nativo). El sub-agente lee el último turno como petición
+ * actual y los turnos previos como contexto.
+ */
+function serializarHistorial(mensajes: MensajeChat[]): string {
+  if (mensajes.length === 1 && mensajes[0].role === 'user') {
+    return mensajes[0].content;
+  }
+  const partes: string[] = [
+    '<!-- Conversación previa con el sub-agente; respondé al ÚLTIMO turno del usuario. -->',
+    '',
+  ];
+  for (const m of mensajes) {
+    partes.push(m.role === 'user' ? '### Usuario' : '### Sub-agente (respuesta previa)');
+    partes.push('');
+    partes.push(m.content);
+    partes.push('');
+  }
+  return partes.join('\n');
+}
+
 async function llamarAgente(
   systemPrompt: string,
   mensajes: MensajeChat[],
-  opts: { maxTokens?: number } = {},
+  _opts: { maxTokens?: number } = {},
 ): Promise<string> {
-  const response = await client().messages.create({
+  return invokeClaudeCli({
+    systemPrompt,
+    userMessage: serializarHistorial(mensajes),
     model: process.env.QA_MODEL ?? 'claude-sonnet-4-6',
-    max_tokens: opts.maxTokens ?? 4096,
-    temperature: 0,
-    system: systemPrompt,
-    messages: mensajes,
+    stripFences: false,
   });
-  return response.content
-    .filter((b): b is Anthropic.TextBlock => b.type === 'text')
-    .map((b) => b.text)
-    .join('\n');
 }
 
 /**

@@ -21,6 +21,21 @@ capsules:
       - d3bd5b4
     pr: null  # cambios commiteados directo a main
 
+  - issueId: qa-llm-real-w1
+    linearId: null
+    title: Suite Persona+Juez ejecutada contra LLM real con wrapper CLI (W1)
+    planningWave: qa-llm-real
+    file: docs/memory/capsules/2026-06-01-qa-llm-real-w1.md
+    closedAt: 2026-06-01
+    areas:
+      - qa
+      - persona-juez
+      - claude-code-cli
+      - llm-as-judge
+    commits:
+      - TBD  # se completa en el commit final
+    pr: null
+
 # Planning waves abiertas (sin capsules aún):
 #   - cr-001-u2-multiformato-revalidacion
 #     Pendiente: instalar pandoc + ejecutar TASK-001..006.
