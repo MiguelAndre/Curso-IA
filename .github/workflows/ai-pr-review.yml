@@ -68,9 +68,16 @@ jobs:
           # postear el review en el PR. Restringir a tools de lectura permite leer
           # el diff pero deja al agente sin manera de emitir el comentario.
           show_full_output: true  # logs detallados del agente (útil para auditoría)
+          use_sticky_comment: true  # un único comentario sticky en el PR con el review
           prompt: |
             Sos el revisor automatizado de este Pull Request. Tu rol es advisory:
             comentás, no aprobás merges.
+
+            CRÍTICO: al final de tu análisis, **debés POSTEAR el review como
+            comentario en el PR** usando alguna de las tools de GitHub disponibles
+            (`mcp__github_*`, `mcp__github_inline_comment__*`, etc.). Si solo
+            escribís el texto en tu respuesta sin invocar la tool, el review no
+            llega al usuario.
 
             INSUMOS OBLIGATORIOS A LEER ANTES DE COMENTAR:
             1. `Agente-IA-Desarrollo-ABAP/AGENTS.md` — contrato del arnés y principios.
