@@ -156,7 +156,7 @@ Cuando una propuesta llega a `merged`:
 - **Origen**: AI PR Review en PR #1 (capsule `2026-06-01-ai-pr-review-smoke-test.md`)
 - **Doc destino**: `.github/workflows/ai-pr-review.yml`
 - **Cambio aplicado**: removido `use_sticky_comment: true`. El agente postea via `gh pr comment` como único canal. Comentario explicativo agregado en el workflow apuntando a esta PROP.
-- **Mergeado en**: commit `<TBD-fill-after-commit>` (siguiente commit a main)
+- **Mergeado en**: commit `0c5d7bf`
 - **Estado**: `merged`
 
 ### PROP-011 — Reescribir `docs/ai-pr-review-human-setup.md` con los 5 pasos completos ✅ merged
@@ -164,5 +164,5 @@ Cuando una propuesta llega a `merged`:
 - **Origen**: capsule `2026-06-01-ai-pr-review-smoke-test.md` (los 5 hallazgos del smoke)
 - **Doc destino**: `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md`
 - **Cambio aplicado**: reescrito en 9 secciones. §2 enumera los 5 pasos críticos en orden estricto (GitHub App + Secret + Workflow sync + allowed-tools + Evidence regex), cada uno con su test de verificación. §5 incluye una guía rápida síntoma → causa → paso. Documentados los gotchas de copy-paste de la UI.
-- **Mergeado en**: commit `<TBD-fill-after-commit>` (siguiente commit a main)
+- **Mergeado en**: commit `0c5d7bf`
 - **Estado**: `merged`
