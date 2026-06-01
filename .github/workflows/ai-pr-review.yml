@@ -50,7 +50,10 @@ jobs:
         env:
           PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          if ! printf '%s\n' "$PR_BODY" | grep -qi "^## Evidence"; then
+          # Regex tolerante a leading whitespace (copy-paste desde IDEs/markdown
+          # con frecuencia agrega 2 espacios) y a múltiples espacios entre `##`
+          # y `Evidence`. El header sigue siendo case-insensitive.
+          if ! printf '%s\n' "$PR_BODY" | grep -qiE "^[[:space:]]*##[[:space:]]+Evidence"; then
             echo "::error::El PR no incluye la sección obligatoria '## Evidence'. Ver .github/pull_request_template.md"
             exit 1
           fi
