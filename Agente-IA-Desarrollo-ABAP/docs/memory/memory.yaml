@@ -33,7 +33,7 @@ capsules:
       - claude-code-cli
       - llm-as-judge
     commits:
-      - TBD  # se completa en el commit final
+      - 1673444
     pr: null
 
 # Planning waves abiertas (sin capsules aún):

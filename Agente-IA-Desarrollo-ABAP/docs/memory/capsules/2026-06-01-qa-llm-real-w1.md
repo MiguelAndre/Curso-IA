@@ -6,7 +6,7 @@ planningWave: qa-llm-real
 closedAt: 2026-06-01
 pr: null  # commit directo a main
 commits:
-  - TBD  # se llena en el commit final
+  - 1673444
 areas:
   - qa
   - persona-juez
