@@ -63,6 +63,11 @@ jobs:
         uses: anthropics/claude-code-action@787c5a0ce96a9a6cfb050ea0c8f4c05f2447c251 # v1 — 2025-08-26
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Sin `--allowed-tools` restrictivo: el agente necesita las tools de GitHub
+          # que la acción auto-provisiona (`mcp__github_inline_comment__*`, etc.) para
+          # postear el review en el PR. Restringir a tools de lectura permite leer
+          # el diff pero deja al agente sin manera de emitir el comentario.
+          show_full_output: true  # logs detallados del agente (útil para auditoría)
           prompt: |
             Sos el revisor automatizado de este Pull Request. Tu rol es advisory:
             comentás, no aprobás merges.
@@ -93,5 +98,3 @@ jobs:
             - No reescribas el PR. No marques approved. No comentes estilo subjetivo.
             - Si tenés dudas, marcá `[needs-human · minor]` con la pregunta.
             - Idioma: español.
-          claude_args: |
-            --allowed-tools "Read,Glob,Grep,Bash(gh pr view:*),Bash(gh pr diff:*)"
