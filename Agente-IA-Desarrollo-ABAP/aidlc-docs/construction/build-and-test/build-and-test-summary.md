@@ -129,3 +129,31 @@ La fase de **Construction** del producto está completa:
 
 Sin `performance-test-instructions.md` (N/A en MVP).
 Sin `contract-test-instructions.md` (N/A — sin servicios).
+
+---
+
+## CR-001 re-test (2026-06-01)
+
+**Change Request 001 — Validador multi-formato** (`.md`, `.txt`, `.pdf`, `.docx`). Implementado en el commit `dbb39e0` y re-validado contra el FD canónico (`qa/tests/fixtures/fds/fd-completo-alv.md`) en sus 4 representaciones.
+
+### Resultado
+
+| # | Formato | Veredicto | Persistencia |
+|---|---|---|---|
+| 1 | `.md` | ✅ APROBADO | `outputs/2026-06-01/REQ-CR-001-MD/validacion.md` |
+| 2 | `.txt` | ✅ APROBADO | `outputs/2026-06-01/REQ-CR-001-TXT/validacion.md` |
+| 3 | `.pdf` | ✅ APROBADO | `outputs/2026-06-01/REQ-CR-001-PDF/validacion.md` |
+| 4 | `.docx` | ✅ APROBADO | `outputs/2026-06-01/REQ-CR-001-DOCX/validacion.md` |
+
+**Veredicto consistente entre formatos** (AC2 de TASK-004 cumplido). Cero gaps formales en cualquiera de las 4 corridas; las 3 observaciones menores que emitió el run `.md` no son gaps formales sino sugerencias discrecionales del modelo.
+
+### Pre-requisitos descubiertos durante el re-test
+
+- **pandoc** ≥ 2.0 instalado y en el `PATH` del usuario que arranca Claude Code (no en el `WinGet\Links` por defecto en Windows — hay que agregar la ruta del package manualmente o usar el instalador `.msi`).
+- **Microsoft Edge** disponible si no hay otro engine de PDF de pandoc instalado (LaTeX / wkhtmltopdf / weasyprint / tectonic). Se usa headless via `--print-to-pdf` para generar `.pdf` desde HTML.
+- **El binario de pandoc debe estar en el `PATH` ANTES de arrancar Claude Code**, no después — el slash command verifica `command -v pandoc` en su propio shell, no relee el PATH cada vez.
+
+### Cierre del CR
+
+Marcado como ✅ Cerrado en `aidlc-docs/aidlc-state.md`. Capsule de aprendizajes en `docs/memory/capsules/2026-06-01-cr-001-retest.md`. Comparación detallada en `outputs/dataset-cr-001/comparison.md` (gitignored).
+

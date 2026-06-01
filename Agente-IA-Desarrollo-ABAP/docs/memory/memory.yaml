@@ -54,9 +54,23 @@ capsules:
       - 1fa5c24
     pr: https://github.com/MiguelAndre/Curso-IA/pull/1
 
-# Planning waves abiertas (sin capsules aún):
-#   - cr-001-u2-multiformato-revalidacion
-#     Pendiente: instalar pandoc + ejecutar TASK-001..006.
-#     Producirá capsules para TASK-001 (dataset), TASK-002 (pandoc),
-#     TASK-003 (PDF nativo), TASK-004 (re-test), TASK-005 (summary),
-#     TASK-006 (cierre del CR) cuando se resuelva el bloqueo.
+  - issueId: cr-001-retest
+    linearId: null
+    title: CR-001 re-test — Validador multi-formato 4/4 APROBADO + pre-requisitos descubiertos
+    planningWave: cr-001-u2-multiformato-revalidacion
+    file: docs/memory/capsules/2026-06-01-cr-001-retest.md
+    closedAt: 2026-06-01
+    areas:
+      - validador-fd
+      - formato-fd
+      - cr-001
+      - aidlc
+    commits:
+      - TBD  # se completa en el commit final
+    pr: null
+
+# Planning waves cerradas:
+#   - ai-pr-review-setup → capsules: ai-pr-review-setup + ai-pr-review-smoke-test
+#   - qa-llm-real → capsule: qa-llm-real-w1
+#   - cr-001-u2-multiformato-revalidacion → capsule: cr-001-retest
+#     (las 6 TASKs ejecutadas; CR cerrado en aidlc-state.md el 2026-06-01)

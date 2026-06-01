@@ -51,7 +51,7 @@
 | **Operations** | ⏸️ Placeholder | — | Per PRD + execution-plan: el producto opera dentro de Claude Code, sin despliegue tradicional |
 | **🏁 Workflow AI-DLC** | ✅ **CERRADO** | 2026-05-20 | Producto listo para entrega al equipo |
 | **🔄 CR-001 U2 multi-formato — Plan** | ✅ Aprobado | 2026-05-20 | Q3 del plan U2 modificado: el Validador debe aceptar `.md`, `.txt`, `.pdf`, `.docx` y normalizar a markdown |
-| **🔄 CR-001 U2 multi-formato — Code** | 🟡 Implementado, re-test pendiente | 2026-05-20 | `validador-fd.md` §1/§5.1/§9 y `validar-fd.md` (slash command, conversión vía pandoc para `.docx`, Read nativo para `.pdf`) actualizados; pendiente re-ejecutar Build and Test sobre los 3 formatos |
+| **🔄 CR-001 U2 multi-formato — Code** | ✅ Cerrado | 2026-06-01 | Re-test ejecutado sobre los 4 formatos (`.md`, `.txt`, `.pdf`, `.docx`): 4/4 APROBADO con veredicto consistente. Evidencia en `outputs/dataset-cr-001/comparison.md` y en `aidlc-docs/construction/build-and-test/build-and-test-summary.md §CR-001 re-test`. Capsule: `docs/memory/capsules/2026-06-01-cr-001-retest.md` |
 | Functional Design | 🔜 Programada (EXECUTE para U2,U3,U4) | — | Prompts = lógica de negocio |
 | NFR Requirements | 🔜 Programada (EXECUTE para U4) | — | Security en código generado |
 | NFR Design | 🔜 Programada (EXECUTE para U4) | — | Contraparte NFR |
