@@ -137,21 +137,6 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
-### PROP-014 — Alinear fixtures de Juez (`codigo-{bueno,pobre,mediocre}.abap`) al patrón 3 archivos
-
-> Spin-off detectado al cerrar PROP-013. Los 3 fixtures de `qa/tests/fixtures/codigo-outputs/` y sus consumidores en `qa/tests/agents/juez-m3.spec.ts` aún representan código monolítico (clase global `ZCL_RPT_*`), no el patrón Patrimonio. **No es bloqueante para PROP-013** porque la evaluación Persona+Juez puede mirar contenido y reglas independientemente de la estructura de archivos, pero conviene decidir.
-
-- **Origen**: cierre de PROP-013 (commit `7beafad`). El grep de coherencia detectó `codigo-bueno.abap` (734 líneas, clase `ZCL_RPT_*`) y sus análogos `codigo-pobre.abap`, `codigo-mediocre.abap` usados como referencia por el Juez.
-- **Doc destino**:
-  1. `qa/tests/fixtures/codigo-outputs/` — los 3 fixtures actuales.
-  2. `qa/tests/agents/juez-m3.spec.ts` — referencias en los specs.
-- **Decisión pendiente**:
-  - **(opción A — alinear)**: regenerar los 3 fixtures como sets de 3 archivos cada uno (`codigo-{bueno,pobre,mediocre}-{report,top,cls}.abap`). El Juez evalúa el set completo. Más realista, mucho más mantenimiento.
-  - **(opción B — desacoplar)**: dejar los fixtures monolíticos como están y documentar que el Juez evalúa contenido (decisiones, AUTHORITY-CHECK, calidad de comentarios, etc.) independientemente de si el código vive en 1 o 3 archivos. Recomendado si el output del LLM real ya viene en 3 archivos y el Juez los concatena lógicamente antes de evaluar.
-- **Riesgo de no hacerlo**: si el LLM real empieza a generar 3 archivos (post-PROP-012) y los fixtures del Juez siguen siendo monolíticos, las comparaciones de calidad pueden distorsionarse o requerir adapters para reconciliar formatos.
-- **Estado**: `pending`
-- **Owner**: Desarrollador líder + responsable de QA
-
 ---
 
 ## 4. Cierre de propuestas
@@ -202,5 +187,19 @@ Cuando una propuesta llega a `merged`:
   - `qa/tests/steps/orchestrator.ts` L207–208: `writeFileSync(join(carpeta, 'codigo-report.abap'), ...)` y `r.archivos_persistidos.push('codigo-report.abap')`. El `CODIGO_FIXTURE` (`codigo-bueno.abap`) se mantiene intacto — su contenido es irrelevante para el contrato del stub.
   - `qa/tests/features/pipeline-abap.feature`: 4 aserciones (L41, 77, 92, 104) cambian `"codigo.abap"` → `"codigo-report.abap"`. Título del escenario BR-12 actualizado: `no genera codigo-v3.abap` → `no genera archivos codigo-*-v3.abap` para consistencia con el versionado por archivo de PROP-012.
 - **Mergeado en**: commit `7beafad`
+- **Estado**: `merged`
+
+### PROP-014 — Alinear fixtures de Juez al patrón 3 archivos ✅ merged (opción B desacoplar)
+
+- **Origen**: cierre de PROP-013 (commit `7beafad`). Los 3 fixtures `qa/tests/fixtures/codigo-outputs/codigo-{bueno,pobre,mediocre}.abap` y sus consumidores en `qa/tests/agents/juez-m3.spec.ts` representaban código monolítico (clase global `ZCL_RPT_*`), no el patrón Patrimonio.
+- **Decisión**: opción **B (desacoplar)** — los fixtures siguen siendo monolíticos por simplicidad. La calibración del Juez evalúa contenido (decisiones, AUTHORITY-CHECK, factualidad, RNs, cabecera, limpieza), no estructura de archivos. La estructura de archivos del LLM real (3 archivos post-PROP-012) se reconcilia vía un **contrato de concatenación** documentado en la rúbrica: report → top → cls, separados por marcador `*&--- file: <nombre> ---*`, antes de invocar `juzgarOutputCodigo`.
+- **Cambio aplicado**:
+  - `qa/rubrics/m3-td-a-codigo.md` §1 Alcance: reescrito para acomodar 1 o 3 archivos; declarado contrato de concatenación; agregada nota de fixtures intencionalmente monolíticos.
+  - `qa/rubrics/m3-td-a-codigo.md` §2 D3 (a): criterio actualizado para distinguir reportes (3 archivos con `cl_*` local) vs clases globales standalone (`ZCL_*`). Aclarado que `REPORT z<area>_<nombre>.` thin **no es penalizable** — es el patrón correcto.
+  - `qa/rubrics/m3-td-a-codigo.md` §4 D3 niveles 5 y 1: anclas verbales actualizadas a los dos patrones válidos (`cl_*` local en reportes / `ZCL_*` global standalone).
+  - `qa/rubrics/m3-td-a-codigo.md` §7 Calibración: aclarado que los 3 ejemplos son monolíticos por simplicidad, con referencia a §1.
+  - `qa/tests/agents/juez-m3.spec.ts`: comentario de 5 líneas al inicio que explica el desacople y apunta a la rúbrica.
+- **Fuera de scope** (intencional): los 3 fixtures `.abap`, el código del Juez (`juez-m3.ts`), y las dimensiones D1/D2/D4/D5/D6/D7 (sus criterios son agnósticos a la estructura de archivos).
+- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
 - **Estado**: `merged`
 

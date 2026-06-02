@@ -1,3 +1,9 @@
+// Calibración del Juez M3. Los fixtures (codigo-{bueno,pobre,mediocre}.abap) son
+// intencionalmente monolíticos — la calibración evalúa contenido, no estructura
+// de archivos. El patrón Patrimonio (3 archivos REPORT+TOP+CLS) se aplica al
+// output del LLM real vía contrato de concatenación documentado en
+// qa/rubrics/m3-td-a-codigo.md §1. Ver PROP-014 en docs/memory/docs-evolution-proposal.md.
+
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';

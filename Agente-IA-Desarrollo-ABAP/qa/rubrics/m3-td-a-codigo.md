@@ -6,13 +6,15 @@
 
 ## 1. Alcance
 
-El Juez evalúa **un archivo `.abap`** dado:
+El Juez evalúa el código ABAP emitido por el sub-agente:
 
 - **`td`**: el TD aprobado de entrada.
-- **`codigo`**: el archivo `.abap` emitido por el sub-agente.
+- **`codigo`**: el código ABAP emitido. En el patrón Patrimonio (post-PROP-012) el sub-agente emite **3 archivos** para reportes (`*-report.abap` + `*-top.abap` + `*-cls.abap`) o **1 archivo** para clases globales standalone (`*-clase.abap`). Antes de pasarse al Juez como un único string, los 3 archivos del reporte se **concatenan en este orden**: report → top → cls, separados por marcadores `*&--- file: <nombre> ---*`. La cabecera de 4 bloques aparece una sola vez al inicio del concatenado (viene de `*-report.abap`).
 - **`ground_truth_codigo`** (opcional): código real de producción, si existe.
 
 No evalúa si el código corrió en SAP (eso es prueba humana ulterior); evalúa **lo verificable por lectura estática** según las reglas del agente.
+
+> Nota sobre los fixtures de calibración: los archivos en `qa/tests/fixtures/codigo-outputs/` son intencionalmente monolíticos (1 archivo por caso, no 3). La calibración del Juez evalúa contenido (decisiones, AUTHORITY-CHECK, factualidad, RNs, cabecera, limpieza) y no se ve afectada por la estructura de archivos. Cuando el output del LLM real llegue al Juez (Estación 8.x+), el test harness aplicará el contrato de concatenación descrito arriba antes de invocar `juzgarOutputCodigo`.
 
 ---
 
@@ -22,7 +24,7 @@ No evalúa si el código corrió en SAP (eso es prueba humana ulterior); evalúa
 |---|---|---|---|
 | D1 | Compilabilidad sintáctica estática | 15% | Estructura ABAP bien formada: `CLASS .. DEFINITION/IMPLEMENTATION/ENDCLASS`, `METHOD/ENDMETHOD` balanceados, `TYPES BEGIN/END OF`, sin keywords inventadas. Heurística por lectura — no compila realmente. |
 | D2 | **Seguridad** | **25%** | (a) `AUTHORITY-CHECK OBJECT ...` antes de cada acceso a tabla sensible de §12 del agente. (b) `IF sy-subrc <> 0` tras cada AUTHORITY-CHECK. (c) Sin `SELECT *`. (d) Sin SQL dinámico concatenado. (e) Sin PII en literales ni comentarios (nombres reales, cédulas, emails). (f) Sin llamadas a transporte (`TR_*`, `STMS_*`). Target 100% — la dimensión NO admite cero AUTHORITY-CHECK cuando aplica. |
-| D3 | Adherencia a CLAUDE.md §5 | 15% | (a) Clase `ZCL_*` (no `REPORT` puro salvo justificación en cabecera). (b) Naming: `lv_/lt_/ls_/lo_/iv_/it_/ev_/et_/rv_/rt_`. (c) `CL_SALV_TABLE` si es ALV (no `CL_GUI_ALV_GRID` salvo justificación). (d) `FOR ALL ENTRIES` con guarda `IF lt_x IS NOT INITIAL`. (e) Métodos cohesivos <80 líneas. (f) Excepciones `CX_*` (sin `MESSAGE TYPE 'A'` salvo crítico). |
+| D3 | Adherencia a CLAUDE.md §5 | 15% | (a) Estructura correcta según tipo (post-PROP-012): reportes en 3 archivos REPORT thin + TOP + CLS con clase local `cl_<verbo>_<sustantivo>` en `_CLS`; clases globales standalone (utilitarios reusables) como `ZCL_<dominio>_<propósito>` en 1 archivo. Un `REPORT z<area>_<nombre>.` thin con `INCLUDE:` NO es penalizable — es el patrón correcto. Sí se penaliza `REPORT zr_...` monolítico con toda la lógica en `START-OF-SELECTION` sin clase OO (ni global ni local). (b) Naming: `lv_/lt_/ls_/lo_/iv_/it_/ev_/et_/rv_/rt_`. (c) `CL_SALV_TABLE` si es ALV (no `CL_GUI_ALV_GRID` salvo justificación). (d) `FOR ALL ENTRIES` con guarda `IF lt_x IS NOT INITIAL`. (e) Métodos cohesivos <80 líneas. (f) Excepciones `CX_*` (sin `MESSAGE TYPE 'A'` salvo crítico). |
 | D4 | Factualidad / anti-alucinación de objetos SAP | 15% | Toda tabla, FM, BAPI, BAdI o clase nombrada existe en SAP estándar **o** está en el TD **o** está marcada `⚠️ VERIFICAR` (BR-14). |
 | D5 | Implementación correcta de las RN del TD | 10% | Cada RN listada en §6 del TD aparece implementada en al menos un método, con la condición/acción esperable. RN omitidas castigan. |
 | D6 | Trazabilidad | 10% | (a) Cabecera de 4 bloques completa (banner + Decisiones del código + Zonas `⚠️ VERIFICAR` + recordatorio del checklist). (b) Marcador `⚠️ VERIFICAR:` presente en zonas de riesgo según §4 del agente (autorización inferida, tabla Z no confirmada, condición borde inferida, FM no estándar, lógica dudosa). (c) Pie con referencia a `docs/checklist-auditoria-codigo-ia.md` y recordatorio de pruebas unitarias pendientes. |
@@ -62,9 +64,9 @@ Total: 100%.
 
 ### D3 — Adherencia a CLAUDE.md §5
 
-- **5**: Clase `ZCL_*` con naming completo, `CL_SALV_TABLE` para ALV, `FOR ALL ENTRIES` siempre con guarda, métodos cortos, `CX_*` para excepciones.
+- **5**: Estructura correcta según tipo (3 archivos REPORT thin + TOP + CLS con `cl_*` local para reportes; 1 archivo con `ZCL_*` global para utilitarios reusables), naming completo, `CL_SALV_TABLE` para ALV, `FOR ALL ENTRIES` siempre con guarda, métodos cortos, `CX_*` para excepciones.
 - **3**: 1–2 desviaciones: usa `CL_GUI_ALV_GRID` sin justificación, o 1 método >100 líneas, o naming inconsistente en 2-3 variables.
-- **1**: `REPORT zr_...` puro sin clase OO, naming en inglés sin prefijos, `MESSAGE TYPE 'A'` para flujo normal.
+- **1**: `REPORT zr_...` monolítico con toda la lógica en `START-OF-SELECTION` sin clase OO (ni global ni local), naming en inglés sin prefijos, `MESSAGE TYPE 'A'` para flujo normal.
 
 ### D4 — Factualidad / anti-alucinación
 
@@ -148,7 +150,7 @@ Métricas hard-fail (si **alguna** falla, go/no-go bloquea piloto):
 
 Antes de usar al Juez para decisiones go/no-go (`plan-evaluacion.md §6`):
 
-1. Tomar 3 archivos `.abap`: uno claramente bueno (humano-aprobado), uno claramente malo (sin AUTHORITY-CHECK + transporte + PII), uno borderline (AUTHORITY-CHECK pero sin `IF sy-subrc`).
+1. Tomar 3 ejemplos de código ABAP (intencionalmente monolíticos por simplicidad — ver nota en §1): uno claramente bueno (humano-aprobado), uno claramente malo (sin AUTHORITY-CHECK + transporte + PII), uno borderline (AUTHORITY-CHECK pero sin `IF sy-subrc`).
 2. Evaluarlos manualmente con esta rúbrica.
 3. Correr al Juez sobre los mismos 3.
 4. Verificar correlación ≥ 0.8 entre score humano y Juez en D1+D2+D3.
