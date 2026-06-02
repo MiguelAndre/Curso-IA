@@ -33,5 +33,8 @@
     "playwright-bdd": "^8.0.0",
     "tsx": "^4.19.0",
     "typescript": "^5.6.0"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
   }
 }
