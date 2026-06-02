@@ -113,8 +113,8 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
    ```
 3. M1 valida. Si aprueba, sigue. Si rechaza, devuelve los gaps al consultor — pipeline detenido.
 4. Revisa el TD que muestra M2 en chat (y queda en `outputs/<fecha>-REQ-2026-042/td.md`). Aprueba o pide ajustes.
-5. Revisa el `.abap` que muestra M3 (queda en `outputs/<fecha>-REQ-2026-042/codigo.abap`).
-6. Importa el `.abap` en Eclipse. Pasa **syntax check** y **pruebas unitarias** (Principio #4).
+5. Revisa los 3 archivos `.abap` que muestra M3 (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`, todos en `outputs/<fecha>-REQ-2026-042/`). Para clases globales standalone es 1 archivo `codigo-clase.abap`.
+6. Importa los `.abap` en Eclipse. Pasa **syntax check** y **pruebas unitarias** (Principio #4).
 7. Coordina **pruebas funcionales** con el consultor.
 8. Aprueba con el [`checklist`](docs/checklist-auditoria-codigo-ia.md). Transporta.
 9. Registra en el Excel del piloto: `Generado por agente: Sí` · `Horas de ajuste: <N>h`.
@@ -197,7 +197,7 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 ### Los outputs están desordenados
 
 - Verifica que estás pasando un `<req-id>` consistente entre M1/M2/M3 o usando `/pipeline-abap` que lo encadena automáticamente.
-- Estructura esperada: `outputs/<YYYY-MM-DD>-<REQ-id>/` con `fd.md`, `validacion.md`, `td.md`, `codigo.abap`.
+- Estructura esperada: `outputs/<YYYY-MM-DD>-<REQ-id>/` con `fd.md`, `validacion.md`, `td.md`, y los `.abap` del reporte (`codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`) o un solo `codigo-clase.abap` si es clase global standalone.
 
 ---
 

@@ -157,7 +157,7 @@ Pipeline pausado esperando tu respuesta.
 Usa la tool `Agent`:
 - `subagent_type`: `td-a-codigo`
 - `description`: `"Generar código ABAP <req-id>"`
-- `prompt`: incluye la ruta `outputs/<fecha>/<req-id>/td.md` (o la última versión `td-vN.md`), el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el TD ya fue aprobado humano post-M2. Genera el código ABAP siguiendo la plantilla de tu §5. Ejecuta tu Pre-Output Checklist §11. Persiste como `outputs/<fecha>/<req-id>/codigo.abap` con `Write`."
+- `prompt`: incluye la ruta `outputs/<fecha>/<req-id>/td.md` (o la última versión `td-vN.md`), el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el TD ya fue aprobado humano post-M2. Genera el código ABAP siguiendo la plantilla de tu §5 (3 archivos para reportes: `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`; 1 archivo `codigo-clase.abap` si es clase global standalone). Ejecuta tu Pre-Output Checklist §11. Persiste en `outputs/<fecha>/<req-id>/` con `Write`."
 
 ### 3.2 Procesar el resultado
 
@@ -183,11 +183,12 @@ Tras Caso C exitoso, emite:
 - `fd.md` — FD original (trazabilidad)
 - `validacion.md` — Reporte del Validador
 - `td.md` (o última versión `td-vN.md`) — Especificación Técnica
-- `codigo.abap` — Código ABAP generado
+- Para reportes: `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap` (más `codigo-<utilitario>.abap` si aplica)
+- Para clases globales standalone: `codigo-clase.abap`
 
 ### ✅ Próximos pasos (tuyos)
 
-1. **Importa** el `.abap` en Eclipse/ADT.
+1. **Importa** los `.abap` en Eclipse/ADT.
 2. **Syntax check** (Ctrl+F2). Si falla, ejecuta `/generar-abap outputs/<fecha>/<req-id>/td.md <req-id>` describiendo el error.
 3. **Escribe pruebas unitarias** cubriendo: happy path, casos borde del TD §7, AUTHORITY-CHECK fallido.
 4. **Aplica el checklist de auditoría**: `docs/checklist-auditoria-codigo-ia.md`.
@@ -226,7 +227,7 @@ Flujo esperado:
 1. Crear `outputs/<YYYY-MM-DD>/REQ-2026-042/`, copiar FD.
 2. Invocar M1 → APROBADO con observaciones menores. Imprimir reporte. Persistir `validacion.md`. Gate 1/3.
 3. Usuario responde `sí`. Invocar M2 → TD generado. Persistir `td.md`. Gate 2/3.
-4. Usuario responde `sí`. Invocar M3 → código generado. Persistir `codigo.abap`.
+4. Usuario responde `sí`. Invocar M3 → código generado. Persistir los 3 archivos del reporte (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) o 1 `codigo-clase.abap` si es clase global standalone.
 5. Resumen final con próximos pasos.
 
 ### Ejemplo 2 — FD rechazado por M1
@@ -252,8 +253,8 @@ Flujo esperado:
 2. M2 genera `td.md`. Gate 2 → `regenerar: <feedback>`.
 3. Re-invocar M2 con el feedback. Generar `td-v2.md`.
 4. Re-presentar Gate 2 con la nueva versión.
-5. Usuario aprueba. M3 genera `codigo.abap` desde `td-v2.md`. Resumen final.
+5. Usuario aprueba. M3 genera los archivos `codigo-*.abap` desde `td-v2.md`. Resumen final.
 
 ### Ejemplo 4 — Escalamiento en M3 tras 2 ciclos
 
-Si en un pipeline previo M3 ya tuvo 2 ciclos con el mismo error (existen `codigo.abap` y `codigo-v2.abap`), el orquestador delega a M3 que aplica BR-12 y emite escalamiento. El orquestador imprime el mensaje y termina sin generar `codigo-v3.abap`.
+Si en un pipeline previo M3 ya tuvo 2 ciclos con el mismo error (existen los archivos `codigo-*.abap` originales y sus `codigo-*-v2.abap`), el orquestador delega a M3 que aplica BR-12 y emite escalamiento. El orquestador imprime el mensaje y termina sin generar archivos `codigo-*-v3.abap`.

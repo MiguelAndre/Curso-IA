@@ -83,7 +83,7 @@ Toda acción del agente debe dejar rastro auditable. Estos son los lugares donde
 
 | Tipo de evidencia | Ubicación | Persiste |
 |---|---|---|
-| **Outputs por requerimiento** | `outputs/<YYYY-MM-DD>-<REQ-id>/` — fd.md, validacion.md, td.md, codigo.abap | Local (en `.gitignore`) — puede contener PII |
+| **Outputs por requerimiento** | `outputs/<YYYY-MM-DD>-<REQ-id>/` — fd.md, validacion.md, td.md, y los `.abap` del M3 (`codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap` para reportes; `codigo-clase.abap` para clases globales standalone) | Local (en `.gitignore`) — puede contener PII |
 | **Decisiones del agente** | Sección "Decisiones y Supuestos" en cada TD y `.abap` (Principio #5) | Versionado si el doc lo es |
 | **Marcas de incertidumbre** | Comentarios `⚠️ VERIFICAR:` en código generado | Versionado con el `.abap` |
 | **PR Evidence** | Sección `## Evidence` del PR (plantilla `.github/pull_request_template.md`) | GitHub PR |

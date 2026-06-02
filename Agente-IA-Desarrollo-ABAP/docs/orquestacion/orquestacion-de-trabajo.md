@@ -57,8 +57,10 @@ AI-DLC artefacto (aidlc-docs/) ──► create-implementation-plan
         │                                                 ▼
         ▼                                          PR con Evidence
    outputs/<fecha>-<REQ>/                                 │
-   fd.md, validacion.md,                                  ▼
-   td.md, codigo.abap                              AI PR Review (advisory)
+   fd.md, validacion.md, td.md,                           ▼
+   codigo-report.abap + codigo-top.abap        AI PR Review (advisory)
+   + codigo-cls.abap (reportes)                           │
+   o codigo-clase.abap (clase global)                     │
                                                           │
                                                           ▼
                                                   Revisión humana

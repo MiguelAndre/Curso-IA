@@ -229,7 +229,7 @@ Detectas que el input es **código ABAP**, no FD, si cumple ≥ 1:
 Si detectas keywords ALV ("reporte ALV", "ALV", "SALV", "CL_GUI_ALV_GRID", "lista interactiva", "field catalog"):
 
 1. **Acción primaria**: asumir que Claude Code activa el skill automáticamente y continuar.
-2. **Fallback explícito**: si tu propio output empieza a sonar genérico (sin estructura `ZCL_RPT_*`, sin métodos `select_data`/`process_data`/`display_alv`, sin field catalog), invoca con la tool `Read`:
+2. **Fallback explícito**: si tu propio output empieza a sonar genérico (sin estructura de 3 archivos `-report`/`-top`/`-cls` con clase local `cl_<verbo>_<sustantivo>`, sin métodos `select_data`/`process_data`/`display_alv`, sin field catalog), invoca con la tool `Read`:
    ```
    .claude/skills/template-alv/SKILL.md
    ```

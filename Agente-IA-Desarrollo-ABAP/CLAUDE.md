@@ -141,7 +141,7 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 
 - ✅ Implementa lógica de negocio en clases `ZCL_*` (custom) o `YCL_*`.
 - ✅ Métodos cohesivos: una responsabilidad por método.
-- ✅ Para reportes ALV: clase `ZCL_RPT_<nombre>` con métodos `select_data`, `process_data`, `display_alv` como patrón base (ver Skill `template-alv`).
+- ✅ Para reportes ALV: clase local `cl_<verbo>_<sustantivo>` embebida en INCLUDE `_CLS` del programa, con métodos `select_data`, `process_data`, `display_alv` como patrón base (ver Skill `template-alv` §3 y §6).
 - ❌ Evita reports puros (`REPORT zr_...`) salvo justificación clara.
 - ✅ Excepciones con clases `CX_*`; no `MESSAGE TYPE 'A'` salvo condiciones críticas declaradas.
 
@@ -155,7 +155,9 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 ### 5.5 Naming
 
 - ✅ Objetos custom: prefijo `Z` (o `Y` si la empresa lo prefiere).
-  - Clases: `ZCL_<dominio>_<propósito>` (p. ej. `ZCL_VENTAS_REPORTE_PEDIDOS`).
+  - **Clases globales** (reusables entre programas, p. ej. utilidades de logging, conexión FTP): `ZCL_<dominio>_<propósito>` (p. ej. `ZCL_LOG`, `ZCL_FTP_CONEXION`). Viven en 1 archivo standalone.
+  - **Clases locales** (clase de negocio del reporte, embebida en su INCLUDE `_CLS`): `cl_<verbo>_<sustantivo>` (p. ej. `cl_amplia_material`, `cl_lista_pedidos`). No tienen prefijo `Z`.
+  - **Regla**: si el objeto se reusa entre programas → `ZCL_*` global; si vive dentro de un solo programa → `cl_*` local en `_CLS`.
   - Tablas Z: `ZT<dominio>_<nombre>` o convención de la empresa.
   - Variantes locales: `lv_`, `lt_`, `ls_`, `lo_`, `lr_` según tipo.
   - Variables globales (mínimas): `gv_`, `gt_`, etc.
@@ -166,6 +168,7 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 - ✅ Métodos cortos (< 50 líneas idealmente).
 - ✅ Separa lógica de selección, transformación y presentación.
 - ✅ Reutiliza módulos de función SAP estándar cuando existan (no reimplementes).
+- ✅ **Reportes ejecutables**: separar en 3 archivos (`*.abap` REPORT thin con `INCLUDE:` + `START-OF-SELECTION`, `*_TOP.abap` con `TABLES`/`TYPES`/data globals/pantalla de selección, `*_CLS.abap` con `cl_<verbo>_<sustantivo>` local). Ver skill `template-alv` §6 para anatomía exacta. Las clases globales reusables van en archivo único `ZCL_*.abap` standalone.
 
 ---
 
@@ -214,14 +217,21 @@ Cuando ejecutes el pipeline (vía `/pipeline-abap`) o módulos sueltos (`/valida
 ```
 outputs/
 └── <YYYY-MM-DD>-<requerimiento_id>/
-    ├── fd.md           (copia del FD original)
-    ├── validacion.md   (output de M1)
-    ├── td.md           (output de M2)
-    ├── td-v2.md        (regeneraciones, si hay)
-    ├── codigo.abap     (output de M3)
-    ├── codigo-v2.abap  (regeneraciones, si hay)
-    └── decisiones.md   (consolidado opcional)
+    ├── fd.md                     (copia del FD original)
+    ├── validacion.md             (output de M1)
+    ├── td.md                     (output de M2)
+    ├── td-v2.md                  (regeneraciones del TD, si hay)
+    ├── codigo-report.abap        (M3 — REPORT thin con INCLUDE: + START-OF-SELECTION)
+    ├── codigo-top.abap           (M3 — TABLES/TYPES/data globals + pantalla de selección)
+    ├── codigo-cls.abap           (M3 — CLASS cl_<verbo>_<sustantivo> DEFINITION + IMPLEMENTATION)
+    ├── codigo-report-v2.abap     (regeneraciones, versionado por archivo)
+    └── decisiones.md             (consolidado opcional)
 ```
+
+Notas:
+- Clases globales standalone (utilidades reusables como `ZCL_LOG`) → 1 archivo `codigo-clase.abap` en lugar de los 3 anteriores.
+- Las regeneraciones versionan solo los archivos que cambiaron (`-v2`, `-v3`); el resto se mantiene referenciando la versión previa en el `INCLUDE:`.
+- Ver `.claude/agents/td-a-codigo.md` §8 para el esquema exacto de persistencia y versionado.
 
 `outputs/` está en `.gitignore` — los TDs y códigos de requerimientos reales pueden contener información sensible y **no se versionan**.
 

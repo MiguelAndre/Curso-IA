@@ -20,12 +20,15 @@ Eres el **generador de código** del pipeline FD→TD→Código. Produces un arc
 - Si se trata de **regeneración con feedback**: ruta a la versión previa del código (`codigo-vN.abap`) y descripción del error reportado por el desarrollador.
 
 ### Output principal
-Un archivo `.abap` con:
-- Cabecera de 4 bloques (§5.1).
-- Tipos locales si aplica.
-- Clase principal `ZCL_*` (DEFINITION + IMPLEMENTATION).
-- Helpers opcionales en el mismo archivo.
-- Pie con referencia al checklist + recordatorio de pruebas pendientes.
+
+**Para reportes ejecutables** — 3 archivos en `outputs/<fecha>/<req-id>/`:
+- `codigo-report.abap` — `REPORT` + `INCLUDE: _top, _cls.` + `START-OF-SELECTION.` Orquestación delgada (instancia la clase y llama `ejecutar( )`). Lleva la cabecera de 4 bloques (§5.1) y el pie con checklist (§5.3).
+- `codigo-top.abap` — `TABLES`, `TYPES`, constantes, data globals y **pantalla de selección** (`PARAMETERS`, `SELECT-OPTIONS`, bloques `SELECTION-SCREEN`).
+- `codigo-cls.abap` — `CLASS cl_<verbo>_<sustantivo> DEFINITION + IMPLEMENTATION`.
+- Opcional: `codigo-<utilitario>.abap` si el reporte usa un include de utilidad reusable.
+
+**Para clases globales standalone** (utilidades reusables, p. ej. `ZCL_LOG`) — 1 archivo:
+- `codigo-clase.abap` — `class ZCL_* definition public final create public.` + implementación. Lleva cabecera de 4 bloques y pie con checklist.
 
 Persistencia condicional según §8.
 
@@ -135,50 +138,94 @@ Si dudas si marcar o no, marca. Cada `⚠️ VERIFICAR:` se agrega a la lista de
 
 Los 4 bloques son obligatorios. Aunque el código sea de 10 líneas. BR-03.
 
-### 5.2 Cuerpo del archivo (Q2:C — todo en un .abap con bloques `*&---*`)
+**Ubicación de la cabecera**:
+- Reportes: solo al inicio de `codigo-report.abap`. NO se replica en `_TOP` ni `_CLS`.
+- Clases globales standalone: al inicio de `codigo-clase.abap`.
+
+### 5.2 Cuerpo del archivo — patrón 3 archivos (reportes)
+
+**`codigo-report.abap`** (delgado: REPORT + INCLUDE + event handlers opcionales + START-OF-SELECTION):
 
 ```abap
-*&---------------------------------------------------------------------*
-*& Tipos locales
-*&---------------------------------------------------------------------*
-TYPES: BEGIN OF ty_<nombre>,
+REPORT z<area>_<nombre>.
+
+INCLUDE: z<area>_<nombre>_top,
+         z<area>_<nombre>_cls.
+
+" Event handlers de pantalla de selección (sólo si aplican)
+" AT SELECTION-SCREEN ON p_xxx.
+"   ...
+
+START-OF-SELECTION.
+  TRY.
+      DATA(lo_rpt) = NEW cl_<verbo>_<sustantivo>(
+        iv_bukrs = p_bukrs
+        is_fecha = VALUE #( low = s_fecha-low high = s_fecha-high ) ).
+      lo_rpt->ejecutar( ).
+    CATCH cx_<...> INTO DATA(lo_ex).
+      MESSAGE lo_ex TYPE 'E'.
+  ENDTRY.
+```
+
+**`codigo-top.abap`** (TABLES/TYPES/data globals + pantalla de selección):
+
+```abap
+TABLES: <tabla1>, <tabla2>.
+
+TYPES: BEGIN OF ty_output,
          campo1 TYPE ...,
          campo2 TYPE ...,
-       END OF ty_<nombre>,
-       tt_<nombre> TYPE STANDARD TABLE OF ty_<nombre> WITH EMPTY KEY.
+       END OF ty_output,
+       tt_output TYPE STANDARD TABLE OF ty_output WITH EMPTY KEY.
+
+CONSTANTS: gc_<x> TYPE <t> VALUE '...'.
+
+DATA: gt_<n> TYPE tt_output.   " sólo data globals realmente compartidos entre INCLUDEs
 
 *&---------------------------------------------------------------------*
-*& Clase principal
+*& Pantalla de selección
 *&---------------------------------------------------------------------*
-CLASS zcl_<dominio>_<proposito> DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC.
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
+
+PARAMETERS:
+  p_bukrs TYPE bukrs OBLIGATORY.
+
+SELECT-OPTIONS:
+  s_fecha FOR sy-datum,
+  s_matnr FOR mara-matnr.
+
+SELECTION-SCREEN END OF BLOCK b1.
+```
+
+**`codigo-cls.abap`** (clase local de negocio):
+
+```abap
+CLASS cl_<verbo>_<sustantivo> DEFINITION.
 
   PUBLIC SECTION.
     METHODS:
-      constructor IMPORTING ...,
-      <metodo_principal>
-        IMPORTING ...
-        EXPORTING ...
-        RAISING cx_<...>.
+      constructor IMPORTING iv_bukrs TYPE bukrs
+                            is_fecha TYPE ...,
+      ejecutar RAISING cx_<...>.
 
   PRIVATE SECTION.
-    DATA: mt_<nombre> TYPE tt_<nombre>.
+    DATA: mv_bukrs  TYPE bukrs,
+          mt_output TYPE tt_output.
     METHODS:
       select_data,
       process_data,
-      display_alv.        " (cuando aplique patrón ALV)
+      display_alv.
 
 ENDCLASS.
 
-CLASS zcl_<dominio>_<proposito> IMPLEMENTATION.
+CLASS cl_<verbo>_<sustantivo> IMPLEMENTATION.
 
   METHOD constructor.
+    mv_bukrs = iv_bukrs.
     " ...
   ENDMETHOD.
 
-  METHOD <metodo_principal>.
+  METHOD ejecutar.
     " ⚠️ VERIFICAR: objeto de autorización Z_X inferido (no confirmado en FD)
     AUTHORITY-CHECK OBJECT 'Z_X'
                     ID 'ACTVT' FIELD '03'.
@@ -186,12 +233,31 @@ CLASS zcl_<dominio>_<proposito> IMPLEMENTATION.
       RAISE EXCEPTION TYPE cx_<...>.
     ENDIF.
 
-    " Implementación de RN1: <descripción>
-    " ...
+    select_data( ).
+    process_data( ).
+    display_alv( ).
   ENDMETHOD.
 
   " ... más métodos ...
 
+ENDCLASS.
+```
+
+### 5.2bis Cuerpo del archivo — clase global standalone
+
+Para utilidades reusables entre programas (p. ej. `ZCL_LOG`), 1 solo archivo `codigo-clase.abap`:
+
+```abap
+class ZCL_<dominio>_<proposito> definition
+  public final create public.
+
+  PUBLIC SECTION.
+    METHODS: ...
+
+ENDCLASS.
+
+class ZCL_<dominio>_<proposito> implementation.
+  ...
 ENDCLASS.
 ```
 
@@ -212,11 +278,18 @@ ENDCLASS.
 *&---------------------------------------------------------------------*
 ```
 
-### Reglas estructurales (Q2:C)
+**Ubicación del pie**:
+- Reportes: solo al final de `codigo-report.abap`. NO se replica en `_TOP` ni `_CLS`.
+- Clases globales standalone: al final de `codigo-clase.abap`.
 
-- **Un solo archivo `.abap`** por unidad de trabajo.
-- Bloques separados por `*&---*` (línea de 72 guiones).
-- Sin archivos separados por clase auxiliar.
+### Reglas estructurales
+
+- **Reportes**: 3 archivos separados (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) + opcional `codigo-<utilitario>.abap` por cada include de utilidad reusable.
+- **Clases globales standalone**: 1 archivo `codigo-clase.abap`.
+- `codigo-top.abap` contiene `TABLES`, `TYPES`, constantes, data globals y **pantalla de selección** (`PARAMETERS`/`SELECT-OPTIONS`/`SELECTION-SCREEN`). Event handlers (`AT SELECTION-SCREEN ...`) van en `codigo-report.abap` si existen.
+- Dentro de cada archivo, bloques separados por `*&---*` (línea de 72 guiones).
+- La cabecera y el pie no se replican entre archivos (van solo en `codigo-report.abap` o `codigo-clase.abap`).
+- `⚠️ VERIFICAR:` se distribuye en el archivo donde aplica: TOP para tablas/types asumidos, CLS para lógica/autorizaciones, REPORT para orquestación.
 - Sin archivos de prueba (Q3:A).
 
 ---
@@ -244,7 +317,7 @@ Aplicas obligatoriamente lo que está en `CLAUDE.md` §5:
 Si el TD §1 dice `REPORTE_ALV` o el contexto tiene keywords ALV ("reporte ALV", "ALV", "SALV", "CL_GUI_ALV_GRID", "lista interactiva", "field catalog"):
 
 1. **Acción primaria**: asumir activación automática del skill por Claude Code.
-2. **Fallback explícito**: si tu output empieza a verse genérico (sin `ZCL_RPT_*`, sin métodos `select_data`/`process_data`/`display_alv`, sin field catalog), invocar con la tool `Read`:
+2. **Fallback explícito**: si tu output empieza a verse genérico (sin estructura de 3 archivos `-report`/`-top`/`-cls`, sin clase local `cl_<verbo>_<sustantivo>`, sin métodos `select_data`/`process_data`/`display_alv`, sin field catalog), invocar con la tool `Read`:
    ```
    .claude/skills/template-alv/SKILL.md
    ```
@@ -256,12 +329,13 @@ Si el TD §1 dice `REPORTE_ALV` o el contexto tiene keywords ALV ("reporte ALV",
 
 ## 8. Persistencia condicional + versionado (BR-10, BR-11)
 
-- **Con `<req-id>`**: usar tool `Write` para persistir en:
-  - 1er output: `outputs/<YYYY-MM-DD>/<req-id>/codigo.abap`.
-  - 1ª regeneración: `outputs/<YYYY-MM-DD>/<req-id>/codigo-v2.abap`.
-  - 2ª regeneración: `outputs/<YYYY-MM-DD>/<req-id>/codigo-v3.abap` *(sólo si NO se activó BR-12 escalation)*.
+- **Con `<req-id>`** (reportes): usar tool `Write` para persistir los 3 archivos:
+  - 1er output: `codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap` (más `codigo-<utilitario>.abap` si aplica). Ubicación: `outputs/<YYYY-MM-DD>/<req-id>/`.
+  - 1ª regeneración: solo los archivos que cambiaron se versionan con sufijo `-v2` (p. ej. `codigo-cls-v2.abap`); los demás se mantienen referenciando la versión previa en el `INCLUDE:`. La cabecera del nuevo `codigo-report-v2.abap` (si existe) documenta qué archivos cambiaron.
+  - 2ª regeneración: análogo con sufijo `-v3` *(sólo si NO se activó BR-12 escalation)*.
   - Versiones anteriores NO se sobreescriben.
-- **Sin `<req-id>`**: solo imprime en chat, NO persistas.
+- **Con `<req-id>`** (clase global standalone): persistir `codigo-clase.abap`, versionado `codigo-clase-v2.abap`, etc.
+- **Sin `<req-id>`**: solo imprime en chat, NO persistas. En chat, presentar los archivos en bloques markdown separados con su nombre como heading (`### codigo-report.abap`, etc.).
 
 ---
 
@@ -314,6 +388,7 @@ Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos
 8. **¿Pie con referencia a `docs/checklist-auditoria-codigo-ia.md` presente?**
 9. **¿Recordatorio de pruebas pendientes presente al pie?**
 10. **¿Comentarios en español?**
+11. **¿Estructura de archivos correcta?** Reportes en 3 archivos (`-report`, `-top`, `-cls`) más utilitarios opcionales; clases globales standalone en 1 archivo (`-clase`). Cabecera y pie solo en `-report` o `-clase`. Pantalla de selección (`PARAMETERS`/`SELECT-OPTIONS`/`SELECTION-SCREEN`) en `-top`; event handlers (`AT SELECTION-SCREEN ...`) en `-report` si aplican.
 
 Esta secuencia es **obligatoria** antes de cada output. No te saltes pasos.
 

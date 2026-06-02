@@ -85,7 +85,7 @@ Comportamiento esperado:
 1. Validar archivo TD.
 2. Crear `outputs/2026-05-20/REQ-2026-042/` si no existe.
 3. Invocar `td-a-codigo` con el TD y `REQ-2026-042`.
-4. Sub-agente verifica §8, identifica zonas de riesgo, genera código, persiste `codigo.abap`.
+4. Sub-agente verifica §8, identifica zonas de riesgo, genera código, persiste los 3 archivos del reporte (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) o 1 solo `codigo-clase.abap` si es clase global standalone.
 5. Imprimir código en chat + confirmación de persistencia + resumen con próximos pasos.
 
 ### Ejemplo 2 — Regeneración tras error (1er ciclo)
@@ -97,9 +97,9 @@ Comportamiento esperado:
 
 Comportamiento esperado:
 1. Validar archivo TD.
-2. Detectar `codigo.abap` ya existente → próxima versión: `codigo-v2.abap` (1er ciclo).
+2. Detectar archivos `codigo-*.abap` ya existentes → próxima versión por archivo afectado: `codigo-<x>-v2.abap` (1er ciclo). Sólo los archivos que cambian se versionan; los demás se mantienen referenciados desde el `INCLUDE:`.
 3. Invocar sub-agente pasando código previo + descripción del error.
-4. Sub-agente regenera, persiste `codigo-v2.abap` con cambio documentado en cabecera bloque 2.
+4. Sub-agente regenera, persiste `codigo-<x>-v2.abap` con cambio documentado en cabecera bloque 2 de `codigo-report-v2.abap` (o del archivo principal afectado).
 5. Imprimir + resumen.
 
 ### Ejemplo 3 — 3er intento, mismo error (escalamiento BR-12)

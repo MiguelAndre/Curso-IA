@@ -1,6 +1,6 @@
 ---
 name: template-alv
-description: Patrón canónico para generar reportes ALV en ABAP OO. Activa este skill cuando el contexto contenga keywords como "reporte ALV", "ALV", "SALV", "CL_GUI_ALV_GRID", "CL_SALV_TABLE", "lista interactiva", "field catalog", "ALV grid" o describa una consulta tabular con columnas, ordenamiento y exportación. Provee estructura ZCL_RPT_ con métodos select_data/process_data/display_alv y field catalog estándar.
+description: Patrón canónico para generar reportes ALV en ABAP OO bajo la convención Patrimonio (3 archivos REPORT + TOP + CLS con clase local `cl_<verbo>_<sustantivo>`). Activa este skill cuando el contexto contenga keywords como "reporte ALV", "ALV", "SALV", "CL_GUI_ALV_GRID", "CL_SALV_TABLE", "lista interactiva", "field catalog", "ALV grid" o describa una consulta tabular con columnas, ordenamiento y exportación. Provee anatomía de los 3 archivos, métodos select_data/process_data/display_alv y field catalog estándar.
 ---
 
 # Skill: Template ALV — Patrón canónico para reportes ABAP
@@ -33,21 +33,20 @@ Cuando un sub-agente detecta estos triggers, aplica el patrón de §3 en adelant
 ### 3.1 Nombre de la clase
 
 ```
-ZCL_RPT_<dominio>_<propósito>
+cl_<verbo>_<sustantivo>
 ```
 
+Es una **clase local** embebida en el INCLUDE `_CLS` del programa (ver §6). No es `ZCL_*` global — esa convención queda para utilitarios reusables entre programas (p. ej. `ZCL_LOG`, `ZCL_FTP_CONEXION`).
+
 Ejemplos:
-- `ZCL_RPT_VENTAS_PEDIDOS_MES` — reporte de pedidos del mes en el dominio Ventas.
-- `ZCL_RPT_COMPRAS_MATERIALES_PROVEEDOR` — UC1 del PRD (referencia del piloto).
-- `ZCL_RPT_FINANZAS_CUENTAS_VENCIDAS` — reporte de cuentas por cobrar vencidas.
+- `cl_lista_pedidos` — listado de pedidos del mes (Ventas).
+- `cl_compra_material` — UC1 del PRD (reporte de materiales por proveedor).
+- `cl_cuenta_vencida` — cuentas por cobrar vencidas (Finanzas).
 
 ### 3.2 Definición de la clase
 
 ```abap
-CLASS zcl_rpt_<dominio>_<proposito> DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC.
+CLASS cl_<verbo>_<sustantivo> DEFINITION.
 
   PUBLIC SECTION.
     TYPES:
@@ -98,7 +97,7 @@ ENDCLASS.
 ### 3.3 Implementación (esqueleto)
 
 ```abap
-CLASS zcl_rpt_<dominio>_<proposito> IMPLEMENTATION.
+CLASS cl_<verbo>_<sustantivo> IMPLEMENTATION.
 
   METHOD constructor.
     mv_<filtro1> = iv_<filtro1>.
@@ -251,13 +250,56 @@ mr_alv->get_selections( )->set_selection_mode( if_salv_c_selection_mode=>cell ).
 
 ---
 
-## 6. Pantalla de selección
+## 6. Anatomía del programa — 3 archivos (REPORT + TOP + CLS)
 
-Para reportes que necesitan filtros del usuario, el código va en un `REPORT` separado (programa ejecutor) o en un `INCLUDE` del programa principal:
+Los reportes ALV en este repo se emiten como **3 archivos separados** en `outputs/<fecha>/<req-id>/`, siguiendo la convención de Patrimonio:
+
+| Archivo | Sufijo | Contenido |
+|---|---|---|
+| `codigo-report.abap` | (ninguno) | `REPORT z<area>_<nombre>.` + `INCLUDE: z<area>_<nombre>_top, z<area>_<nombre>_cls.` + `START-OF-SELECTION.` con orquestación delgada (instancia la clase y llama `ejecutar( )`) |
+| `codigo-top.abap` | `_TOP` | `TABLES`, `TYPES`, constantes, data globals **y pantalla de selección** (`PARAMETERS`, `SELECT-OPTIONS`, bloques `SELECTION-SCREEN BEGIN/END OF BLOCK`, textos de selección) |
+| `codigo-cls.abap` | `_CLS` | `CLASS cl_<verbo>_<sustantivo> DEFINITION` + `CLASS cl_<verbo>_<sustantivo> IMPLEMENTATION` |
+
+### 6.1 `codigo-report.abap` — esqueleto
 
 ```abap
-" Programa ejecutor: zr_rpt_<dominio>_<proposito>
-REPORT zr_rpt_<dominio>_<proposito>.
+REPORT z<area>_<nombre>.
+
+INCLUDE: z<area>_<nombre>_top,
+         z<area>_<nombre>_cls.
+
+START-OF-SELECTION.
+  TRY.
+      DATA(lo_rpt) = NEW cl_<verbo>_<sustantivo>(
+        iv_bukrs = p_bukrs
+        is_fecha = VALUE #( low = s_fecha-low high = s_fecha-high ) ).
+      lo_rpt->ejecutar( ).
+    CATCH cx_<...> INTO DATA(lo_ex).
+      MESSAGE lo_ex TYPE 'E'.
+  ENDTRY.
+```
+
+> Si el programa necesita event handlers de la pantalla de selección (`AT SELECTION-SCREEN`, `AT SELECTION-SCREEN ON p_xxx`, `AT SELECTION-SCREEN OUTPUT`, etc.) y no son triviales, generarlos en `codigo-report.abap` **después** del bloque `INCLUDE:` y **antes** de `START-OF-SELECTION.` — los `AT SELECTION-SCREEN` deben estar en scope del programa principal.
+
+### 6.2 `codigo-top.abap` — esqueleto (incluye la pantalla de selección)
+
+```abap
+TABLES: <tabla1>, <tabla2>.
+
+TYPES: BEGIN OF ty_output,
+         campo1 TYPE ...,
+         campo2 TYPE ...,
+       END OF ty_output,
+       tt_output TYPE STANDARD TABLE OF ty_output WITH EMPTY KEY.
+
+CONSTANTS: gc_<x> TYPE <t> VALUE '...'.
+
+DATA: gt_<n> TYPE tt_output.   " sólo data globals realmente compartidos entre INCLUDEs
+
+*&---------------------------------------------------------------------*
+*& Pantalla de selección
+*&---------------------------------------------------------------------*
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-b01.
 
 PARAMETERS:
   p_bukrs TYPE bukrs OBLIGATORY.
@@ -267,20 +309,33 @@ SELECT-OPTIONS:
   s_matnr FOR mara-matnr,
   s_werks FOR marc-werks.
 
-START-OF-SELECTION.
-  TRY.
-      DATA(lo_rpt) = NEW zcl_rpt_<dominio>_<proposito>(
-        iv_bukrs    = p_bukrs
-        is_fecha    = VALUE #( low = s_fecha-low high = s_fecha-high )
-        " ... etc ...
-      ).
-      lo_rpt->ejecutar( ).
-    CATCH cx_<...> INTO DATA(lo_ex).
-      MESSAGE lo_ex TYPE 'E'.
-  ENDTRY.
+SELECTION-SCREEN END OF BLOCK b1.
 ```
 
-> El sub-agente `td-a-codigo` típicamente genera la clase `ZCL_RPT_*` en un solo `.abap` (Q2:C). El programa ejecutor `ZR_*` puede generarse en un bloque separado dentro del mismo `.abap` con un comentario `*&---*` que lo identifique, o agregarse después como complemento si el TD lo solicita.
+### 6.3 `codigo-cls.abap` — esqueleto
+
+Contiene la clase local `cl_<verbo>_<sustantivo>` (DEFINITION + IMPLEMENTATION) — ver §3.2 y §3.3 para el esqueleto detallado.
+
+### 6.4 Utilitarios reusables (clases globales)
+
+Si el reporte invoca un utilitario reusable entre programas (p. ej. conexión FTP, logging), ese utilitario vive en un archivo separado `codigo-<utilitario>.abap` con sintaxis de clase global standalone:
+
+```abap
+class ZCL_LOG definition public final create public.
+  ...
+endclass.
+
+class ZCL_LOG implementation.
+  ...
+endclass.
+```
+
+Y se agrega al `INCLUDE:` del report si se referencia como include local, o se invoca directamente vía `ZCL_LOG=>metodo( )` si ya está activado como objeto global en SAP.
+
+### 6.5 Cuándo NO usar el patrón 3 archivos
+
+- **Clases globales standalone** (no asociadas a un programa específico): 1 solo archivo `codigo-clase.abap` con `class ZCL_* definition public final create public.`
+- **Function modules o BAdIs**: aplican sus propios contratos (fuera del alcance de este skill).
 
 ---
 
@@ -294,7 +349,7 @@ START-OF-SELECTION.
 - ❌ **`SELECT *`** en `select_data` (Pre-Output Checklist check 1 / SECURITY-09).
 - ❌ **Hardcoding del field catalog en `display_alv`** en lugar de un método `build_field_catalog` separado.
 - ❌ **No habilitar funciones estándar** del SALV (`get_functions( )->set_all`): el usuario pierde exportación, filtros, sort.
-- ❌ **Variables globales** del reporte fuera de la clase (excepto `PARAMETERS`/`SELECT-OPTIONS` del programa ejecutor).
+- ❌ **Data globals dispersos** entre los 3 archivos. Todo lo estructural (`TABLES`, `TYPES`, constants, `DATA`, `PARAMETERS`, `SELECT-OPTIONS`, `SELECTION-SCREEN`) va en `_TOP`; nada de declaraciones globales en `_REPORT` (salvo `AT SELECTION-SCREEN` event handlers cuando aplique) ni en `_CLS`.
 - ❌ **Eventos sin handler** o handlers con lógica de negocio embebida (sacar a métodos de la clase).
 
 ---

@@ -19,7 +19,7 @@
 ## Identificación
 
 - **Requerimiento**: `<REQ-AAAA-NNN>`
-- **Archivo ABAP**: `<ruta al .abap revisado, p. ej. outputs/2026-05-19-REQ-2026-042/codigo.abap>`
+- **Archivos ABAP revisados**: `<rutas a los .abap revisados — para reportes son 3 archivos: outputs/2026-05-19-REQ-2026-042/codigo-report.abap, codigo-top.abap, codigo-cls.abap; para clases globales standalone: outputs/.../codigo-clase.abap>`
 - **Desarrollador revisor**: `<nombre>`
 - **Fecha de revisión**: `<YYYY-MM-DD>`
 - **Versión del código revisado**: `<v1 / v2 / vN>`

@@ -127,6 +127,24 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
+### PROP-013 — Adaptar QA stub (orchestrator.ts + pipeline-abap.feature) al patrón 3 archivos de PROP-012
+
+- **Origen**: cierre de PROP-012 (commit `<pendiente>`). La verificación de coherencia post-merge dejó referencias a `codigo.abap` (singular) en `qa/tests/steps/orchestrator.ts` y `qa/tests/features/pipeline-abap.feature` que no son sustituciones mecánicas: requieren decisión de diseño sobre el comportamiento del stub.
+- **Doc destino**:
+  1. `qa/tests/steps/orchestrator.ts` — líneas 206–208 (escritura del fixture `codigo.abap` por el stub del M3).
+  2. `qa/tests/features/pipeline-abap.feature` — líneas 41, 77, 92, 104 (aserciones Gherkin de presencia/ausencia de `codigo.abap` en la carpeta de outputs).
+  3. Probablemente también el fixture apuntado por `CODIGO_FIXTURE` en `orchestrator.ts`.
+- **Cambio propuesto** (decisión de diseño pendiente entre dos opciones):
+
+  **(opción A — fidelidad)**: el stub emula los 3 archivos del patrón Patrimonio. `orchestrator.ts` escribe `codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap` (o `codigo-clase.abap` según el caso). Las 4 aserciones Gherkin pasan a referenciar `codigo-report.abap` como marcador de "M3 corrió" (o se duplican para los 3 archivos). Hay que crear 3 fixtures pequeños en `qa/fixtures/` (uno por archivo). Más realista, más mantenimiento.
+
+  **(opción B — simplificación)**: el stub escribe un solo archivo marcador `codigo-report.abap` (suficiente para probar el contrato del orquestador: M3 corrió y persistió). Las 4 aserciones cambian `codigo.abap` → `codigo-report.abap`. 1 solo fixture. Menos realista, menor mantenimiento. La realidad del patrón 3 archivos se valida en la corrida E2E con LLM real, no en el unit test del orquestador.
+
+- **Evidencia**: post-merge de PROP-012, `Grep` `\bcodigo\.abap\b` muestra 4 residuales en feature + 2 en `orchestrator.ts`, todos bajo `qa/tests/`. Los demás archivos del repo ya están alineados al patrón 3 archivos.
+- **Riesgo de no hacerlo**: los tests de QA siguen pasando porque el contrato del stub coincide consigo mismo (`writeFileSync('codigo.abap')` ↔ aserción `debe contener "codigo.abap"`), pero la suite deja de reflejar la realidad post-PROP-012. Cuando se incorpore una corrida E2E con LLM real (Estación 8.x), las aserciones del stub no servirán como gold reference porque están desactualizadas.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder (decide opción A vs B) — preferencia inicial: **B** por simplicidad del stub, ya que la validación E2E del patrón 3 archivos vive en otro layer.
+
 ### PROP-007 — Regla: workflows productivos siempre en `.github/workflows/` de la raíz
 
 - **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (invariant)
@@ -136,54 +154,6 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Riesgo de no hacerlo**: futuros workflows (ej. `qa.yml` para Estación 8) pueden volver a quedar invisibles si se colocan en subdirectorio.
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
-
-### PROP-012 — Patrón de modularización ABAP de Patrimonio (3 archivos REPORT + TOP + CLS, clases locales `cl_*`)
-
-- **Origen**: corrida demo del 2026-06-01 (`outputs/2026-06-01/REQ-DEMO-001/codigo.abap`) confrontada con 3 ejemplos canónicos de programas reales de Patrimonio (1 clase global de logging, 1 report con FTP, 1 report ALV de extensión de materiales) analizados localmente. El código fuente no se versiona en este repo público por confidencialidad corporativa.
-- **Doc destino** (3 archivos canónicos):
-  1. `.claude/skills/template-alv/SKILL.md` — sección 6 (Pantalla de selección) y línea 283 (default monolítico).
-  2. `CLAUDE.md` §5.5 (Naming) y §5.6 (Modularización).
-  3. `.claude/agents/td-a-codigo.md` — instrucciones de persistencia de outputs.
-- **Cambio propuesto**:
-
-  **(a) `template-alv/SKILL.md`** — reemplazar el default "un solo `.abap`" por el patrón Patrimonio:
-
-  Para reportes ejecutables, M3 debe emitir **3 archivos separados** en `outputs/<fecha>/<req-id>/`:
-
-  | Archivo | Sufijo | Contenido |
-  |---|---|---|
-  | `codigo-report.abap` | (ninguno) | `REPORT z<area>_<nombre>.` + `INCLUDE: ..._top, ..._cls.` + `START-OF-SELECTION.` con orquestación delgada |
-  | `codigo-top.abap` | `_TOP` | `TABLES`, `TYPES`, constantes y data globals — todo lo estructural |
-  | `codigo-cls.abap` | `_CLS` | `CLASS cl_<nombre> DEFINITION` + `CLASS cl_<nombre> IMPLEMENTATION` |
-
-  Para reportes que invocan utilitarios reutilizables (ej. conexión FTP, log), generar también `codigo-<utilitario>.abap` y agregarlo al `INCLUDE:` del report.
-
-  Para clases globales standalone (utilidades como `ZCL_LOG`): **1 archivo** `codigo-clase.abap` con sintaxis `class ZCL_* definition public final create public.`
-
-  **(b) `CLAUDE.md` §5.5 (Naming)** — distinguir clases globales vs locales:
-  - `ZCL_<dominio>_<propósito>` — **clase global** reusable entre programas (ej. `ZCL_LOG`). Vive en 1 archivo standalone.
-  - `cl_<verbo>_<sustantivo>` — **clase local** embebida en un INCLUDE `_CLS` del programa. Es la clase de negocio del reporte (ej. `cl_amplia_material`, `cl_supply`).
-  - **Regla**: si el objeto se reusa entre programas → `ZCL_*` global; si vive dentro de un solo programa → `cl_*` local en `_CLS`.
-
-  **(c) `CLAUDE.md` §5.6 (Modularización)** — añadir regla de archivos:
-  - Métodos cortos (< 50 líneas idealmente). *(existente)*
-  - Separa lógica de selección, transformación y presentación. *(existente)*
-  - Reutiliza módulos de función SAP estándar cuando existan. *(existente)*
-  - **Nuevo**: para reportes ejecutables, separar en 3 archivos (`*.abap`, `*_TOP.abap`, `*_CLS.abap`). Ver skill `template-alv` §6 para anatomía exacta. Las clases globales reusables van en archivo único.
-
-  **(d) `.claude/agents/td-a-codigo.md`** — actualizar el contrato de persistencia:
-  - Para reportes: persistir 3 archivos (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) más utilitarios opcionales.
-  - Para clases globales: persistir 1 archivo (`codigo-clase.abap`).
-  - La cabecera de trazabilidad obligatoria del Principio #5 va al inicio del archivo `*-report.abap` (o del archivo único si es clase global), no replicada en cada INCLUDE.
-  - Los `⚠️ VERIFICAR:` se distribuyen en el archivo donde aplican (TOP para tablas/types asumidos, CLS para lógica/autorizaciones, REPORT para orquestación).
-
-- **Evidencia** (la corrida del agente sí queda; los ejemplos corporativos se analizaron localmente y no se versionan):
-  - `outputs/2026-06-01/REQ-DEMO-001/codigo.abap` — 734 líneas monolíticas con `ZCL_RPT_COMPRAS_MAT_PROV` como clase global. Reproducible: `/pipeline-abap outputs/dataset-cr-001/fd-base.md REQ-DEMO-001`.
-  - **Patrón observado en código real de Patrimonio** (no versionado): los reportes producen 3 archivos `*.abap` + `*_TOP.abap` + `*_CLS.abap` con clase de negocio `cl_<verbo>_<sustantivo>` local dentro del `_CLS`. Las clases globales reusables (ej. utilidades de logging) viven en 1 archivo `ZCL_*.abap` standalone con sintaxis SE24/ADT estándar.
-  - Para reproducir el análisis: cualquier desarrollador de Patrimonio puede comparar `outputs/2026-06-01/REQ-DEMO-001/codigo.abap` con un programa Z de producción cualquiera del cliente.
-- **Riesgo de no hacerlo**: cada output de M3 requiere **refactor manual de 30-60 min** en Eclipse para separar el `.abap` monolítico en los 3 INCLUDEs antes de importar — anula buena parte del ahorro del pipeline. Además, naming `ZCL_*` para clases de negocio embebidas crea objetos globales innecesarios que ensucian SE80 y SE24.
-- **Estado**: `pending`
-- **Owner**: Configurador (Jefe de Tecnología + Desarrollador líder) — la decisión Q2:C del cuestionario inicial queda superada por estos 3 ejemplos canónicos de la empresa.
 
 ---
 
@@ -213,4 +183,16 @@ Cuando una propuesta llega a `merged`:
 - **Doc destino**: `Agente-IA-Desarrollo-ABAP/docs/ai-pr-review-human-setup.md`
 - **Cambio aplicado**: reescrito en 9 secciones. §2 enumera los 5 pasos críticos en orden estricto (GitHub App + Secret + Workflow sync + allowed-tools + Evidence regex), cada uno con su test de verificación. §5 incluye una guía rápida síntoma → causa → paso. Documentados los gotchas de copy-paste de la UI.
 - **Mergeado en**: commit `0c5d7bf`
+- **Estado**: `merged`
+
+### PROP-012 — Patrón de modularización ABAP de Patrimonio (3 archivos REPORT + TOP + CLS, clases locales `cl_*`) ✅ merged
+
+- **Origen**: corrida demo del 2026-06-01 (`outputs/2026-06-01/REQ-DEMO-001/codigo.abap`) confrontada con 3 ejemplos canónicos de programas reales de Patrimonio (1 clase global de logging, 1 report con FTP, 1 report ALV de extensión de materiales) analizados localmente. El código fuente no se versiona en este repo público por confidencialidad corporativa.
+- **Doc destino**: `.claude/skills/template-alv/SKILL.md`, `CLAUDE.md`, `.claude/agents/td-a-codigo.md`, y el árbol de outputs en `CLAUDE.md` §7.
+- **Cambio aplicado** (alcance estricto + coherencia, en un solo lote):
+  - **`template-alv/SKILL.md`**: §3.1–3.3 cambian la clase del reporte de `ZCL_RPT_*` a `cl_<verbo>_<sustantivo>` (local). §6 reescrita: anatomía REPORT + TOP + CLS, con `PARAMETERS`/`SELECT-OPTIONS`/`SELECTION-SCREEN` ubicados en `_TOP` (event handlers `AT SELECTION-SCREEN` en `_REPORT` si aplican). §7 anti-patrones actualizado para hablar de "data globals dispersos" en lugar de "variables globales fuera de la clase". `description` del frontmatter actualizado para reflejar la nueva convención.
+  - **`CLAUDE.md`**: §5.3 ahora apunta a `cl_<verbo>_<sustantivo>` local en `_CLS`. §5.5 distingue clases globales `ZCL_*` reusables (1 archivo standalone) vs clases locales `cl_*` embebidas en `_CLS`. §5.6 agrega regla de 3 archivos para reportes ejecutables. §7 árbol de outputs reemplaza `codigo.abap` por `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`.
+  - **`td-a-codigo.md`**: §1 output principal describe los 3 archivos (más `codigo-clase.abap` para clases globales standalone). §5.1 añade ubicación de la cabecera (solo en `_REPORT` o `-clase`). §5.2 reescrita con esqueleto de los 3 archivos + §5.2bis para clase global. §5.3 añade ubicación del pie. "Reglas estructurales" sustituye el "Un solo archivo" por el contrato 3 archivos. §8 persistencia reescrita para versionar archivo por archivo. §11 Pre-Output Checklist agrega check 11 (estructura de archivos correcta).
+- **Decisión Q2:C superada**: el cuestionario inicial Q2:C definía "un solo `.abap`" como default conservador hasta que la empresa aportara su convención. Los 3 ejemplos canónicos de Patrimonio confirman la convención y reemplazan el default.
+- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
 - **Estado**: `merged`

@@ -72,9 +72,9 @@ flowchart TB
 
         AGENTS["🤖 <b>Capa de Sub-agentes</b><br/>[.claude/agents/]<br/><br/>validador-fd (M1)<br/>fd-a-td (M2)<br/>td-a-codigo (M3)"]
 
-        SKILL["🧩 <b>Skill Template ALV</b><br/>[.claude/skills/template-alv/]<br/><br/>Patrón canónico ZCL_RPT_*<br/>(activación automática)"]
+        SKILL["🧩 <b>Skill Template ALV</b><br/>[.claude/skills/template-alv/]<br/><br/>Patrón 3 archivos REPORT+TOP+CLS<br/>clase local cl_&lt;verbo&gt;_&lt;sustantivo&gt;<br/>(activación automática)"]
 
-        OUT["📂 <b>Almacén de Outputs</b><br/>[outputs/&lt;fecha&gt;-&lt;id&gt;/]<br/><br/>fd.md · validacion.md<br/>td.md · codigo.abap<br/>(no versionado)"]
+        OUT["📂 <b>Almacén de Outputs</b><br/>[outputs/&lt;fecha&gt;-&lt;id&gt;/]<br/><br/>fd.md · validacion.md · td.md<br/>codigo-report.abap · codigo-top.abap · codigo-cls.abap<br/>(no versionado)"]
     end
 
     DEV -->|"1. invoca comando"| CMDS
