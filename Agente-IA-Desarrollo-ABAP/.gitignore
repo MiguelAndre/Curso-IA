@@ -17,3 +17,14 @@ Thumbs.db
 
 # Estado local de Claude Code (permisos otorgados por usuario en esta máquina)
 .claude/settings.local.json
+
+# Terraform — estado local y plan; tfvars con valores sensibles
+# Nota: .terraform.lock.hcl SÍ se versiona para fijar versiones de provider.
+infra/.terraform/
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/*.tfplan
+infra/.terraform.tfvars.local
+infra/*.auto.tfvars
+crash.log
+crash.*.log

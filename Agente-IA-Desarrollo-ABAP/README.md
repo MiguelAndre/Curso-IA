@@ -52,7 +52,8 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   ├── commands/                          # Slash commands
 │   └── skills/
 │       ├── template-alv/                  # Skill activable para reportes ALV
-│       └── testing/                       # Steering file de QA (Estación 8)
+│       ├── testing/                       # Steering file de QA (Estación 8)
+│       └── iac/                           # Steering file de IaC (Estación 9)
 ├── .agents/
 │   └── skills/custom-codereview-guide.md  # Guía custom para el AI PR Review
 ├── .github/
@@ -70,6 +71,13 @@ Toma un **Documento Funcional (FD)** elaborado por un consultor funcional y lo t
 │   └── adr/                               # ADRs del producto
 ├── entregables/                           # C4 model, NFR matrix, ADRs maestros
 ├── qa/                                    # Suite de QA (Playwright + BDD + Persona/Juez)
+├── specs/
+│   └── architecture.md                    # Spec de IaC (repo GitHub como código — Estación 9)
+├── infra/                                 # Terraform del repo GitHub (provider integrations/github)
+│   ├── provider.tf · main.tf · variables.tf · outputs.tf
+│   └── modules/{repo,branch-protection,labels}/
+├── scripts/
+│   └── validate.sh                        # fmt + validate + plan -detailed-exitcode (drift)
 ├── outputs/                               # ⚠️ ignorado por git — outputs por requerimiento
 ├── evaluacion/                            # ⚠️ ignorado por git — dataset pre-piloto anonimizado
 └── aidlc-docs/                            # Documentación AI-DLC del proceso de construcción
@@ -270,12 +278,92 @@ Cada tarea cerrada deja una capsule consultable en futuras tareas. Los aprendiza
 ### Diseño y AI-DLC
 
 - [entregables/ADR-001-claude-code-como-plataforma.md](entregables/ADR-001-claude-code-como-plataforma.md)
+- [entregables/ADR-002-no-iac-cloud.md](entregables/ADR-002-no-iac-cloud.md) — por qué no hay infra cloud y qué se gestiona como IaC.
 - [entregables/c4-model.md](entregables/c4-model.md) · [entregables/nfr-matrix.md](entregables/nfr-matrix.md)
 - [aidlc-docs/](aidlc-docs/) — documentación AI-DLC del proceso de construcción.
 
+### Infraestructura como código (Estación 9)
+
+- [specs/architecture.md](specs/architecture.md) — spec del repo como infraestructura.
+- [infra/](infra/) — módulos Terraform.
+- [scripts/validate.sh](scripts/validate.sh) — fmt + validate + drift detection.
+- [.claude/skills/iac/SKILL.md](.claude/skills/iac/SKILL.md) — convenciones del agente para HCL.
+
 ---
 
-## 9. Contribuciones y mantenimiento
+## 9. Infraestructura como código (IaC)
+
+El producto **no requiere infraestructura cloud** (ver `entregables/ADR-002-no-iac-cloud.md`). El único activo hospedado es el repositorio de GitHub, que se gestiona como código con Terraform.
+
+### 9.1 Alcance gestionado
+
+| Componente | Recurso Terraform | Ubicación |
+|---|---|---|
+| Settings del repo | `github_repository` | `infra/modules/repo/` |
+| Protección de `main` | `github_branch_protection` | `infra/modules/branch-protection/` |
+| Labels (`review-this`, `bug`, ...) | `github_issue_label` | `infra/modules/labels/` |
+
+Lo que **no** se gestiona: workflows (`.github/workflows/`), valores de secrets, CODEOWNERS. Ver `specs/architecture.md` §1.
+
+### 9.2 Prerrequisitos
+
+- **Terraform** >= 1.5 (`terraform --version`).
+- **GitHub Personal Access Token** con scopes `repo` (full) + `admin:org`.
+  - Exportar antes de cualquier comando: `export GITHUB_TOKEN=ghp_...`
+  - Nunca commitear el token (ver `.gitignore`).
+
+### 9.3 Setup inicial (primera vez)
+
+```bash
+cd infra
+terraform init
+
+# Adoptar el repo y labels existentes en el state (en lugar de crearlos)
+terraform import \
+  -var="organizacion=<tu-org-o-usuario>" \
+  module.repo.github_repository.principal Agente-IA-Desarrollo-ABAP
+
+terraform import \
+  -var="organizacion=<tu-org-o-usuario>" \
+  module.labels.github_issue_label.review_ia Agente-IA-Desarrollo-ABAP:review-this
+```
+
+### 9.4 Comandos del ciclo de vida
+
+```bash
+# Previsualizar cambios
+terraform plan -var="organizacion=<tu-org-o-usuario>"
+
+# Aplicar (manualmente, el Configurador — Principio #6)
+terraform apply -var="organizacion=<tu-org-o-usuario>"
+
+# Drift detection (exit 0 = sin drift, exit 2 = drift)
+terraform plan -detailed-exitcode -var="organizacion=<tu-org-o-usuario>"
+
+# Validación completa: fmt + validate + plan
+GITHUB_TOKEN=ghp_... bash scripts/validate.sh
+```
+
+### 9.5 Outputs
+
+| Output | Descripción |
+|---|---|
+| `url_repo` | URL HTTPS del repositorio gestionado |
+| `rama_protegida` | Pattern de la rama con branch protection activa |
+| `etiqueta_review_ia` | Label que dispara el AI PR Review advisory |
+| `labels_gestionadas` | Lista de todas las labels declaradas en Terraform |
+
+### 9.6 Convenciones para el agente
+
+El agente respeta las convenciones del skill `.claude/skills/iac/SKILL.md` al generar HCL:
+- Identificadores en español (`module.repo.principal`, no `module.repo.main`).
+- Cero secrets en código.
+- `prevent_destroy = true` en `github_repository.principal`.
+- `enforce_admins = true` en `github_branch_protection` de `main`.
+
+---
+
+## 10. Contribuciones y mantenimiento
 
 - Cambios a `CLAUDE.md`, sub-agentes, comandos o skills se versionan vía git.
 - El **Configurador** (Jefe de Tecnología + Desarrollador líder) mantiene la configuración. Los demás desarrolladores la consumen.
