@@ -204,8 +204,8 @@ export async function runPipelineStub(
     return r;
   }
   const codigoOutput = opciones.stubs.m3Output ?? readFileSync(CODIGO_FIXTURE, 'utf8');
-  writeFileSync(join(carpeta, 'codigo.abap'), codigoOutput);
-  r.archivos_persistidos.push('codigo.abap');
+  writeFileSync(join(carpeta, 'codigo-report.abap'), codigoOutput);
+  r.archivos_persistidos.push('codigo-report.abap');
 
   r.mensajes.push('## 🎉 Pipeline FD→TD→Código completado');
   return r;

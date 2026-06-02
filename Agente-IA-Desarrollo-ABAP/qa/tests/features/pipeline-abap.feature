@@ -38,7 +38,7 @@ Característica: Orquestador del pipeline FD → TD → Código (/pipeline-abap)
     Y la carpeta de outputs debe contener "fd.md"
     Y la carpeta de outputs debe contener "validacion.md"
     Y la carpeta de outputs NO debe contener "td.md"
-    Y la carpeta de outputs NO debe contener "codigo.abap"
+    Y la carpeta de outputs NO debe contener "codigo-report.abap"
 
   @gate-1 @principio-6
   Escenario: Usuario responde "no" en Gate 1 — pipeline pausa sin invocar M2
@@ -74,7 +74,7 @@ Característica: Orquestador del pipeline FD → TD → Código (/pipeline-abap)
     Y el orquestador debe haber invocado a M2
     Y el orquestador NO debe haber invocado a M3
     Y la carpeta de outputs debe contener "td.md"
-    Y la carpeta de outputs NO debe contener "codigo.abap"
+    Y la carpeta de outputs NO debe contener "codigo-report.abap"
 
   @happy-path @completado
   Escenario: Happy path — los 4 archivos canónicos quedan persistidos
@@ -89,11 +89,11 @@ Característica: Orquestador del pipeline FD → TD → Código (/pipeline-abap)
     Y la carpeta de outputs debe contener "fd.md"
     Y la carpeta de outputs debe contener "validacion.md"
     Y la carpeta de outputs debe contener "td.md"
-    Y la carpeta de outputs debe contener "codigo.abap"
+    Y la carpeta de outputs debe contener "codigo-report.abap"
     Y la carpeta de outputs debe seguir el patrón "<fecha>/<req-id>/"
 
   @br-12 @escalamiento
-  Escenario: M3 escala tras 2 ciclos del mismo error — no genera codigo-v3.abap
+  Escenario: M3 escala tras 2 ciclos del mismo error — no genera archivos codigo-*-v3.abap
     Dado un FD que el Validador M1 va a aprobar
     Y el usuario responde "sí" en Gate 1
     Y el usuario responde "sí" en Gate 2
@@ -101,5 +101,5 @@ Característica: Orquestador del pipeline FD → TD → Código (/pipeline-abap)
     Cuando se ejecuta el orquestador con ese FD y "REQ-2026-104"
     Entonces el estado del pipeline debe ser "escalado-m3"
     Y el orquestador debe haber invocado a M3
-    Y la carpeta de outputs NO debe contener "codigo.abap"
+    Y la carpeta de outputs NO debe contener "codigo-report.abap"
     Y el mensaje al usuario debe contener "Límite de iteraciones alcanzado"

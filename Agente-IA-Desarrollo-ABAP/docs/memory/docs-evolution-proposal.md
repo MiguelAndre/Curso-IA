@@ -127,24 +127,6 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
-### PROP-013 — Adaptar QA stub (orchestrator.ts + pipeline-abap.feature) al patrón 3 archivos de PROP-012
-
-- **Origen**: cierre de PROP-012 (commit `245cf7c`). La verificación de coherencia post-merge dejó referencias a `codigo.abap` (singular) en `qa/tests/steps/orchestrator.ts` y `qa/tests/features/pipeline-abap.feature` que no son sustituciones mecánicas: requieren decisión de diseño sobre el comportamiento del stub.
-- **Doc destino**:
-  1. `qa/tests/steps/orchestrator.ts` — líneas 206–208 (escritura del fixture `codigo.abap` por el stub del M3).
-  2. `qa/tests/features/pipeline-abap.feature` — líneas 41, 77, 92, 104 (aserciones Gherkin de presencia/ausencia de `codigo.abap` en la carpeta de outputs).
-  3. Probablemente también el fixture apuntado por `CODIGO_FIXTURE` en `orchestrator.ts`.
-- **Cambio propuesto** (decisión de diseño pendiente entre dos opciones):
-
-  **(opción A — fidelidad)**: el stub emula los 3 archivos del patrón Patrimonio. `orchestrator.ts` escribe `codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap` (o `codigo-clase.abap` según el caso). Las 4 aserciones Gherkin pasan a referenciar `codigo-report.abap` como marcador de "M3 corrió" (o se duplican para los 3 archivos). Hay que crear 3 fixtures pequeños en `qa/fixtures/` (uno por archivo). Más realista, más mantenimiento.
-
-  **(opción B — simplificación)**: el stub escribe un solo archivo marcador `codigo-report.abap` (suficiente para probar el contrato del orquestador: M3 corrió y persistió). Las 4 aserciones cambian `codigo.abap` → `codigo-report.abap`. 1 solo fixture. Menos realista, menor mantenimiento. La realidad del patrón 3 archivos se valida en la corrida E2E con LLM real, no en el unit test del orquestador.
-
-- **Evidencia**: post-merge de PROP-012, `Grep` `\bcodigo\.abap\b` muestra 4 residuales en feature + 2 en `orchestrator.ts`, todos bajo `qa/tests/`. Los demás archivos del repo ya están alineados al patrón 3 archivos.
-- **Riesgo de no hacerlo**: los tests de QA siguen pasando porque el contrato del stub coincide consigo mismo (`writeFileSync('codigo.abap')` ↔ aserción `debe contener "codigo.abap"`), pero la suite deja de reflejar la realidad post-PROP-012. Cuando se incorpore una corrida E2E con LLM real (Estación 8.x), las aserciones del stub no servirán como gold reference porque están desactualizadas.
-- **Estado**: `pending`
-- **Owner**: Desarrollador líder (decide opción A vs B) — preferencia inicial: **B** por simplicidad del stub, ya que la validación E2E del patrón 3 archivos vive en otro layer.
-
 ### PROP-007 — Regla: workflows productivos siempre en `.github/workflows/` de la raíz
 
 - **Origen**: capsule `docs/memory/capsules/2026-06-01-ai-pr-review-setup.md` (invariant)
@@ -154,6 +136,21 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Riesgo de no hacerlo**: futuros workflows (ej. `qa.yml` para Estación 8) pueden volver a quedar invisibles si se colocan en subdirectorio.
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
+
+### PROP-014 — Alinear fixtures de Juez (`codigo-{bueno,pobre,mediocre}.abap`) al patrón 3 archivos
+
+> Spin-off detectado al cerrar PROP-013. Los 3 fixtures de `qa/tests/fixtures/codigo-outputs/` y sus consumidores en `qa/tests/agents/juez-m3.spec.ts` aún representan código monolítico (clase global `ZCL_RPT_*`), no el patrón Patrimonio. **No es bloqueante para PROP-013** porque la evaluación Persona+Juez puede mirar contenido y reglas independientemente de la estructura de archivos, pero conviene decidir.
+
+- **Origen**: cierre de PROP-013 (commit `<pendiente>`). El grep de coherencia detectó `codigo-bueno.abap` (734 líneas, clase `ZCL_RPT_*`) y sus análogos `codigo-pobre.abap`, `codigo-mediocre.abap` usados como referencia por el Juez.
+- **Doc destino**:
+  1. `qa/tests/fixtures/codigo-outputs/` — los 3 fixtures actuales.
+  2. `qa/tests/agents/juez-m3.spec.ts` — referencias en los specs.
+- **Decisión pendiente**:
+  - **(opción A — alinear)**: regenerar los 3 fixtures como sets de 3 archivos cada uno (`codigo-{bueno,pobre,mediocre}-{report,top,cls}.abap`). El Juez evalúa el set completo. Más realista, mucho más mantenimiento.
+  - **(opción B — desacoplar)**: dejar los fixtures monolíticos como están y documentar que el Juez evalúa contenido (decisiones, AUTHORITY-CHECK, calidad de comentarios, etc.) independientemente de si el código vive en 1 o 3 archivos. Recomendado si el output del LLM real ya viene en 3 archivos y el Juez los concatena lógicamente antes de evaluar.
+- **Riesgo de no hacerlo**: si el LLM real empieza a generar 3 archivos (post-PROP-012) y los fixtures del Juez siguen siendo monolíticos, las comparaciones de calidad pueden distorsionarse o requerir adapters para reconciliar formatos.
+- **Estado**: `pending`
+- **Owner**: Desarrollador líder + responsable de QA
 
 ---
 
@@ -196,3 +193,14 @@ Cuando una propuesta llega a `merged`:
 - **Decisión Q2:C superada**: el cuestionario inicial Q2:C definía "un solo `.abap`" como default conservador hasta que la empresa aportara su convención. Los 3 ejemplos canónicos de Patrimonio confirman la convención y reemplazan el default.
 - **Mergeado en**: commit `245cf7c`
 - **Estado**: `merged`
+
+### PROP-013 — Adaptar QA stub (orchestrator.ts + pipeline-abap.feature) al patrón 3 archivos de PROP-012 ✅ merged
+
+- **Origen**: cierre de PROP-012 (commit `245cf7c`). La verificación de coherencia post-merge dejó referencias a `codigo.abap` (singular) en `qa/tests/steps/orchestrator.ts` y `qa/tests/features/pipeline-abap.feature`.
+- **Decisión**: opción **B (simplificación)** — el stub escribe un único archivo marcador `codigo-report.abap` (suficiente para probar el contrato del orquestador: M3 corrió y persistió). La fidelidad del patrón 3 archivos se valida en otro layer (Persona+Juez del LLM real), no en el unit test del orquestador.
+- **Cambio aplicado**:
+  - `qa/tests/steps/orchestrator.ts` L207–208: `writeFileSync(join(carpeta, 'codigo-report.abap'), ...)` y `r.archivos_persistidos.push('codigo-report.abap')`. El `CODIGO_FIXTURE` (`codigo-bueno.abap`) se mantiene intacto — su contenido es irrelevante para el contrato del stub.
+  - `qa/tests/features/pipeline-abap.feature`: 4 aserciones (L41, 77, 92, 104) cambian `"codigo.abap"` → `"codigo-report.abap"`. Título del escenario BR-12 actualizado: `no genera codigo-v3.abap` → `no genera archivos codigo-*-v3.abap` para consistencia con el versionado por archivo de PROP-012.
+- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
+- **Estado**: `merged`
+
