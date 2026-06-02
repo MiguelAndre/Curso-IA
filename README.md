@@ -2,7 +2,7 @@
 
 Repositorio con notas, laboratorios y entregables prácticos de mi formación en **Inteligencia Artificial aplicada al desarrollo de software**.
 
-Programa intensivo organizado en **8 estaciones progresivas** que van desde la concepción de un producto hasta su aseguramiento de calidad con IA, precedidas por una **Nivelación** de fundamentos.
+Programa intensivo organizado en **9 estaciones progresivas** que van desde la concepción de un producto hasta su puesta en operación con IaC, precedidas por una **Nivelación** de fundamentos.
 
 ---
 
@@ -10,7 +10,7 @@ Programa intensivo organizado en **8 estaciones progresivas** que van desde la c
 
 📁 [`Agente-IA-Desarrollo-ABAP/`](Agente-IA-Desarrollo-ABAP/)
 
-A lo largo de las 8 estaciones se construyó **un único producto real**: un **Agente IA para Desarrollo ABAP** que toma documentos funcionales (FD — el documento de especificación de negocio que entrega el consultor funcional) y los transforma en código ABAP listo para auditoría humana, dentro de Claude Code.
+A lo largo de las 9 estaciones se construyó **un único producto real**: un **Agente IA para Desarrollo ABAP** que toma documentos funcionales (FD — el documento de especificación de negocio que entrega el consultor funcional) y los transforma en código ABAP listo para auditoría humana, dentro de Claude Code.
 
 El proyecto está en la raíz porque es transversal a todo el curso. Las carpetas `Estacion-N/` contienen el material didáctico de cada sesión más el README detallado de mi recorrido.
 
@@ -29,6 +29,7 @@ El proyecto está en la raíz porque es transversal a todo el curso. Las carpeta
 | 6 | [`Estacion-6/`](Estacion-6/) | Scaffolding y mapa agencial (ficha de arnés, AGENTS.md) | [Estacion-6/README.md](Estacion-6/README.md) |
 | 7 | [`Estacion-7/`](Estacion-7/) | Orquestación, AI PR Review y memoria evolutiva | [Estacion-7/README.md](Estacion-7/README.md) |
 | 8 | [`Estacion-8/`](Estacion-8/) | QA con IA: BDD, Persona + Juez y reporte consolidado | [Estacion-8/README.md](Estacion-8/README.md) |
+| 9 | [`Estacion-9/`](Estacion-9/) | Producción y Operación: IaC con Terraform e IA generativa | [Estacion-9/README.md](Estacion-9/README.md) |
 
 > Cada `Estacion-N/README.md` tiene la misma estructura: metadatos · tema y objetivo · conceptos clave · material del curso · mi entrega · aporte al proyecto central · lecciones.
 
@@ -47,6 +48,7 @@ El proyecto está en la raíz porque es transversal a todo el curso. Las carpeta
 | 6 | Ficha de arnés Claude Code + `AGENTS.md` neutral multi-tool | [`Agente-IA-Desarrollo-ABAP/docs/arnes/`](Agente-IA-Desarrollo-ABAP/docs/arnes/) | Leonardo González |
 | 7 | Planning wave OpenSymphony + AI PR Review advisory + memoria evolutiva | [`Agente-IA-Desarrollo-ABAP/docs/tasks/`](Agente-IA-Desarrollo-ABAP/docs/tasks/) | Leonardo González |
 | 8 | Suite QA: 3 feature files BDD (24 escenarios) + 3 rúbricas + Jueces M1/M2/M3 + Persona Consultor + reporte consolidado go/no-go | [`Agente-IA-Desarrollo-ABAP/qa/`](Agente-IA-Desarrollo-ABAP/qa/) | Andrés Caicedo |
+| 9 | ADR-002 (no IaC cloud, sí IaC del repo GitHub) + Terraform con provider `integrations/github` (3 módulos: repo + branch-protection + labels) + skill `iac` + validate.sh con drift detection | [`Agente-IA-Desarrollo-ABAP/infra/`](Agente-IA-Desarrollo-ABAP/infra/) · [`Agente-IA-Desarrollo-ABAP/entregables/ADR-002-no-iac-cloud.md`](Agente-IA-Desarrollo-ABAP/entregables/ADR-002-no-iac-cloud.md) | Andrés Caicedo |
 
 ---
 
@@ -87,6 +89,7 @@ El curso combina material teórico (PDFs), manuales prácticos (Markdown), ejerc
 | Memoria evolutiva | ✅ Plantillas + dry-run + **4 capsules reales** (`ai-pr-review-setup`, `qa-llm-real-w1`, `ai-pr-review-smoke-test`, `cr-001-retest` — 2026-06-01) · backlog `docs-evolution-proposal.md` con PROP-001..009 `pending` + PROP-010/011 `merged` |
 | Plan de evaluación pre-piloto | ✅ Diseñado · ✅ Operativizado (suite QA ejecutable en `qa/` — Estación 8) |
 | Suite de QA (BDD + Persona + Juez + reporte go/no-go) | ✅ Construida · ✅ **Corrida real contra LLM** (2026-06-01, 22/23 verdes, $0 USD vía CLI con suscripción — ver [capsule](Agente-IA-Desarrollo-ABAP/docs/memory/capsules/2026-06-01-qa-llm-real-w1.md)) · ✅ **CI workflow** ([`.github/workflows/qa.yml`](.github/workflows/qa.yml)) — 2 jobs (`test-agents` con LLM real + `test-lib` puro) · ⚠️ Pendiente: golden dataset real anonimizado |
+| IaC del repo GitHub (Estación 9) | ✅ Decidida vía [ADR-002](Agente-IA-Desarrollo-ABAP/entregables/ADR-002-no-iac-cloud.md) (no infra cloud, sí gestión del repo como código) · ✅ Terraform con provider `integrations/github` v6.12.1 (3 módulos: repo + branch-protection + labels) · ✅ `fmt + init + validate` limpios sin warnings (Terraform v1.15.5) · ⚠️ Pendiente: `plan/apply` real (requiere `GITHUB_TOKEN` con scopes `repo` + `admin:org`) |
 
 ---
 
@@ -100,6 +103,7 @@ Solo herramientas y plataformas usadas en el repo. Los frameworks/metodologías 
 - **Stack del caso ABAP** (producto central): SAP S/4HANA Cloud, ABAP OO, ALV (`CL_SALV_TABLE`), BAdI, SmartForms.
 - **Stack del caso EntreVista AI** (ejemplo del instructor): AWS Lambda, MongoDB Atlas, Pinecone, Telegram Bot API.
 - **Stack de QA** (Estación 8): Playwright + playwright-bdd, Anthropic SDK (Persona + Juez ejecutables), tsx, golden datasets en JSON.
+- **Stack de IaC** (Estación 9): Terraform v1.15.5 + provider `integrations/github` v6.12.1; LocalStack referenciado pero no aplica (provider GitHub, no AWS).
 - **Control de versiones**: Git, GitHub.
 
 ---

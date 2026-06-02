@@ -12,6 +12,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 |---|---|---|
 | **ADR** | Architecture Decision Record | Documento corto con *Contexto · Decisión · Consecuencias* por cada decisión arquitectónica relevante. |
 | **AI-DLC** | Artificial Intelligence Development Lifecycle | Framework de AWS Labs (v0.1.8) para especificación + construcción co-creada con agentes. |
+| **AIaaS** | AI as a Service | Modelo cloud que entrega modelos pre-entrenados como servicio (Bedrock, Vertex AI, Claude API). Solo gestionás el prompt / fine-tune. |
 | **API** | Application Programming Interface | Contrato técnico (HTTP) entre cliente y servidor. |
 | **BDD** | Behavior-Driven Development | Especificar comportamiento con escenarios `Given–When–Then` (Gherkin) antes de codificar. |
 | **C4** | Context · Container · Component · Code | Modelo de Simon Brown para diagramar arquitectura en 4 niveles. |
@@ -20,6 +21,10 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **CR** | Change Request | Cambio sobre algo ya cerrado. Requiere re-ejecución parcial del workflow. |
 | **DDD** | Domain-Driven Design | Modelado del software alineado con el dominio del negocio. Entities, Value Objects, Aggregates, Bounded Contexts. |
 | **DoR / DoD** | Definition of Ready / Definition of Done | Criterios objetivos para entrar a / salir de una tarea. |
+| **FaaS** | Function as a Service | Modelo cloud que entrega ejecución de funciones bajo demanda con escalado automático (AWS Lambda, Cloud Functions). Gestionás sólo la función. |
+| **HCL** | HashiCorp Configuration Language | Lenguaje declarativo de Terraform (y otros productos HashiCorp). Sintaxis `bloque "tipo" "nombre" { ... }` con interpolación `${var.x}` y expresiones HCL2. |
+| **IaaS** | Infrastructure as a Service | Modelo cloud que entrega hardware virtualizado (EC2, VM Azure). Gestionás SO + runtime + datos + app. |
+| **IaC** | Infrastructure as Code | Práctica de declarar la infraestructura en archivos versionados (Terraform, Pulumi, CDK). Habilita reproducibilidad, idempotencia y revisión por PR. |
 | **ICP** | Ideal Customer Profile | Perfil específico del cliente objetivo. |
 | **IDE** | Integrated Development Environment | Editor con tooling integrado. |
 | **IS** | Insumo (terminología AI-DLC) | Item del PRD trackeado uno a uno (IS-1..IS-N). |
@@ -33,6 +38,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **MoSCoW** | Must · Should · Could · Won't | Priorización del MVP en el PRD. |
 | **MVP** | Minimum Viable Product | Versión mínima entregable que valida la hipótesis. |
 | **NFR** | Non-Functional Requirement | Requerimiento no funcional (performance, seguridad, escalabilidad). Debe tener valor numérico verificable. |
+| **PaaS** | Platform as a Service | Modelo cloud que entrega runtime gestionado (App Engine, Heroku, Vercel). Gestionás datos + app. |
 | **PBT** | Property-Based Testing | Testing basado en propiedades en lugar de ejemplos. Extensión opcional de AI-DLC. |
 | **PII** | Personally Identifiable Information | Datos personales. Sensibles para seguridad y compliance. |
 | **POM** | Page Object Model | Patrón de diseño para testing E2E web: la UI se encapsula en clases (`HomePage`, `LoginPage`). Los tests llaman métodos del page object, no selectores inline — la suite escala sin volverse frágil. |
@@ -78,6 +84,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Context Engineering** | Diseñar el entorno (CLAUDE.md, AGENTS.md, hooks, permisos) en lugar de optimizar prompts individuales. Regla 80/20: el contexto produce 80% del resultado. |
 | **Definition of Ready / Done** | Criterios objetivos para que una tarea pueda empezar (DoR) o cerrarse (DoD). |
 | **Domain Entity** | Objeto con identidad única que persiste (ej. `Operator`). Concepto DDD. |
+| **Drift detection** | Comprobación de si el estado real de la infraestructura se desvía de lo declarado. En Terraform: `plan -detailed-exitcode` → exit 0 sin drift, exit 2 con drift. Atrapa cambios manuales hechos por la consola que rompen la promesa de IaC. |
 | **Dry-run** | Ejecutar un comando en modo simulación sin tocar el estado real. Útil para previsualizar `convert-tasks-to-linear apply` o `memory capture`. |
 | **Evals** | Golden set de casos + rúbricas para medir calidad agentic (planning, tool selection, output format). |
 | **Evidence section** | Sección obligatoria del PR que documenta intención, comandos, output, AC cumplidos, riesgos. Sin ella, el AI PR Review falla. |
@@ -90,11 +97,13 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Harness** | Sinónimo en inglés de "Arnés". Ver entrada Arnés. |
 | **Hook** | Script en `.claude/hooks/` que ejecuta código real automáticamente tras una acción del agente (PostToolUse, PreToolUse). Garantía determinista, no recomendación. |
 | **Ice Cream Cone** | Anti-patrón de testing: pocos unitarios + muchos E2E. Suite frágil, lenta, costosa. Lo opuesto a la **pirámide de pruebas**. Si tu CI tarda 40 min en una app mediana, probablemente estás acá. |
+| **Idempotencia** | Propiedad de una operación que produce el mismo resultado al aplicarse una o N veces. En Terraform, `apply` es idempotente: si el state coincide con la realidad, no hace nada. Permite reaplicar sin miedo a duplicar recursos. |
 | **Inception** | Primera fase del workflow AI-DLC. 6 actividades: Workspace Detection · Requirements Analysis · User Stories · Workflow Planning · Application Design · Units Generation. Salida: contrato ejecutable para Construction. |
 | **Instructor advisory** | Línea en CLAUDE.md que el agente *interpreta* ("debería tener en cuenta"). Recomendación, no garantía. Lo opuesto a un hook. |
 | **Insumo (IS)** | En AI-DLC: item específico del PRD que se trackea con ID a lo largo de toda la documentación. |
 | **Juez (LLM-as-Judge)** | LLM que evalúa la conversación o el output de otro agente contra una **rúbrica** con dimensiones puntuadas 1–5. Devuelve un **scorecard** JSON estructurado. Debe calibrarse contra un **golden dataset** antes de usarse para decisiones go/no-go. |
 | **Linear** | Gestor de tareas externo donde se publica la planning wave de OpenSymphony. |
+| **LocalStack** | Emulador de AWS que corre como contenedor Docker en `localhost:4566`. Intercepta el SDK de AWS, permitiendo correr `terraform apply` contra una "nube local" sin costo ni credenciales reales. El mismo `.tf` apunta a LocalStack o a AWS cambiando una variable del provider. |
 | **Memory capture** | Acción de convertir un issue cerrado en capsule consultable. `opensymphony memory capture --dry-run` para previsualizar. |
 | **Milestone** | Hito que agrupa varias tareas dentro de una planning wave. Tiene Definition of Done propia. |
 | **Moat** | Ventaja defensible que perdura aunque alguien copie la idea. Tres tipos: Data Moat (datos únicos), Distribution Moat (canal embebido), Trust Moat (compliance/reliability). |
@@ -104,6 +113,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Pirámide de pruebas** | Distribución ideal del esfuerzo de testing: base ancha de unitarios (lógica aislada, sin I/O), medio de integración (contratos entre módulos), cima estrecha de E2E (usuario final ejerciendo el sistema completo). Anti-patrón opuesto: **Ice Cream Cone**. |
 | **Planning wave** | Paquete de trabajo coherente (manifest + milestones + task files) que se ejecuta como bloque. |
 | **Proveedor** | Quién sirve la inferencia (Anthropic API, AWS Bedrock, OpenAI). Distinto del modelo y del arnés. |
+| **Provider (Terraform)** | Plugin que traduce HCL a llamadas a la API de un cloud o SaaS (`hashicorp/aws`, `integrations/github`, `cloudflare/cloudflare`). Se descarga en `init` y se fija con `.terraform.lock.hcl`. No confundir con **Proveedor** de inferencia. |
 | **Reverse engineering** | Modo de AI-DLC para entrar a un código existente (brownfield) y producir specs desde él. No usado en este proyecto (greenfield). |
 | **Rúbrica** | Documento markdown con dimensiones evaluables (1–5), pesos por dimensión, anclas verbales por nivel y ejemplos del dataset. La consume el **Juez** como system prompt. Es la única fuente de verdad — los pesos los aplica el harness en código, no el LLM (evita gaming). |
 | **Same-repo only** | Política de seguridad del AI PR Review: solo PRs internos disparan el workflow; PRs de forks no, para evitar exfiltración de secrets. |
@@ -112,6 +122,7 @@ Glosario de los términos del dominio de IA, agentes, especificación y orquesta
 | **Sesión paralela** | Dos agentes en el mismo repo, en ramas/workspaces independientes. Antigravity soporta esto nativamente. |
 | **Skill** | Módulo procedimental versionable que encapsula un patrón recurrente. Vive en `.claude/skills/<nombre>/SKILL.md` con frontmatter (`name`, `description`, `tools`). |
 | **Slash command** | Trigger en Claude Code que invoca una skill o sub-agente: `/validar-fd`, `/generar-td`, `/pipeline-abap`. |
+| **State (Terraform)** | Snapshot JSON de qué recursos administra Terraform y cómo se mapean a IDs reales del cloud. Puede ser local (`terraform.tfstate`, gitignored) o remoto (S3 + DynamoDB lock). Es la única fuente de verdad para el diff de `plan` — si se corrompe, hay que recuperarlo con `import`. |
 | **Steering file** | Archivo de convenciones del proyecto que el coding agent lee sin repetirlas en cada prompt. En Kiro: `.kiro/skills/testing.md`. En Claude Code: una skill bajo `.claude/skills/<nombre>/SKILL.md`. Acelera la generación al evitar reaprender convenciones en cada sesión. |
 | **Sub-agente** | Agente especializado con rol, tools y modelo propios. Reside en `.claude/agents/<nombre>.md`. Permite delegación. |
 | **Superficie de trabajo** | Dónde corre el arnés (CLI, IDE, web, cloud). |

@@ -222,6 +222,30 @@ Sistema de orquestación autónoma que ejecuta agentes de código (vía **OpenHa
 
 ---
 
+## Frameworks de operación e infraestructura
+
+### Terraform — Estación 9
+
+**HashiCorp**. Herramienta de **IaC declarativa**: describís el estado final deseado en HCL, Terraform calcula el diff vs el state actual y aplica los cambios. Soporta 3000+ providers (AWS, GCP, Azure, GitHub, Cloudflare, etc.) cuyos schemas se consultan en vivo vía **Terraform MCP Server**.
+
+**Flujo canónico**: `init` (descarga providers) → `plan` (diff revisable) → `apply` (ejecuta cambios) → `destroy` (limpieza). `import` adopta recursos preexistentes en el state. Drift detection con `plan -detailed-exitcode`.
+
+**Para qué sirve**: pasar de "configuración invisible en consolas web" a infraestructura versionada en git, revisable en PR, idempotente y rollbackeable.
+
+**Cuándo usarlo**: cualquier proyecto donde la configuración cloud, SaaS o de repo deba ser auditable y reproducible. En este proyecto: gestión del repositorio de GitHub (settings, branch protection, labels) como código — el producto no usa cloud propio (ver `Agente-IA-Desarrollo-ABAP/entregables/ADR-002-no-iac-cloud.md`).
+
+**Repo oficial**: https://github.com/hashicorp/terraform · Registry: https://registry.terraform.io
+
+#### Complemento: LocalStack
+
+Emulador local de AWS (Docker container en `localhost:4566`) que intercepta el SDK de AWS. Permite correr `terraform apply` contra una "nube local" sin costo ni credenciales reales. Cambiar entre LocalStack y AWS real se hace modificando solo el endpoint del provider — el mismo `.tf` sirve para ambos.
+
+**Cuándo usarlo**: para iterar IaC sin gastar dinero ni arriesgar recursos reales. No aplica cuando el provider no es AWS (ej. GitHub).
+
+**Repo oficial**: https://github.com/localstack/localstack · Docs: https://docs.localstack.cloud
+
+---
+
 ## Protocolos relacionados
 
 ### MCP (Model Context Protocol) — Nivelación + Estación 3
@@ -249,6 +273,7 @@ Modelado de dominio     → DDD                                          · Esta
 Acceptance criteria     → BDD + Gherkin                                · Estación 4 (user stories)
 Tests                   → TDD                                          · Estación 5
 QA de agentes LLM       → Persona + Juez (rúbrica + golden dataset)    · Estación 8
+Infraestructura como código → Terraform (+ LocalStack para dev sin costo) · Estación 9
 Priorización del MVP    → MoSCoW                                       · Estación 2
 Bootstrap del agente    → Context Engineering (AGENTS.md+CLAUDE.md)    · Estación 3
 Loop del agente         → ReAct                                        · Estación 3 (implícito)

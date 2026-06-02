@@ -1,0 +1,25 @@
+services:
+  localstack:
+    image: localstack/localstack:latest
+    container_name: localstack-asistente-ia
+    ports:
+      - "4566:4566"       # Puerto principal de la API de LocalStack
+      - "4510-4559:4510-4559"  # Puertos de servicios adicionales
+    environment:
+      - SERVICES=s3,dynamodb,ecs,ecr,iam,logs,elbv2,ec2
+      - DEBUG=0
+      - DATA_DIR=/var/lib/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - localstack-data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  localstack-data:
+    driver: local

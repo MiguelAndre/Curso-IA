@@ -1,0 +1,16 @@
+{
+  "name": "iac-infra",
+  "description": "Infraestructura del Asistente IA — Terraform con LocalStack y AWS",
+  "scripts": {
+    "infra:init": "terraform -chdir=infra init",
+    "infra:plan:local": "terraform -chdir=infra plan -var-file=providers-local.tfvars",
+    "infra:apply:local": "terraform -chdir=infra apply -auto-approve -var-file=providers-local.tfvars",
+    "infra:plan:aws": "terraform -chdir=infra plan -var-file=providers-aws.tfvars",
+    "infra:apply:aws": "terraform -chdir=infra apply -auto-approve -var-file=providers-aws.tfvars",
+    "infra:output": "terraform -chdir=infra output -json",
+    "infra:destroy:local": "terraform -chdir=infra destroy -auto-approve -var-file=providers-local.tfvars",
+    "infra:destroy:aws": "terraform -chdir=infra destroy -auto-approve -var-file=providers-aws.tfvars",
+    "validate": "LOCALSTACK=true AWS_REGION=us-east-1 ENVIRONMENT=local bash scripts/validate.sh",
+    "validate:aws": "AWS_REGION=us-east-1 ENVIRONMENT=dev bash scripts/validate.sh"
+  }
+}
