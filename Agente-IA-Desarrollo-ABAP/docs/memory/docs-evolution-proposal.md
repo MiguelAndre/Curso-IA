@@ -200,6 +200,6 @@ Cuando una propuesta llega a `merged`:
   - `qa/rubrics/m3-td-a-codigo.md` §7 Calibración: aclarado que los 3 ejemplos son monolíticos por simplicidad, con referencia a §1.
   - `qa/tests/agents/juez-m3.spec.ts`: comentario de 5 líneas al inicio que explica el desacople y apunta a la rúbrica.
 - **Fuera de scope** (intencional): los 3 fixtures `.abap`, el código del Juez (`juez-m3.ts`), y las dimensiones D1/D2/D4/D5/D6/D7 (sus criterios son agnósticos a la estructura de archivos).
-- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
+- **Mergeado en**: commit `1aac4b4`
 - **Estado**: `merged`
 
