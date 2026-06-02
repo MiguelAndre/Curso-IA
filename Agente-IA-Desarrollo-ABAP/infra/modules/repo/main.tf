@@ -16,9 +16,12 @@ resource "github_repository" "principal" {
 
   topics = var.topics
 
-  vulnerability_alerts = true
-
   lifecycle {
     prevent_destroy = true
   }
+}
+
+resource "github_repository_dependabot_security_updates" "principal" {
+  repository = github_repository.principal.name
+  enabled    = true
 }
