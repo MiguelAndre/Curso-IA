@@ -6,13 +6,13 @@ variable "organizacion" {
 variable "nombre_repo" {
   type        = string
   description = "Nombre del repositorio gestionado."
-  default     = "Agente-IA-Desarrollo-ABAP"
+  default     = "Curso-IA"
 }
 
 variable "descripcion_repo" {
   type        = string
   description = "Descripción visible en GitHub."
-  default     = "Agente IA para Desarrollo ABAP — pipeline FD → TD → Código basado en Claude Code"
+  default     = "Curso de IA por 30x"
 }
 
 variable "rama_principal" {
@@ -30,5 +30,5 @@ variable "etiqueta_review_ia" {
 variable "topics" {
   type        = list(string)
   description = "Topics que tagean el repositorio en GitHub."
-  default     = ["claude-code", "abap", "ai-agent", "aidlc"]
+  default     = ["hardcore-ai", "ai-30x", "claude-code", "aidlc", "abap", "ai-agent"]
 }

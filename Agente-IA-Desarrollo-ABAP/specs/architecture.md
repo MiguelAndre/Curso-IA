@@ -1,7 +1,7 @@
 # Arquitectura del Agente IA ABAP — Infraestructura como Código
 
 > **Contrato agente-equipo** para la generación de módulos Terraform.
-> Esta spec describe el único activo hospedado del producto: el repositorio de GitHub.
+> Esta spec describe el único activo hospedado donde vive el producto: el repositorio `MiguelAndre/Curso-IA` en GitHub.
 > El producto no requiere infraestructura cloud (ver `entregables/ADR-002-no-iac-cloud.md`).
 
 ---
@@ -26,41 +26,46 @@ La spec **no incluye**:
 
 ### 2.1 Repositorio (`github_repository`)
 
-- **Nombre**: `Agente-IA-Desarrollo-ABAP`
-- **Visibilidad**: privado
-- **Descripción**: "Agente IA para Desarrollo ABAP — pipeline FD → TD → Código basado en Claude Code"
+- **Nombre**: `Curso-IA`
+- **Visibilidad**: `public`
+- **Descripción**: "Curso de IA por 30x"
 - **Default branch**: `main`
-- **Features habilitadas**: issues, projects
-- **Features deshabilitadas**: wiki (la documentación vive en el repo bajo `docs/`)
-- **Topics**: `claude-code`, `abap`, `ai-agent`, `aidlc`
-- **Auto-delete head branches**: `true` (limpieza de ramas post-merge)
-- **Allow merge commit**: `false` (preferimos squash para historia lineal)
+- **Features habilitadas**: issues, projects, wiki
+- **Features deshabilitadas**: discussions
+- **Topics**: `hardcore-ai`, `ai-30x`, `claude-code`, `aidlc`, `abap`, `ai-agent`
+- **Auto-delete head branches**: `false` (el usuario administra ramas manualmente)
+- **Allow merge commit**: `true`
 - **Allow squash merge**: `true`
-- **Allow rebase merge**: `false`
+- **Allow rebase merge**: `true`
 
 ### 2.2 Protección de la rama `main` (`github_branch_protection`)
 
-Es el control que materializa el **Principio #1 del PRD** ("el desarrollador es garante final"):
+Control mínimo en repo solo (Configurador único). Para repo multi-dev del producto en el futuro se endurece (`enforce_admins=true`, `aprobaciones_requeridas=1`, status checks específicos).
 
 - **Branch pattern**: `main`
-- **Required pull request reviews**: 1 reviewer humano
-- **Dismiss stale reviews on push**: `true`
-- **Require review from code owners**: no aplica (no hay CODEOWNERS en el alcance MVP)
-- **Required status checks**:
-  - `ai-pr-review` (advisory; el job debe completarse aunque su veredicto no bloquee)
-- **Strict (require branches to be up to date)**: `true`
-- **Enforce admins**: `true` (nadie salta el gate, ni el Configurador)
+- **Required pull request reviews**: `0` (GitHub no permite self-approve en repos personales)
+- **Dismiss stale reviews on push**: `true` (aplica si el PR sí recibe reviews opcionales)
+- **Require review from code owners**: `false`
+- **Required status checks**: `strict=true` (PRs deben estar al día con `main`) sin contexts específicos (los workflows tienen path-filtering y bloquearían PRs que no tocan esos paths)
+- **Required linear history**: `true`
+- **Enforce admins**: `false` (el Configurador puede pushear directo en emergencias)
 - **Allow force pushes**: `false`
 - **Allow deletions**: `false`
+- **Require signed commits**: `false`
 
 ### 2.3 Labels (`github_issue_label`)
 
-- `review-this` — color `#0E8A16`, descripción "Dispara el AI PR Review advisory en este PR". Es la etiqueta operativa del producto (PRD §AI PR Review).
-- `bug` — color `#D73A4A`.
-- `enhancement` — color `#A2EEEF`.
-- `documentation` — color `#0075CA`.
+- `review-this` — color `#0E8A16`, descripción "Dispara el AI PR Review advisory sobre este PR". Etiqueta operativa del producto (PRD §AI PR Review).
+- `bug` — color `#d73a4a`, descripción "Something isn't working" (default de GitHub).
+- `enhancement` — color `#a2eeef`, descripción "New feature or request" (default de GitHub).
+- `documentation` — color `#0075ca`, descripción "Improvements or additions to documentation" (default de GitHub).
 
-Los labels estándar de GitHub que no se enumeran aquí no se gestionan por Terraform (drift aceptado para `good first issue`, etc.).
+Los labels estándar restantes de GitHub que no se enumeran (`duplicate`, `good first issue`, `help wanted`, `invalid`, `question`, `wontfix`) no se gestionan por Terraform (drift aceptado).
+
+### 2.4 Dependabot
+
+- `github_repository_vulnerability_alerts` — Dependabot alerts: `true`.
+- `github_repository_dependabot_security_updates` — auto-fix PRs: `true` (requiere alerts habilitadas como prerequisito).
 
 ---
 

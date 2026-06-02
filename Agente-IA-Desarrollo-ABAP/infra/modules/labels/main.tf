@@ -1,16 +1,16 @@
 locals {
   labels_estandar = {
     bug = {
-      color       = "D73A4A"
-      description = "Defecto reportado en el agente o sus artefactos."
+      color       = "d73a4a"
+      description = "Something isn't working"
     }
     enhancement = {
-      color       = "A2EEEF"
-      description = "Mejora propuesta sobre el comportamiento existente."
+      color       = "a2eeef"
+      description = "New feature or request"
     }
     documentation = {
-      color       = "0075CA"
-      description = "Cambios sobre docs, README, ADRs o memoria evolutiva."
+      color       = "0075ca"
+      description = "Improvements or additions to documentation"
     }
   }
 }

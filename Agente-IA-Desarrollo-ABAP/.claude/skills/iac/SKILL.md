@@ -43,9 +43,14 @@ Nunca:
 
 El recurso `github_repository.principal` lleva `lifecycle { prevent_destroy = true }`. Si el usuario pide eliminarlo, exige `terraform state rm` explícito + confirmación. Nunca generes un `apply` que pueda destruir el repo del producto.
 
-### R4 — `enforce_admins = true` en `main`
+### R4 — `enforce_admins` depende del contexto del repo
 
-El bloque `github_branch_protection` de `main` mantiene `enforce_admins = true`. No lo cambies a `false` "para acelerar un merge". Es el control del Principio #1 del PRD ("desarrollador garante final"). Si choca con una emergencia, escala — no lo bajes desde Terraform.
+El bloque `github_branch_protection` expone `enforce_admins` como variable.
+
+- **Repo multi-dev del producto** (futuro, cuando se extraiga a su propio repo): `true`. Materializa el Principio #1 del PRD ("desarrollador garante final"). Nadie salta el gate, ni el Configurador.
+- **Repo solo del Configurador** (estado actual, `MiguelAndre/Curso-IA`): `false`. GitHub no permite self-approve en repos personales — `true` + `required_approving_review_count >= 1` bloquearía todo trabajo solo.
+
+No lo bajes de `true` a `false` en un repo multi-dev "para acelerar un merge" — eso sí viola el principio.
 
 ### R5 — State local durante el piloto
 

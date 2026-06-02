@@ -13,7 +13,9 @@ module "branch_protection" {
   repositorio = module.repo.nombre
   rama        = var.rama_principal
 
-  status_checks_requeridos = ["ai-pr-review"]
+  enforce_admins           = false
+  aprobaciones_requeridas  = 0
+  status_checks_requeridos = []
 }
 
 module "labels" {

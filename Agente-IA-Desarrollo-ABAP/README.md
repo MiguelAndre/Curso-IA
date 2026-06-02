@@ -297,51 +297,59 @@ El producto **no requiere infraestructura cloud** (ver `entregables/ADR-002-no-i
 
 ### 9.1 Alcance gestionado
 
+El producto vive como subcarpeta del repo `MiguelAndre/Curso-IA` (no tiene repo propio). El IaC gestiona ese repo.
+
 | Componente | Recurso Terraform | Ubicación |
 |---|---|---|
-| Settings del repo | `github_repository` | `infra/modules/repo/` |
-| Protección de `main` | `github_branch_protection` | `infra/modules/branch-protection/` |
-| Labels (`review-this`, `bug`, ...) | `github_issue_label` | `infra/modules/labels/` |
+| Settings del repo (`Curso-IA`, public, topics, merge styles) | `github_repository` | `infra/modules/repo/` |
+| Protección de `main` (linear history, sin force-push) | `github_branch_protection` | `infra/modules/branch-protection/` |
+| Labels (`review-this`, `bug`, `enhancement`, `documentation`) | `github_issue_label` | `infra/modules/labels/` |
+| Dependabot alerts + security updates | `github_repository_vulnerability_alerts` + `github_repository_dependabot_security_updates` | `infra/modules/repo/` |
 
-Lo que **no** se gestiona: workflows (`.github/workflows/`), valores de secrets, CODEOWNERS. Ver `specs/architecture.md` §1.
+Lo que **no** se gestiona: workflows (`.github/workflows/`), valores de secrets, CODEOWNERS, labels default no enumerados (`duplicate`, `good first issue`, etc.). Ver `specs/architecture.md` §1.
 
 ### 9.2 Prerrequisitos
 
-- **Terraform** >= 1.5 (`terraform --version`).
-- **GitHub Personal Access Token** con scopes `repo` (full) + `admin:org`.
-  - Exportar antes de cualquier comando: `export GITHUB_TOKEN=ghp_...`
-  - Nunca commitear el token (ver `.gitignore`).
+- **Terraform** >= 1.5 (`terraform --version`). Instalable con `winget install Hashicorp.Terraform`.
+- **GitHub CLI** (`gh`) recomendado para gestionar el token: `winget install --id GitHub.cli --scope user`.
+- **Token de GitHub** con scope `repo`. Vía gh: `gh auth login --scopes repo` (queda en `~/.config/gh/hosts.yml`). Vía PAT manual: https://github.com/settings/tokens/new?scopes=repo.
+- **Exportar el token antes de cada sesión Terraform**: `export GITHUB_TOKEN=$(gh auth token)`. Nunca commitearlo.
 
-### 9.3 Setup inicial (primera vez)
+### 9.3 Setup inicial (ya aplicado el 2026-06-01)
 
 ```bash
 cd infra
 terraform init
 
-# Adoptar el repo y labels existentes en el state (en lugar de crearlos)
-terraform import \
-  -var="organizacion=<tu-org-o-usuario>" \
-  module.repo.github_repository.principal Agente-IA-Desarrollo-ABAP
+# Recursos preexistentes en GitHub adoptados en el state:
+terraform import -var="organizacion=MiguelAndre" \
+  module.repo.github_repository.principal Curso-IA
 
-terraform import \
-  -var="organizacion=<tu-org-o-usuario>" \
-  module.labels.github_issue_label.review_ia Agente-IA-Desarrollo-ABAP:review-this
+terraform import -var="organizacion=MiguelAndre" \
+  'module.labels.github_issue_label.estandar["bug"]' Curso-IA:bug
+terraform import -var="organizacion=MiguelAndre" \
+  'module.labels.github_issue_label.estandar["enhancement"]' Curso-IA:enhancement
+terraform import -var="organizacion=MiguelAndre" \
+  'module.labels.github_issue_label.estandar["documentation"]' Curso-IA:documentation
 ```
 
 ### 9.4 Comandos del ciclo de vida
 
 ```bash
+export GITHUB_TOKEN=$(gh auth token)
+cd infra
+
 # Previsualizar cambios
-terraform plan -var="organizacion=<tu-org-o-usuario>"
+terraform plan -var="organizacion=MiguelAndre"
 
 # Aplicar (manualmente, el Configurador — Principio #6)
-terraform apply -var="organizacion=<tu-org-o-usuario>"
+terraform apply -var="organizacion=MiguelAndre"
 
 # Drift detection (exit 0 = sin drift, exit 2 = drift)
-terraform plan -detailed-exitcode -var="organizacion=<tu-org-o-usuario>"
+terraform plan -detailed-exitcode -var="organizacion=MiguelAndre"
 
 # Validación completa: fmt + validate + plan
-GITHUB_TOKEN=ghp_... bash scripts/validate.sh
+bash scripts/validate.sh
 ```
 
 ### 9.5 Outputs
@@ -359,7 +367,7 @@ El agente respeta las convenciones del skill `.claude/skills/iac/SKILL.md` al ge
 - Identificadores en español (`module.repo.principal`, no `module.repo.main`).
 - Cero secrets en código.
 - `prevent_destroy = true` en `github_repository.principal`.
-- `enforce_admins = true` en `github_branch_protection` de `main`.
+- `enforce_admins` y `aprobaciones_requeridas` son variables; el default depende del contexto (repo solo: `false`/`0`; repo multi-dev del producto: `true`/`1`).
 
 ---
 

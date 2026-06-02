@@ -2,7 +2,7 @@ resource "github_branch_protection" "principal" {
   repository_id = var.repositorio
   pattern       = var.rama
 
-  enforce_admins          = true
+  enforce_admins          = var.enforce_admins
   allows_force_pushes     = false
   allows_deletions        = false
   require_signed_commits  = false

@@ -168,16 +168,31 @@ Agente-IA-Desarrollo-ABAP/
 | **`vulnerability_alerts` migrado a recurso separado** | El argumento inline está deprecado en provider v6. Lo reemplacé por `github_repository_dependabot_security_updates`, que además habilita auto-fix PRs (mejora sobre solo alertas). |
 | **`.terraform.lock.hcl` versionado** | Garantiza que `init` en otra máquina resuelva la misma versión de provider. Excluí `.terraform/` y `terraform.tfstate` del git pero no el lock — convención estándar. |
 
-### 5.4 Resultados de validación local
+### 5.4 Resultados de validación local + apply real
+
+Tras descubrir que el producto vive como subcarpeta de `MiguelAndre/Curso-IA` (no tiene repo propio), reoriento el IaC al repo real y aplico:
 
 | Comando | Resultado | Tiempo |
 |---|---|---|
-| `terraform --version` | v1.15.5 (instalada vía `winget install Hashicorp.Terraform`) | < 1 s |
+| `terraform --version` | v1.15.5 (vía `winget install Hashicorp.Terraform`) | < 1 s |
 | `terraform fmt -check -recursive` | Sin diff | < 1 s |
-| `terraform init -backend=false` | Sólo descarga `integrations/github` v6.12.1 (tras fix `versions.tf` en módulos) | ~5 s |
-| `terraform validate` | `Success! The configuration is valid.` (cero warnings tras migración de `vulnerability_alerts`) | < 1 s |
-| `terraform plan` | _Pendiente_ — requiere `GITHUB_TOKEN` con scopes `repo` + `admin:org` | N/A |
-| `terraform apply` | _Pendiente_ — manual, sólo lo ejecuta el Configurador (Principio #6 del PRD) | N/A |
+| `terraform init` | Descarga `integrations/github` v6.12.1 — un solo provider | ~5 s |
+| `terraform validate` | `Success! The configuration is valid.` (cero warnings) | < 1 s |
+| `gh auth login --scopes repo` | Token guardado en `~/.config/gh/hosts.yml`. Export: `export GITHUB_TOKEN=$(gh auth token)` | manual |
+| `terraform import` × 4 | Adopta el repo `Curso-IA` + 3 labels existentes (`bug`, `enhancement`, `documentation`) | ~10 s total |
+| `terraform plan` | `Plan: 3 to add, 1 to change, 0 to destroy` (label `review-this`, branch protection main, dependabot security updates · update de topics) | ~5 s |
+| `terraform apply` | `Apply complete! Resources: 3 added, 1 changed, 0 destroyed` (primera iter) → `Apply complete! Resources: 2 added` (segunda iter tras añadir `vulnerability_alerts`) | ~15 s |
+| `terraform plan -detailed-exitcode` (drift check) | `No changes. Your infrastructure matches the configuration.` exit 0 | ~4 s |
+
+**Cambios reales aplicados en `MiguelAndre/Curso-IA`** (verificables en la UI):
+- Topics: `["hardcore-ai", "ai-30x", "claude-code", "aidlc", "abap", "ai-agent"]`
+- Branch protection en `main`: linear history, sin force-push, sin deletions. `enforce_admins=false` y `aprobaciones_requeridas=0` porque es repo solo (R4 del skill).
+- Label `review-this` creado (verde, descripción operativa del AI PR Review).
+- Dependabot alerts + auto-fix PRs habilitados.
+
+**Re-orientación documentada**:
+- ADR-002 §5 ahora aclara que el repo gestionado es `Curso-IA` (público, del curso), no un repo dedicado del producto.
+- Skill `iac` R4 ahora trata `enforce_admins` como variable contextual: `true` para repo multi-dev del producto, `false` para repo solo del Configurador.
 
 ---
 

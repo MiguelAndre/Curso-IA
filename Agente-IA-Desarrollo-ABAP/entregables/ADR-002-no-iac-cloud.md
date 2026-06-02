@@ -63,13 +63,17 @@ Diseñar la arquitectura de despliegue del MCP read-only descrito en PRD §11.3 
 
 ## 5. Decisión
 
-**Se adopta la Opción A**: el producto no provisiona infraestructura cloud propia. Se gestiona como Infraestructura como Código únicamente el **repositorio de GitHub** del producto, usando el provider `integrations/github` de Terraform.
+**Se adopta la Opción A**: el producto no provisiona infraestructura cloud propia. Se gestiona como Infraestructura como Código el **repositorio de GitHub** donde vive el producto, usando el provider `integrations/github` de Terraform.
+
+> **Nota de implementación (post-apply 2026-06-01)**: el producto `Agente-IA-Desarrollo-ABAP` vive como subcarpeta del repo `MiguelAndre/Curso-IA` — no tiene repo dedicado. Por eso el IaC gestiona ese repo (público, del curso), no uno hipotético del producto. Si en el futuro el producto se extrae a su propio repo, se reapunta `var.nombre_repo` y se reimporta el state.
 
 Alcance gestionado por IaC:
 
-- `github_repository` — nombre, descripción, default branch, settings (issues, projects, wiki).
-- `github_branch_protection` — protección de `main`: revisión obligatoria, status checks requeridos.
-- `github_issue_label` — label `review-this` (gate del AI PR Review) + labels base.
+- `github_repository` — nombre, descripción, default branch, settings (issues, projects, wiki), topics.
+- `github_branch_protection` — protección de `main`: linear history, sin force-push, sin deletions. **`enforce_admins=false`** y **`required_approving_review_count=0`** porque es un repo solo (single-Configurador); GitHub no permite self-approve. Para repos multi-dev del producto en el futuro: `true`/`1` (R4 del skill `iac`).
+- `github_issue_label` — label `review-this` (gate del AI PR Review) + labels base (`bug`, `enhancement`, `documentation`) alineadas con los defaults de GitHub.
+- `github_repository_vulnerability_alerts` — habilita Dependabot alerts.
+- `github_repository_dependabot_security_updates` — habilita auto-fix PRs (requiere alerts habilitadas primero).
 
 **Fuera de alcance** (con justificación):
 
