@@ -137,6 +137,54 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 - **Estado**: `pending`
 - **Owner**: Desarrollador líder
 
+### PROP-012 — Patrón de modularización ABAP de Patrimonio (3 archivos REPORT + TOP + CLS, clases locales `cl_*`)
+
+- **Origen**: corrida demo del 2026-06-01 (`outputs/2026-06-01/REQ-DEMO-001/codigo.abap`) confrontada con 3 ejemplos canónicos de programas reales de Patrimonio (1 clase global de logging, 1 report con FTP, 1 report ALV de extensión de materiales) analizados localmente. El código fuente no se versiona en este repo público por confidencialidad corporativa.
+- **Doc destino** (3 archivos canónicos):
+  1. `.claude/skills/template-alv/SKILL.md` — sección 6 (Pantalla de selección) y línea 283 (default monolítico).
+  2. `CLAUDE.md` §5.5 (Naming) y §5.6 (Modularización).
+  3. `.claude/agents/td-a-codigo.md` — instrucciones de persistencia de outputs.
+- **Cambio propuesto**:
+
+  **(a) `template-alv/SKILL.md`** — reemplazar el default "un solo `.abap`" por el patrón Patrimonio:
+
+  Para reportes ejecutables, M3 debe emitir **3 archivos separados** en `outputs/<fecha>/<req-id>/`:
+
+  | Archivo | Sufijo | Contenido |
+  |---|---|---|
+  | `codigo-report.abap` | (ninguno) | `REPORT z<area>_<nombre>.` + `INCLUDE: ..._top, ..._cls.` + `START-OF-SELECTION.` con orquestación delgada |
+  | `codigo-top.abap` | `_TOP` | `TABLES`, `TYPES`, constantes y data globals — todo lo estructural |
+  | `codigo-cls.abap` | `_CLS` | `CLASS cl_<nombre> DEFINITION` + `CLASS cl_<nombre> IMPLEMENTATION` |
+
+  Para reportes que invocan utilitarios reutilizables (ej. conexión FTP, log), generar también `codigo-<utilitario>.abap` y agregarlo al `INCLUDE:` del report.
+
+  Para clases globales standalone (utilidades como `ZCL_LOG`): **1 archivo** `codigo-clase.abap` con sintaxis `class ZCL_* definition public final create public.`
+
+  **(b) `CLAUDE.md` §5.5 (Naming)** — distinguir clases globales vs locales:
+  - `ZCL_<dominio>_<propósito>` — **clase global** reusable entre programas (ej. `ZCL_LOG`). Vive en 1 archivo standalone.
+  - `cl_<verbo>_<sustantivo>` — **clase local** embebida en un INCLUDE `_CLS` del programa. Es la clase de negocio del reporte (ej. `cl_amplia_material`, `cl_supply`).
+  - **Regla**: si el objeto se reusa entre programas → `ZCL_*` global; si vive dentro de un solo programa → `cl_*` local en `_CLS`.
+
+  **(c) `CLAUDE.md` §5.6 (Modularización)** — añadir regla de archivos:
+  - Métodos cortos (< 50 líneas idealmente). *(existente)*
+  - Separa lógica de selección, transformación y presentación. *(existente)*
+  - Reutiliza módulos de función SAP estándar cuando existan. *(existente)*
+  - **Nuevo**: para reportes ejecutables, separar en 3 archivos (`*.abap`, `*_TOP.abap`, `*_CLS.abap`). Ver skill `template-alv` §6 para anatomía exacta. Las clases globales reusables van en archivo único.
+
+  **(d) `.claude/agents/td-a-codigo.md`** — actualizar el contrato de persistencia:
+  - Para reportes: persistir 3 archivos (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) más utilitarios opcionales.
+  - Para clases globales: persistir 1 archivo (`codigo-clase.abap`).
+  - La cabecera de trazabilidad obligatoria del Principio #5 va al inicio del archivo `*-report.abap` (o del archivo único si es clase global), no replicada en cada INCLUDE.
+  - Los `⚠️ VERIFICAR:` se distribuyen en el archivo donde aplican (TOP para tablas/types asumidos, CLS para lógica/autorizaciones, REPORT para orquestación).
+
+- **Evidencia** (la corrida del agente sí queda; los ejemplos corporativos se analizaron localmente y no se versionan):
+  - `outputs/2026-06-01/REQ-DEMO-001/codigo.abap` — 734 líneas monolíticas con `ZCL_RPT_COMPRAS_MAT_PROV` como clase global. Reproducible: `/pipeline-abap outputs/dataset-cr-001/fd-base.md REQ-DEMO-001`.
+  - **Patrón observado en código real de Patrimonio** (no versionado): los reportes producen 3 archivos `*.abap` + `*_TOP.abap` + `*_CLS.abap` con clase de negocio `cl_<verbo>_<sustantivo>` local dentro del `_CLS`. Las clases globales reusables (ej. utilidades de logging) viven en 1 archivo `ZCL_*.abap` standalone con sintaxis SE24/ADT estándar.
+  - Para reproducir el análisis: cualquier desarrollador de Patrimonio puede comparar `outputs/2026-06-01/REQ-DEMO-001/codigo.abap` con un programa Z de producción cualquiera del cliente.
+- **Riesgo de no hacerlo**: cada output de M3 requiere **refactor manual de 30-60 min** en Eclipse para separar el `.abap` monolítico en los 3 INCLUDEs antes de importar — anula buena parte del ahorro del pipeline. Además, naming `ZCL_*` para clases de negocio embebidas crea objetos globales innecesarios que ensucian SE80 y SE24.
+- **Estado**: `pending`
+- **Owner**: Configurador (Jefe de Tecnología + Desarrollador líder) — la decisión Q2:C del cuestionario inicial queda superada por estos 3 ejemplos canónicos de la empresa.
+
 ---
 
 ## 4. Cierre de propuestas
