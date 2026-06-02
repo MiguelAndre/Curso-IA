@@ -141,7 +141,7 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 
 > Spin-off detectado al cerrar PROP-013. Los 3 fixtures de `qa/tests/fixtures/codigo-outputs/` y sus consumidores en `qa/tests/agents/juez-m3.spec.ts` aún representan código monolítico (clase global `ZCL_RPT_*`), no el patrón Patrimonio. **No es bloqueante para PROP-013** porque la evaluación Persona+Juez puede mirar contenido y reglas independientemente de la estructura de archivos, pero conviene decidir.
 
-- **Origen**: cierre de PROP-013 (commit `<pendiente>`). El grep de coherencia detectó `codigo-bueno.abap` (734 líneas, clase `ZCL_RPT_*`) y sus análogos `codigo-pobre.abap`, `codigo-mediocre.abap` usados como referencia por el Juez.
+- **Origen**: cierre de PROP-013 (commit `7beafad`). El grep de coherencia detectó `codigo-bueno.abap` (734 líneas, clase `ZCL_RPT_*`) y sus análogos `codigo-pobre.abap`, `codigo-mediocre.abap` usados como referencia por el Juez.
 - **Doc destino**:
   1. `qa/tests/fixtures/codigo-outputs/` — los 3 fixtures actuales.
   2. `qa/tests/agents/juez-m3.spec.ts` — referencias en los specs.
@@ -201,6 +201,6 @@ Cuando una propuesta llega a `merged`:
 - **Cambio aplicado**:
   - `qa/tests/steps/orchestrator.ts` L207–208: `writeFileSync(join(carpeta, 'codigo-report.abap'), ...)` y `r.archivos_persistidos.push('codigo-report.abap')`. El `CODIGO_FIXTURE` (`codigo-bueno.abap`) se mantiene intacto — su contenido es irrelevante para el contrato del stub.
   - `qa/tests/features/pipeline-abap.feature`: 4 aserciones (L41, 77, 92, 104) cambian `"codigo.abap"` → `"codigo-report.abap"`. Título del escenario BR-12 actualizado: `no genera codigo-v3.abap` → `no genera archivos codigo-*-v3.abap` para consistencia con el versionado por archivo de PROP-012.
-- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
+- **Mergeado en**: commit `7beafad`
 - **Estado**: `merged`
 
