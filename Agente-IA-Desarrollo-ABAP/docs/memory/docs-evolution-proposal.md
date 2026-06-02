@@ -129,7 +129,7 @@ Estos son los documentos donde la memoria puede proponer cambios. Cualquier otro
 
 ### PROP-013 — Adaptar QA stub (orchestrator.ts + pipeline-abap.feature) al patrón 3 archivos de PROP-012
 
-- **Origen**: cierre de PROP-012 (commit `<pendiente>`). La verificación de coherencia post-merge dejó referencias a `codigo.abap` (singular) en `qa/tests/steps/orchestrator.ts` y `qa/tests/features/pipeline-abap.feature` que no son sustituciones mecánicas: requieren decisión de diseño sobre el comportamiento del stub.
+- **Origen**: cierre de PROP-012 (commit `245cf7c`). La verificación de coherencia post-merge dejó referencias a `codigo.abap` (singular) en `qa/tests/steps/orchestrator.ts` y `qa/tests/features/pipeline-abap.feature` que no son sustituciones mecánicas: requieren decisión de diseño sobre el comportamiento del stub.
 - **Doc destino**:
   1. `qa/tests/steps/orchestrator.ts` — líneas 206–208 (escritura del fixture `codigo.abap` por el stub del M3).
   2. `qa/tests/features/pipeline-abap.feature` — líneas 41, 77, 92, 104 (aserciones Gherkin de presencia/ausencia de `codigo.abap` en la carpeta de outputs).
@@ -194,5 +194,5 @@ Cuando una propuesta llega a `merged`:
   - **`CLAUDE.md`**: §5.3 ahora apunta a `cl_<verbo>_<sustantivo>` local en `_CLS`. §5.5 distingue clases globales `ZCL_*` reusables (1 archivo standalone) vs clases locales `cl_*` embebidas en `_CLS`. §5.6 agrega regla de 3 archivos para reportes ejecutables. §7 árbol de outputs reemplaza `codigo.abap` por `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`.
   - **`td-a-codigo.md`**: §1 output principal describe los 3 archivos (más `codigo-clase.abap` para clases globales standalone). §5.1 añade ubicación de la cabecera (solo en `_REPORT` o `-clase`). §5.2 reescrita con esqueleto de los 3 archivos + §5.2bis para clase global. §5.3 añade ubicación del pie. "Reglas estructurales" sustituye el "Un solo archivo" por el contrato 3 archivos. §8 persistencia reescrita para versionar archivo por archivo. §11 Pre-Output Checklist agrega check 11 (estructura de archivos correcta).
 - **Decisión Q2:C superada**: el cuestionario inicial Q2:C definía "un solo `.abap`" como default conservador hasta que la empresa aportara su convención. Los 3 ejemplos canónicos de Patrimonio confirman la convención y reemplazan el default.
-- **Mergeado en**: commit `<pendiente — completar tras commit con SHA real>`
+- **Mergeado en**: commit `245cf7c`
 - **Estado**: `merged`
