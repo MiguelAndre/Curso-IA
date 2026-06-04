@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pitch 3 min — Agente IA para Desarrollo SAP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0c0e0d;
+    --bg2: #141816;
+    --lime: #c5f82a;
+    --lime-dim: #9bbf1f;
+    --text: #f4f6f3;
+    --muted: #9aa39a;
+    --faint: #5c655c;
+    --card: #1a1f1c;
+    --border: #262d26;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(197,248,42,0.08) 0%, transparent 45%),
+      radial-gradient(circle at 88% 85%, rgba(197,248,42,0.04) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6vh 9vw;
+    opacity: 0; transform: translateX(40px);
+    transition: opacity .5s ease, transform .5s ease;
+    pointer-events: none;
+  }
+  .slide.active { opacity: 1; transform: translateX(0); pointer-events: auto; }
+
+  .kicker {
+    color: var(--lime); font-size: clamp(.75rem,1.1vw,1rem);
+    font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .rule-tag {
+    display: inline-block; margin-bottom: 1.4rem;
+    color: var(--faint); font-size: clamp(.7rem,1vw,.9rem);
+    letter-spacing: .04em;
+  }
+  .rule-tag b { color: var(--lime-dim); }
+  h1 {
+    font-size: clamp(2.2rem, 5.5vw, 4.6rem); line-height: 1.04;
+    font-weight: 800; letter-spacing: -.02em; margin-bottom: 1.4rem;
+  }
+  h2 {
+    font-size: clamp(1.7rem, 3.6vw, 3rem); line-height: 1.1;
+    font-weight: 800; margin-bottom: 1.6rem; letter-spacing: -.01em;
+  }
+  .bar { width: 110px; height: 6px; background: var(--lime); border-radius: 3px; margin: 0 0 2rem; }
+  .lead {
+    font-size: clamp(1.15rem, 2.1vw, 1.8rem); line-height: 1.5;
+    color: var(--text); max-width: 60ch; font-weight: 400;
+  }
+  .lead .hl { color: var(--lime); font-weight: 700; }
+  .lead .dim { color: var(--muted); }
+  .sub { color: var(--muted); font-size: clamp(1rem,1.6vw,1.35rem); margin-top: 1.4rem; max-width: 58ch; line-height: 1.5; }
+
+  /* pipeline */
+  .pipe { display: flex; align-items: stretch; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+  .step {
+    flex: 1 1 220px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 1.5rem 1.4rem; position: relative;
+  }
+  .step .n { color: var(--lime); font-weight: 800; font-size: .85rem; letter-spacing: .1em; }
+  .step h3 { font-size: clamp(1.1rem,1.7vw,1.4rem); margin: .5rem 0 .6rem; font-weight: 700; }
+  .step p { color: var(--muted); font-size: clamp(.9rem,1.3vw,1.05rem); line-height: 1.45; }
+  .step .verdict { color: var(--lime); font-weight: 700; }
+
+  /* demo embebida */
+  .slide.demo-slide { justify-content: flex-start; padding-top: 11vh; padding-bottom: 10vh; }
+  .slide.demo-slide h2 { font-size: clamp(1.25rem, 2.6vw, 2.1rem); margin-bottom: 1.1rem; max-width: 70ch; }
+  .demo-frame {
+    width: 100%; flex: 1; min-height: 0; border: 1px solid var(--border);
+    border-radius: 12px; background: #0a0c0b; box-shadow: 0 18px 50px rgba(0,0,0,.5);
+  }
+  .demo-note { color: var(--muted); font-size: clamp(.85rem,1.3vw,1.05rem); margin-top: .9rem; }
+  .demo-note b { color: var(--text); }
+  .demo-note code { color: var(--lime); background: rgba(197,248,42,.1); padding: 1px 6px; border-radius: 4px; }
+
+  .cmd {
+    font-family: 'SF Mono', 'Consolas', monospace; background: #05070a;
+    border: 1px solid var(--border); border-left: 4px solid var(--lime);
+    border-radius: 10px; padding: 1rem 1.3rem; margin: 1.6rem 0;
+    font-size: clamp(.95rem,1.6vw,1.3rem); color: var(--lime);
+  }
+  .cmd .pr { color: var(--faint); }
+
+  /* metric */
+  .metric { display: flex; align-items: baseline; gap: 1.5rem; flex-wrap: wrap; margin: 1rem 0 1.5rem; }
+  .metric .big { font-size: clamp(3rem,9vw,7rem); font-weight: 800; color: var(--lime); line-height: 1; letter-spacing: -.03em; }
+  .metric .unit { font-size: clamp(1.1rem,2vw,1.8rem); color: var(--text); font-weight: 600; max-width: 18ch; }
+  .chips { display: flex; gap: .8rem; flex-wrap: wrap; margin-top: 1rem; }
+  .chip { background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: .5rem 1.1rem; color: var(--muted); font-size: clamp(.85rem,1.3vw,1.05rem); }
+  .chip b { color: var(--text); }
+
+  .who { font-size: clamp(1.3rem,2.4vw,2rem); font-weight: 700; margin-bottom: .4rem; }
+  .who .role { color: var(--muted); font-weight: 400; font-size: clamp(1rem,1.7vw,1.4rem); }
+  .next {
+    background: var(--card); border: 1px solid var(--border); border-left: 4px solid var(--lime);
+    border-radius: 14px; padding: 1.6rem 1.8rem; margin-top: 1.6rem; max-width: 62ch;
+  }
+  .next .closer { color: var(--lime); font-weight: 800; font-size: clamp(1.3rem,2.4vw,2rem); margin-top: 1rem; display: block; }
+
+  /* chrome */
+  .meta { position: fixed; top: 4vh; left: 9vw; right: 9vw; display: flex; justify-content: space-between; align-items: center; z-index: 3; }
+  .meta .title { color: var(--faint); font-size: .8rem; letter-spacing: .1em; text-transform: uppercase; }
+  .meta .dur { color: var(--lime); font-size: .85rem; font-weight: 700; }
+  .progress { position: fixed; bottom: 0; left: 0; height: 4px; background: var(--lime); transition: width .5s ease; z-index: 4; }
+  .nav { position: fixed; bottom: 3.2vh; right: 9vw; display: flex; gap: .6rem; align-items: center; z-index: 4; }
+  .nav button {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    width: 44px; height: 44px; border-radius: 10px; font-size: 1.2rem; cursor: pointer; transition: .2s;
+  }
+  .nav button:hover { border-color: var(--lime); color: var(--lime); }
+  .nav .count { color: var(--muted); font-size: .9rem; min-width: 52px; text-align: center; font-variant-numeric: tabular-nums; }
+  .hint { position: fixed; bottom: 3.5vh; left: 9vw; color: var(--faint); font-size: .8rem; z-index: 4; }
+</style>
+</head>
+<body>
+<div class="meta">
+  <span class="title">Hardcore AI 30X · Pitch 3 min</span>
+</div>
+
+<div class="deck" id="deck">
+
+  <!-- 1 · PROBLEMA -->
+  <section class="slide active" data-dur="⏱ 0:30 · El problema">
+    <h1>"Listo… en unas&nbsp;semanas."<br>A veces&nbsp;meses.</h1>
+    <span class="bar"></span>
+    <p class="lead">
+      El negocio pide un cambio en el sistema de la empresa, y esa es la respuesta de TI.
+      Equipos pequeños, con una cola de pedidos que no para de crecer.
+    </p>
+    <p class="sub">
+      Y lo más frustrante: la mayor parte de ese tiempo <span style="color:var(--lime);font-weight:700">no es programar</span>
+      — es esperar en la fila y rehacer cosas que llegaron mal especificadas.
+    </p>
+  </section>
+
+  <!-- 2 · QUÉ CONSTRUÍ (demo en vivo embebida) -->
+  <section class="slide demo-slide" data-dur="⏱ 0:45 · Qué construí — demo en vivo">
+    <h2>Un agente que convierte el documento del consultor en código SAP.</h2>
+    <iframe class="demo-frame" data-src="demo-terminal.html?autoplay=1" title="Demo del pipeline corriendo"></iframe>
+    <p class="demo-note"><b>ABAP · RAP · CAP</b> · cada salida marca <code>⚠️ VERIFICAR</code> · cero caja negra</p>
+  </section>
+
+  <!-- 3 · CÓMO CON IA -->
+  <section class="slide" data-dur="⏱ 0:45 · Cómo lo hice con IA">
+    <h2>No fue magia.<br>Fue método + criterio humano.</h2>
+    <span class="bar"></span>
+    <p class="lead">
+      Seguí un proceso paso a paso, a lo largo de 9 estaciones.
+      <span class="hl">La IA hizo el trabajo pesado</span> — requisitos, diseño, código.
+      <span class="dim">Pero en cada paso, el que aprobaba era yo.</span>
+    </p>
+    <p class="sub">
+      Yo definí las reglas que la IA no puede romper: <b style="color:var(--text)">ella propone, yo decido — nunca al revés.</b>
+      La clave no fue el prompt perfecto: fue darle buen contexto y especificar antes de construir.
+    </p>
+  </section>
+
+  <!-- 4 · QUÉ LOGRÉ -->
+  <section class="slide" data-dur="⏱ 0:30 · Qué logré">
+    <div class="metric">
+      <span class="big">semanas&nbsp;→&nbsp;&lt;1&nbsp;día</span>
+    </div>
+    <p class="lead">
+      Lo que hoy toma <span class="hl">semanas</span>, el agente lo deja listo en <span class="hl">menos de un día hábil</span>:
+      borrador técnico y código en horas.
+    </p>
+    <p class="sub">El desarrollador ya no escribe desde cero — <b style="color:var(--text)">revisa y aprueba.</b><br>
+    De <i>“te lo entrego el mes que viene”</i> a <i>“te lo entrego esta semana”.</i></p>
+    <div class="chips">
+      <span class="chip">Respaldo: QA real <b>22/23 verde</b></span>
+      <span class="chip">Costo <b>$0</b> (licencia existente)</span>
+    </div>
+  </section>
+
+  <!-- 5 · QUIÉN SOY / QUÉ SIGUE -->
+  <section class="slide" data-dur="⏱ 0:30 · Quién soy y qué sigue">
+    <p class="who">Miguel Andrés Hernández <span class="role">· desarrollador en Manufacturas Eliot S.A.S.</span></p>
+    <span class="bar"></span>
+    <p class="lead">Esto no lo hice para una demo. <span class="hl">Lo hice para mi propio equipo.</span></p>
+    <div class="next">
+      <p class="lead" style="font-size:clamp(1.05rem,1.8vw,1.5rem)">
+        La próxima semana lo pruebo con <b style="color:var(--lime)">un pedido real de la cola</b> y mido una sola cosa:
+        cuántas horas me toma ajustar el código que generó. Si es poco, entra al día a día del equipo.
+      </p>
+      <span class="closer">Un caso real. Esta semana.</span>
+    </div>
+  </section>
+
+</div>
+
+<div class="progress" id="progress"></div>
+<div class="hint">← →  ·  barra espaciadora  ·  F pantalla completa</div>
+<div class="nav">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <span class="count" id="count">1 / 5</span>
+  <button id="next" aria-label="Siguiente">›</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const count = document.getElementById('count');
+  const progress = document.getElementById('progress');
+  let i = 0;
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach((s, k) => s.classList.toggle('active', k === i));
+    count.textContent = `${i + 1} / ${slides.length}`;
+    progress.style.width = `${((i + 1) / slides.length) * 100}%`;
+    // demo embebida: carga (autoplay) al entrar, descarga al salir para reiniciar
+    slides.forEach((s, k) => {
+      const f = s.querySelector('.demo-frame');
+      if (!f) return;
+      if (k === i) { if (!f.src) f.src = f.dataset.src; }
+      else if (f.src) f.removeAttribute('src');
+    });
+  }
+  document.getElementById('next').onclick = () => show(i + 1);
+  document.getElementById('prev').onclick = () => show(i - 1);
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+  show(0);
+</script>
+</body>
+</html>
