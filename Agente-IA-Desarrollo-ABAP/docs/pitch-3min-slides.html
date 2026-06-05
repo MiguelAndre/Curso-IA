@@ -87,8 +87,36 @@
   .slide.demo-slide h2 { font-size: clamp(1.25rem, 2.6vw, 2.1rem); margin-bottom: 1.1rem; max-width: 70ch; }
   .demo-frame {
     width: 100%; flex: 1; min-height: 0; border: 1px solid var(--border);
-    border-radius: 12px; background: #0a0c0b; box-shadow: 0 18px 50px rgba(0,0,0,.5);
+    border-radius: 12px; background: #0e1311; box-shadow: 0 18px 50px rgba(0,0,0,.5);
+    display: flex; flex-direction: column; overflow: hidden;
   }
+  /* terminal embebida (sin iframe) */
+  .term-bar { display: flex; align-items: center; gap: .55rem; padding: .7rem 1rem;
+    background: #111614; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .term-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .term-bar .dot.r { background: #ff5f57; } .term-bar .dot.y { background: #febc2e; } .term-bar .dot.g { background: #28c840; }
+  .term-bar .tname { margin-left: .6rem; color: var(--muted); font-size: clamp(.7rem,1vw,.85rem); }
+  .term-bar .tbadge { margin-left: auto; color: var(--lime); font-size: .72rem; border: 1px solid var(--border); padding: .12rem .55rem; border-radius: 999px; }
+  .term-screen {
+    flex: 1; min-height: 0; padding: 1rem 1.3rem; overflow-y: auto;
+    font-family: 'SF Mono','JetBrains Mono','Consolas',monospace;
+    font-size: clamp(.72rem, 1.05vw, .95rem); line-height: 1.55;
+    white-space: pre-wrap; word-break: break-word; color: #d7e0d5;
+  }
+  .term-screen::-webkit-scrollbar { width: 8px; } .term-screen::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .term-screen .prompt { color: var(--lime); }
+  .term-screen .pathp { color: #57d3e0; }
+  .term-screen .tcmd { color: #d7e0d5; }
+  .term-screen .muted { color: #7e8a7e; }
+  .term-screen .com { color: #5c685c; }
+  .term-screen .ok { color: var(--lime); font-weight: 700; }
+  .term-screen .warn { color: #f5b942; }
+  .term-screen .err { color: #ff6b6b; }
+  .term-screen .kw { color: #8ad6ff; }
+  .term-screen .head { color: #57d3e0; font-weight: 700; }
+  .term-screen .gate { color: #f5b942; font-weight: 700; }
+  .term-screen .cursor { display: inline-block; width: 9px; height: 1.05em; background: var(--lime); vertical-align: text-bottom; animation: tblink 1s steps(1) infinite; }
+  @keyframes tblink { 50% { opacity: 0; } }
   .demo-note { color: var(--muted); font-size: clamp(.85rem,1.3vw,1.05rem); margin-top: .9rem; }
   .demo-note b { color: var(--text); }
   .demo-note code { color: var(--lime); background: rgba(197,248,42,.1); padding: 1px 6px; border-radius: 4px; }
@@ -156,7 +184,14 @@
   <!-- 2 · QUÉ CONSTRUÍ (demo en vivo embebida) -->
   <section class="slide demo-slide" data-dur="⏱ 0:45 · Qué construí — demo en vivo">
     <h2>Un agente que convierte el documento del consultor en código SAP.</h2>
-    <iframe class="demo-frame" data-src="demo-terminal.html?autoplay=1" title="Demo del pipeline corriendo"></iframe>
+    <div class="demo-frame">
+      <div class="term-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="tname">claude-code — Agente IA para Desarrollo SAP — pipeline FD → TD → Código</span>
+        <span class="tbadge">● demo</span>
+      </div>
+      <div class="term-screen" id="termScreen"></div>
+    </div>
     <p class="demo-note"><b>ABAP · RAP · CAP</b> · cada salida marca <code>⚠️ VERIFICAR</code> · cero caja negra</p>
   </section>
 
@@ -217,6 +252,7 @@
 </div>
 
 <script>
+  /* ——— Navegación del deck ——— */
   const slides = Array.from(document.querySelectorAll('.slide'));
   const count = document.getElementById('count');
   const progress = document.getElementById('progress');
@@ -226,12 +262,10 @@
     slides.forEach((s, k) => s.classList.toggle('active', k === i));
     count.textContent = `${i + 1} / ${slides.length}`;
     progress.style.width = `${((i + 1) / slides.length) * 100}%`;
-    // demo embebida: carga (autoplay) al entrar, descarga al salir para reiniciar
+    // demo embebida: arranca al entrar a su slide, se reinicia al salir
     slides.forEach((s, k) => {
-      const f = s.querySelector('.demo-frame');
-      if (!f) return;
-      if (k === i) { if (!f.src) f.src = f.dataset.src; }
-      else if (f.src) f.removeAttribute('src');
+      if (!s.querySelector('#termScreen')) return;
+      if (k === i) startDemo(); else resetDemo();
     });
   }
   document.getElementById('next').onclick = () => show(i + 1);
@@ -246,6 +280,107 @@
       else document.exitFullscreen();
     }
   });
+
+  /* ——— Demo de terminal embebida (sin iframe: funciona en cualquier visor) ——— */
+  const C = { prompt: '<span class="prompt">miguel@eliot</span> <span class="pathp">~/Agente-IA-Desarrollo-ABAP</span> <span class="prompt">$</span> ' };
+  const SCRIPT = [
+    ['type', C.prompt + '<span class="tcmd">/pipeline-abap docs/fd-materiales-por-proveedor.md REQ-2026-042</span>', 600],
+    ['gap', '', 400],
+    ['out', '<span class="com"># El orquestador ejecuta M1 → gate humano → M2 → gate humano → M3</span>', 500],
+    ['out', '', 200],
+
+    ['out', '<span class="head">┌─ MÓDULO 1 · Validador de FD ──────────────────────────────┐</span>', 250],
+    ['out', '<span class="muted">  Leyendo FD … 7 secciones obligatorias detectadas</span>', 600],
+    ['out', '<span class="muted">  ✓ Objetivo medible (−4 h/mes de consolidación manual)</span>', 350],
+    ['out', '<span class="muted">  ✓ Reglas de negocio RN1–RN3 condicionadas</span>', 350],
+    ['out', '<span class="muted">  ✓ Tablas SAP: MARA · LFA1 · EKKO · EKPO · MSEG · MKPF</span>', 350],
+    ['out', '<span class="muted">  ✓ Criterios de aceptación verificables (CA1–CA3)</span>', 350],
+    ['out', '<span class="muted">  ✓ Casos borde explícitos (CB1–CB4) · ✓ Autorizaciones (Z_RPT_COMPRAS)</span>', 500],
+    ['out', '  <span class="head">Estado:</span> <span class="ok">✅ APROBADO</span> <span class="muted">— sin gaps bloqueantes</span>', 400],
+    ['out', '<span class="head">└────────────────────────────────────────────────────────────┘</span>', 400],
+    ['out', '', 300],
+    ['out', '<span class="gate">⏸  GATE HUMANO — el desarrollador revisa y aprueba para continuar.</span>', 500],
+    ['out', '<span class="muted">   &gt; aprobado ✔</span>', 700],
+    ['out', '', 300],
+
+    ['out', '<span class="head">┌─ MÓDULO 2 · FD → Especificación Técnica (TD) ─────────────┐</span>', 250],
+    ['out', '<span class="muted">  Tipo de objeto:</span> Reporte ALV (CL_SALV_TABLE)', 400],
+    ['out', '<span class="muted">  Arquitectura:</span> clase local <span class="kw">cl_lista_materiales</span> · métodos', 350],
+    ['out', '              select_data / process_data / display_alv', 350],
+    ['out', '<span class="muted">  Flujo de datos:</span> EKKO⋈EKPO⋈MSEG → precio promedio ponderado (RN2)', 450],
+    ['out', '<span class="head">  ## Decisiones y Supuestos</span> <span class="muted">(obligatorio · Principio #5)</span>', 350],
+    ['out', '<span class="muted">   1. Promedio ponderado por importe/cantidad de MSEG, no precio maestro.</span>', 350],
+    ['out', '<span class="muted">   2. TBD: ¿incluir consignación? — pendiente confirmar con el consultor.</span>', 500],
+    ['out', '<span class="head">└────────────────────────────────────────────────────────────┘</span>', 400],
+    ['out', '', 300],
+    ['out', '<span class="gate">⏸  GATE HUMANO — revisión del TD.</span> <span class="muted">&gt; aprobado ✔</span>', 800],
+    ['out', '', 300],
+
+    ['out', '<span class="head">┌─ MÓDULO 3 · TD → Código SAP ──────────────────────────────┐</span>', 250],
+    ['out', '<span class="muted">  Generando (ABAP OO · patrón ALV, 3 archivos) …</span>', 600],
+    ['out', '<span class="ok">  ✓ codigo-report.abap</span>  <span class="muted">REPORT thin + INCLUDE: + START-OF-SELECTION</span>', 350],
+    ['out', '<span class="ok">  ✓ codigo-top.abap</span>     <span class="muted">TABLES/TYPES + pantalla de selección</span>', 350],
+    ['out', '<span class="ok">  ✓ codigo-cls.abap</span>     <span class="muted">CLASS cl_lista_materiales DEFINITION + IMPLEMENTATION</span>', 600],
+    ['out', '', 250],
+    ['out', '<span class="com">  *&-- Generado por Agente IA SAP — pipeline FD→TD→Código</span>', 300],
+    ['out', '<span class="com">  *&-- Requerimiento: REQ-2026-042</span>', 300],
+    ['out', '  <span class="kw">METHOD</span> select_data.', 300],
+    ['out', '    <span class="kw">SELECT</span> ekpo~matnr ebeln menge netpr', 300],
+    ['out', '      <span class="kw">FROM</span> ekpo <span class="kw">INNER JOIN</span> ekko <span class="kw">ON</span> ekko~ebeln = ekpo~ebeln', 300],
+    ['out', '      <span class="kw">WHERE</span> ekko~lifnr <span class="kw">IN</span> s_lifnr <span class="kw">AND</span> ekko~bedat <span class="kw">IN</span> s_bedat', 300],
+    ['out', '      <span class="kw">INTO TABLE</span> @rt_datos.', 350],
+    ['out', '    <span class="warn">* ⚠️ VERIFICAR: objeto de autorización Z_RPT_COMPRAS inferido del FD §7;</span>', 350],
+    ['out', '    <span class="warn">*              validar con el perfil real antes de transportar.</span>', 300],
+    ['out', '  <span class="kw">ENDMETHOD</span>.', 500],
+    ['out', '<span class="head">└────────────────────────────────────────────────────────────┘</span>', 400],
+    ['out', '', 300],
+    ['out', '<span class="ok">✔ Pipeline completo.</span> <span class="muted">3 archivos en outputs/2026-..-../REQ-2026-042/</span>', 350],
+    ['out', '<span class="gate">El desarrollador importa en Eclipse, pasa syntax check + pruebas, audita con el checklist y transporta.</span>', 400],
+    ['out', '<span class="muted">La IA sugirió. El humano ejecuta. Siempre en ese orden.</span>', 400],
+    ['out', '', 300],
+    ['out', C.prompt + '<span class="cursor"></span>', 0],
+  ];
+
+  const screen = document.getElementById('termScreen');
+  let timer = null, running = false;
+  const speed = 1;
+  function clearTerm() { screen.innerHTML = ''; }
+  function appendLine(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html === '' ? '&nbsp;' : html;
+    screen.appendChild(div); screen.scrollTop = screen.scrollHeight;
+    return div;
+  }
+  function sleep(ms) { return new Promise(r => { timer = setTimeout(r, ms * speed); }); }
+  async function typeLine(html) {
+    const div = appendLine('');
+    const tmp = document.createElement('div'); tmp.innerHTML = html;
+    const text = tmp.textContent;
+    for (let n = 1; n <= text.length; n++) {
+      div.textContent = text.slice(0, n);
+      screen.scrollTop = screen.scrollHeight;
+      await sleep(14);
+      if (!running) return;
+    }
+    div.innerHTML = html;
+  }
+  async function run() {
+    if (running) return;
+    running = true; clearTerm();
+    for (const [type, html, pause] of SCRIPT) {
+      if (!running) return;
+      if (type === 'type') await typeLine(html);
+      else if (type === 'gap') {}
+      else appendLine(html);
+      await sleep(pause);
+      if (!running) return;
+    }
+    running = false;
+  }
+  function stop() { running = false; if (timer) clearTimeout(timer); }
+  function startDemo() { stop(); run(); }
+  function resetDemo() { stop(); clearTerm(); appendLine(C.prompt + '<span class="cursor"></span>'); }
+
   show(0);
 </script>
 </body>
