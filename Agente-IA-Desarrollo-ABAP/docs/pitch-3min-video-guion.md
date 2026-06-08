@@ -1,10 +1,10 @@
-# 🎬 Guión de video — Pitch 3 min (Agente IA para Desarrollo SAP)
+# 🎬 Guión de video — Pitch 3 min (Agente IA para Desarrollo ABAP)
 
 > **Cómo usar este guión:** es para grabar en **una sola toma de ~3 minutos**.
 > Columna izquierda = lo que VES en pantalla (slides + demo). Columna derecha = lo que DICES.
 > El cronómetro es acumulado. Ensaya 2 veces leyendo en voz alta antes de grabar.
 
-**Aclaración honesta:** este archivo es el *script*, no el video renderizado. Para producir el MP4 grabas tu pantalla siguiendo este guión. La parte de "proyecto funcionando" la cubre `demo-terminal.html` (demo animada y grabable — ver §Setup).
+**Aclaración honesta:** este archivo es el *script*, no el video renderizado. Para producir el MP4 grabas tu pantalla siguiendo este guión. La parte de "proyecto funcionando" la cubre `demo-terminal.html` (demo animada y grabable de **generación de código ABAP** — ver §Setup).
 
 ---
 
@@ -22,12 +22,12 @@
 
 | ⏱ Tiempo | 📺 EN PANTALLA | 🎙️ NARRACIÓN (lees esto) |
 |---|---|---|
-| **0:00–0:30** | **Slide 1** (el dolor). Te quedas en este slide los 30 s. | "El negocio pide un cambio en el sistema de la empresa… y la respuesta de TI es: *listo, en unas semanas*. A veces meses. Son equipos pequeños con una cola de pedidos que no para de crecer. Y lo más frustrante: la mayor parte de ese tiempo **no es programar — es esperar en la fila y rehacer cosas que llegaron mal especificadas.** El negocio se queda esperando, y TI se queda quedando mal." |
+| **0:00–0:30** | **Slide 1** (el dolor). Te quedas en este slide los 30 s. | "El negocio pide un cambio en el sistema de la empresa… y la respuesta de TI es: *listo, en unas semanas*. A veces meses. Somos un equipo pequeño con una cola de pedidos que no para de crecer. Y lo más frustrante: la mayor parte de ese tiempo **no es programar — es esperar en la fila y rehacer cosas que llegaron mal especificadas, o que se salieron del estándar SAP sin necesidad.** El negocio se queda esperando, y TI queda mal parado." |
 | **0:30–0:38** | Avanzas a **Slide 2**. Lees el encabezado y el comando. | "Esto lo construí para resolverlo. **No lo explico, lo muestro.**" |
-| **0:38–1:15** | **CAMBIA a la pestaña `demo-terminal.html`** y dale **play**. Se ve el comando escribirse y correr: M1 valida (APROBADO), M2 genera la spec, M3 genera código SAP. | "Escribo un comando y le paso el documento del consultor. Miren: **primero revisa que el documento esté bien** — si está incompleto, lo rechaza y dice por qué. *(pausa, aparece APROBADO)* Como está completo, **escribe la especificación técnica.** Y luego **genera el código SAP** — puede ser ABAP, RAP o CAP según el caso. Fíjense que cada salida trae *por qué tomó cada decisión* y marca con advertencia lo que no está seguro. **Nada de caja negra.**" |
-| **1:15–2:00** | **Vuelves a los slides → Slide 3** (cómo con IA). | "¿Cómo lo hice? No fue magia, ni *dile a la IA que lo haga*. Seguí un método paso a paso, a lo largo de 9 estaciones. **La IA hizo el trabajo pesado**: los requisitos, el diseño, el código. **Pero en cada paso, el que aprobaba era yo.** Definí las reglas que la IA no puede romper —ella propone, yo decido, nunca al revés—. Y cuando algo se salía del plan, lo frenaba y lo rehacía. La clave no fue el prompt perfecto: fue **darle buen contexto y especificar antes de construir.**" |
-| **2:00–2:30** | Avanzas a **Slide 4** (la métrica, en grande). | "¿Qué logré? **Un solo número:** lo que hoy toma **semanas, queda listo en menos de un día.** El borrador técnico y el código, en horas. El desarrollador ya no escribe desde cero: **revisa y aprueba.** Es pasar de *te lo entrego el mes que viene* a *te lo entrego esta semana*." |
-| **2:30–3:00** | Avanzas a **Slide 5** (quién soy / qué sigue). Te quedas hasta el cierre. | "Soy Miguel Andrés Hernández, desarrollador en Manufacturas Eliot S.A.S. Esto no lo hice para una demo: lo hice para mi propio equipo. El siguiente paso es concreto: la próxima semana lo pruebo con **un pedido real de la cola** y mido una sola cosa — **cuántas horas me toma ajustar el código que generó.** Si es poco, entra al día a día del equipo. *(pausa)* **Un caso real. Esta semana.**" *(silencio 2 s, fin)* |
+| **0:38–1:15** | **CAMBIA a la pestaña `demo-terminal.html`** y dale **play**. Se ve el comando escribirse y correr: M1 valida (APROBADO), M2 genera la spec, M3 genera código ABAP. | "Escribo un comando y le paso el documento del consultor. Miren: **primero revisa que el documento esté bien** — si está incompleto, lo rechaza y dice por qué. *(pausa, aparece APROBADO)* Como está completo, **escribe la especificación técnica.** Y luego **genera el código ABAP** — clases, reportes ALV, lo que el desarrollador ya escribe a mano hoy. Fíjense que cada salida trae *por qué tomó cada decisión* y marca con advertencia lo que no está seguro. **Nada de caja negra.**" |
+| **1:15–2:00** | **Vuelves a los slides → Slide 3** (cómo con IA). | "¿Cómo lo hice? No fue magia, ni *dile a la IA que lo haga*. Seguí un método paso a paso. **La IA hizo el trabajo pesado**: los requisitos, el diseño, el código. **Pero en cada paso, el que aprobaba era yo.** Definí las reglas que la IA no puede romper —ella propone, yo decido, nunca al revés—. La clave no fue el prompt perfecto: fue **darle buen contexto y especificar antes de construir — y siempre que se pueda, sobre el estándar SAP. El agente no inventa: trabaja con lo que la especificación le entregue.** Y cuando el desarrollo es custom — un **Z** —, la especificación tiene que traerlo explícito: **qué módulos Z, qué tablas Z, qué clases Z** se van a usar o crear. El agente no adivina objetos Z." |
+| **2:00–2:30** | Avanzas a **Slide 4** (la métrica, en grande). | "¿Qué logré? Esto **no acelera todo el ciclo** — acelera **una fase específica: la escritura del código ABAP**. Lo que hoy toma **días de codificación, queda en horas.** Pero ojo: **esas horas que ganamos no desaparecen del proyecto** — se reinvierten en lo que de verdad mueve la aguja: **escribir una buena especificación, sobre el estándar SAP, antes de codificar.** El desarrollador ya no escribe desde cero: **revisa y aprueba.**" |
+| **2:30–3:00** | Avanzas a **Slide 5** (quién soy / qué sigue). Te quedas hasta el cierre. | "Soy Miguel Andrés Hernández, desarrollador en Manufacturas Eliot S.A.S. Esto no lo hice para una demo: lo hice para mi propio equipo. El siguiente paso es concreto: lo pruebo con **un pedido real de la cola** y mido una sola cosa — **cuántas horas me toma ajustar el código ABAP que generó.** Si es poco, entra al día a día del equipo. Si no, ajustamos el método. *(pausa)* **Un caso real. Medimos. Decidimos.**" *(silencio 2 s, fin)* |
 
 ---
 
@@ -36,7 +36,8 @@
 - **Transición clave en 0:38:** practica el cambio slides → terminal sin titubear (`Alt+Tab` o dos ventanas lado a lado). Es el momento más frágil de la toma.
 - **La demo (0:38–1:15)** es el corazón del video: deja que la animación respire, no hables encima de todo. Cuando aparezca **APROBADO** en verde, **haz una pausa de 1 segundo** — deja que el dato pegue solo.
 - **Frase ancla (0:00):** *"no es programar — es esperar en la fila y rehacer."* Dila más lento que el resto.
-- **Cierre (3:00):** *"Un caso real. Esta semana."* + silencio. No agregues "gracias" antes del corte; deja que cierre seco.
+- **Calibración honesta (1:15–2:00):** la frase de los **Z** es deliberada — los dueños van a preguntar "¿y los desarrollos custom?". La respuesta del guión es: *el agente los implementa, pero **la especificación los tiene que declarar primero**.* No improvises ahí.
+- **Cierre (3:00):** *"Un caso real. Medimos. Decidimos."* + silencio. No agregues "gracias" antes del corte; deja que cierre seco. **No prometas fecha** — el verbo es "medimos", no "entregamos".
 
 ---
 
@@ -47,7 +48,8 @@ Si grabas para un jurado en vivo y temes el cambio de ventana: incrusta un **scr
 
 ## ✅ Checklist antes de subir el video
 - [ ] Dura entre **2:50 y 3:10** (si te pasas, recorta el bloque 3).
-- [ ] La demo se ve **correr de verdad** (no es una captura estática).
+- [ ] La demo se ve **correr de verdad** (no es una captura estática) y muestra **generación ABAP**, no otras tecnologías SAP.
 - [ ] Se entiende el audio en la primera oración (prueba de la abuela).
-- [ ] Aparece **una sola** métrica destacada (semanas → <1 día).
-- [ ] Cierras con *"Un caso real. Esta semana."*
+- [ ] Aparece **una sola** métrica destacada (**días de código ABAP → horas**, con la ganancia reinvertida en la especificación).
+- [ ] Queda explícito que **el agente depende de una buena especificación sobre el estándar SAP**, y que los **objetos Z deben venir declarados** en la entrada.
+- [ ] Cierras con *"Un caso real. Medimos. Decidimos."* (sin prometer fecha).

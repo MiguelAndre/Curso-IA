@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pitch 3 min — Agente IA para Desarrollo SAP</title>
+<title>Pitch 3 min — Agente IA para Desarrollo ABAP</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -173,26 +173,26 @@
     <span class="bar"></span>
     <p class="lead">
       El negocio pide un cambio en el sistema de la empresa, y esa es la respuesta de TI.
-      Equipos pequeños, con una cola de pedidos que no para de crecer.
+      Somos un equipo pequeño, con una cola de pedidos que no para de crecer.
     </p>
     <p class="sub">
       Y lo más frustrante: la mayor parte de ese tiempo <span style="color:var(--lime);font-weight:700">no es programar</span>
-      — es esperar en la fila y rehacer cosas que llegaron mal especificadas.
+      — es esperar en la fila y rehacer cosas que llegaron mal especificadas, o que se salieron del estándar SAP sin necesidad.
     </p>
   </section>
 
   <!-- 2 · QUÉ CONSTRUÍ (demo en vivo embebida) -->
   <section class="slide demo-slide" data-dur="⏱ 0:45 · Qué construí — demo en vivo">
-    <h2>Un agente que convierte el documento del consultor en código SAP.</h2>
+    <h2>Un agente que convierte el documento del consultor en código ABAP.</h2>
     <div class="demo-frame">
       <div class="term-bar">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-        <span class="tname">claude-code — Agente IA para Desarrollo SAP — pipeline FD → TD → Código</span>
+        <span class="tname">claude-code — Agente IA para Desarrollo ABAP — pipeline FD → TD → Código</span>
         <span class="tbadge">● demo</span>
       </div>
       <div class="term-screen" id="termScreen"></div>
     </div>
-    <p class="demo-note"><b>ABAP · RAP · CAP</b> · cada salida marca <code>⚠️ VERIFICAR</code> · cero caja negra</p>
+    <p class="demo-note"><b>ABAP OO · clases · reportes ALV</b> · cada salida marca <code>⚠️ VERIFICAR</code> · cero caja negra</p>
   </section>
 
   <!-- 3 · CÓMO CON IA -->
@@ -200,29 +200,30 @@
     <h2>No fue magia.<br>Fue método + criterio humano.</h2>
     <span class="bar"></span>
     <p class="lead">
-      Seguí un proceso paso a paso, a lo largo de 9 estaciones.
+      Seguí un método paso a paso.
       <span class="hl">La IA hizo el trabajo pesado</span> — requisitos, diseño, código.
       <span class="dim">Pero en cada paso, el que aprobaba era yo.</span>
     </p>
     <p class="sub">
       Yo definí las reglas que la IA no puede romper: <b style="color:var(--text)">ella propone, yo decido — nunca al revés.</b>
-      La clave no fue el prompt perfecto: fue darle buen contexto y especificar antes de construir.
+      La clave no fue el prompt perfecto: fue <b style="color:var(--text)">especificar bien antes de construir — y siempre que se pueda, sobre el estándar SAP.</b>
+      Cuando el desarrollo es <b style="color:var(--lime)">custom (Z)</b>, la especificación debe declarar <b style="color:var(--text)">qué módulos Z, tablas Z y clases Z</b> se van a usar. El agente no adivina objetos Z.
     </p>
   </section>
 
   <!-- 4 · QUÉ LOGRÉ -->
   <section class="slide" data-dur="⏱ 0:30 · Qué logré">
     <div class="metric">
-      <span class="big">semanas&nbsp;→&nbsp;&lt;1&nbsp;día</span>
+      <span class="big">días&nbsp;→&nbsp;horas</span>
     </div>
     <p class="lead">
-      Lo que hoy toma <span class="hl">semanas</span>, el agente lo deja listo en <span class="hl">menos de un día hábil</span>:
-      borrador técnico y código en horas.
+      No acelera todo el ciclo — acelera <span class="hl">una fase: la escritura del código ABAP</span>.
+      Lo que hoy toma <span class="hl">días de codificación</span>, queda en <span class="hl">horas</span>.
     </p>
-    <p class="sub">El desarrollador ya no escribe desde cero — <b style="color:var(--text)">revisa y aprueba.</b><br>
-    De <i>“te lo entrego el mes que viene”</i> a <i>“te lo entrego esta semana”.</i></p>
+    <p class="sub">Esas horas que ganamos <b style="color:var(--text)">no desaparecen del proyecto</b>: se reinvierten en lo que de verdad mueve la aguja — <b style="color:var(--text)">escribir una buena especificación, sobre el estándar SAP, antes de codificar.</b><br>
+    El desarrollador ya no escribe desde cero — <b style="color:var(--text)">revisa y aprueba.</b></p>
     <div class="chips">
-      <span class="chip">Respaldo: QA real <b>22/23 verde</b></span>
+      <span class="chip">Ganancia <b>se reinvierte</b> en la especificación</span>
       <span class="chip">Costo <b>$0</b> (licencia existente)</span>
     </div>
   </section>
@@ -234,10 +235,10 @@
     <p class="lead">Esto no lo hice para una demo. <span class="hl">Lo hice para mi propio equipo.</span></p>
     <div class="next">
       <p class="lead" style="font-size:clamp(1.05rem,1.8vw,1.5rem)">
-        La próxima semana lo pruebo con <b style="color:var(--lime)">un pedido real de la cola</b> y mido una sola cosa:
-        cuántas horas me toma ajustar el código que generó. Si es poco, entra al día a día del equipo.
+        Lo pruebo con <b style="color:var(--lime)">un pedido real de la cola</b> y mido una sola cosa:
+        cuántas horas me toma ajustar el código ABAP que generó. Si es poco, entra al día a día del equipo. Si no, ajustamos el método.
       </p>
-      <span class="closer">Un caso real. Esta semana.</span>
+      <span class="closer">Un caso real. Medimos. Decidimos.</span>
     </div>
   </section>
 
@@ -316,13 +317,13 @@
     ['out', '<span class="gate">⏸  GATE HUMANO — revisión del TD.</span> <span class="muted">&gt; aprobado ✔</span>', 800],
     ['out', '', 300],
 
-    ['out', '<span class="head">┌─ MÓDULO 3 · TD → Código SAP ──────────────────────────────┐</span>', 250],
+    ['out', '<span class="head">┌─ MÓDULO 3 · TD → Código ABAP ─────────────────────────────┐</span>', 250],
     ['out', '<span class="muted">  Generando (ABAP OO · patrón ALV, 3 archivos) …</span>', 600],
     ['out', '<span class="ok">  ✓ codigo-report.abap</span>  <span class="muted">REPORT thin + INCLUDE: + START-OF-SELECTION</span>', 350],
     ['out', '<span class="ok">  ✓ codigo-top.abap</span>     <span class="muted">TABLES/TYPES + pantalla de selección</span>', 350],
     ['out', '<span class="ok">  ✓ codigo-cls.abap</span>     <span class="muted">CLASS cl_lista_materiales DEFINITION + IMPLEMENTATION</span>', 600],
     ['out', '', 250],
-    ['out', '<span class="com">  *&-- Generado por Agente IA SAP — pipeline FD→TD→Código</span>', 300],
+    ['out', '<span class="com">  *&-- Generado por Agente IA ABAP — pipeline FD→TD→Código</span>', 300],
     ['out', '<span class="com">  *&-- Requerimiento: REQ-2026-042</span>', 300],
     ['out', '  <span class="kw">METHOD</span> select_data.', 300],
     ['out', '    <span class="kw">SELECT</span> ekpo~matnr ebeln menge netpr', 300],
