@@ -3,6 +3,12 @@
 # No se versionan — el plan de evaluación y la auditoría operan sobre archivos locales
 outputs/
 
+# Inputs del agente (FDs reales para el pipeline)
+# Pueden contener reglas de negocio sensibles, tablas Z internas, datos de empleados
+# La carpeta se conserva en el repo vía inputs/.gitkeep
+inputs/*
+!inputs/.gitkeep
+
 # Dataset de evaluación pre-piloto (FDs y código de producción anonimizados, pero igual sensibles)
 evaluacion/
 
