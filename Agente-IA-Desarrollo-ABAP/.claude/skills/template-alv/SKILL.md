@@ -252,7 +252,7 @@ mr_alv->get_selections( )->set_selection_mode( if_salv_c_selection_mode=>cell ).
 
 ## 6. Anatomía del programa — 3 archivos (REPORT + TOP + CLS)
 
-Los reportes ALV en este repo se emiten como **3 archivos separados** en `outputs/<fecha>/<req-id>/`, siguiendo la convención de Patrimonio:
+Los reportes ALV en este repo se emiten como **3 archivos separados** en `outputs/<req-id>/`, siguiendo la convención de Patrimonio:
 
 | Archivo | Sufijo | Contenido |
 |---|---|---|

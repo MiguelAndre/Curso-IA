@@ -1,5 +1,5 @@
 ---
-description: Orquestador del pipeline completo FD→TD→Código ABAP. Ejecuta M1 Validador → gate humano → M2 FD→TD → gate humano → M3 TD→Código con persistencia consolidada en outputs/<fecha>/<req-id>/. Sin modo autopilot.
+description: Orquestador del pipeline completo FD→TD→Código ABAP. Ejecuta M1 Validador → gate humano → M2 FD→TD → gate humano → M3 TD→Código con persistencia consolidada en outputs/<req-id>/. Sin modo autopilot.
 argument-hint: <ruta-fd> <req-id>
 ---
 
@@ -28,11 +28,10 @@ Eres el **orquestador** del pipeline completo. Tu trabajo es coordinar los 3 sub
      y termina.
 
 3. **Preparar carpeta de outputs**:
-   - Calcula la fecha actual `YYYY-MM-DD`.
-   - Crea el directorio `outputs/<fecha>/<req-id>/` con `Bash mkdir -p`.
+   - Crea el directorio `outputs/<req-id>/` con `Bash mkdir -p`.
 
 4. **Persistir copia del FD** para trazabilidad:
-   - `Read` el FD original y escribe una copia en `outputs/<fecha>/<req-id>/fd.md` con `Write`.
+   - `Read` el FD original y escribe una copia en `outputs/<req-id>/fd.md` con `Write`.
    - Esto preserva el FD tal como entró al pipeline (BR-14 de U2 — re-validación = fresca).
 
 5. **Mensaje inicial al usuario**:
@@ -41,7 +40,7 @@ Eres el **orquestador** del pipeline completo. Tu trabajo es coordinar los 3 sub
    
    - **Requerimiento**: <req-id>
    - **FD origen**: <ruta-fd>
-   - **Carpeta de outputs**: `outputs/<fecha>/<req-id>/`
+   - **Carpeta de outputs**: `outputs/<req-id>/`
    
    El pipeline tiene 3 etapas con gates humanos obligatorios entre ellas.
    ```
@@ -60,7 +59,7 @@ Usa la tool `Agent`:
 ### 1.2 Procesar el resultado
 
 - **Imprime el reporte completo** del validador en chat.
-- **Persiste** el reporte como `outputs/<fecha>/<req-id>/validacion.md` con `Write`.
+- **Persiste** el reporte como `outputs/<req-id>/validacion.md` con `Write`.
 
 ### 1.3 Acción según estado
 
@@ -72,7 +71,7 @@ Usa la tool `Agent`:
 El Validador rechazó el FD. **El pipeline NO continúa** (Principio #2 — FD sin calidad no avanza, sin excepciones).
 
 ### Próximos pasos:
-1. Reenvía el reporte de gaps al consultor funcional (`outputs/<fecha>/<req-id>/validacion.md`).
+1. Reenvía el reporte de gaps al consultor funcional (`outputs/<req-id>/validacion.md`).
 2. Una vez actualizado el FD, ejecuta `/pipeline-abap <ruta-fd-actualizado> <req-id>` para re-iniciar.
 
 Mientras tanto, **no quedas bloqueado** — puedes tomar el siguiente ticket con FD completo (PRD §7 Journey 3).
@@ -99,7 +98,7 @@ Pipeline pausado esperando tu respuesta.
 
 **Espera respuesta del usuario antes de continuar.**
 
-- Si la respuesta no es afirmativa clara (`sí`, `continuar`, `ok`, `si`), termina el pipeline limpiamente con mensaje "Pipeline pausado. Para retomar, ejecuta `/generar-td outputs/<fecha>/<req-id>/fd.md <req-id>`".
+- Si la respuesta no es afirmativa clara (`sí`, `continuar`, `ok`, `si`), termina el pipeline limpiamente con mensaje "Pipeline pausado. Para retomar, ejecuta `/generar-td outputs/<req-id>/fd.md <req-id>`".
 - Si es afirmativa, continúa a la Etapa M2.
 
 ---
@@ -111,12 +110,12 @@ Pipeline pausado esperando tu respuesta.
 Usa la tool `Agent`:
 - `subagent_type`: `fd-a-td`
 - `description`: `"Generar TD <req-id>"`
-- `prompt`: incluye la ruta `outputs/<fecha>/<req-id>/fd.md`, el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el FD ya fue APROBADO por el Validador. Genera el TD con las 9 secciones obligatorias. Persiste como `outputs/<fecha>/<req-id>/td.md` con `Write`."
+- `prompt`: incluye la ruta `outputs/<req-id>/fd.md`, el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el FD ya fue APROBADO por el Validador. Genera el TD con las 9 secciones obligatorias. Persiste como `outputs/<req-id>/td.md` con `Write`."
 
 ### 2.2 Procesar el resultado
 
 - **Imprime el TD completo** en chat.
-- Si el sub-agente no persistió (verifica con `Glob outputs/<fecha>/<req-id>/td.md`), persiste tú con `Write`.
+- Si el sub-agente no persistió (verifica con `Glob outputs/<req-id>/td.md`), persiste tú con `Write`.
 
 ### 2.3 Gate humano 2/3
 
@@ -146,7 +145,7 @@ Pipeline pausado esperando tu respuesta.
 
 - **Si `sí` / continuar**: avanza a Etapa M3.
 - **Si `regenerar: <feedback>`**: re-invoca `fd-a-td` con el TD previo + feedback. Persiste como `td-v(N+1).md`. Re-ejecuta el Gate 2 con la nueva versión.
-- **Si `detener`**: termina con mensaje "Pipeline pausado tras M2. Archivos persistidos en `outputs/<fecha>/<req-id>/`. Para retomar M3 manualmente, ejecuta `/generar-abap outputs/<fecha>/<req-id>/td.md <req-id>`."
+- **Si `detener`**: termina con mensaje "Pipeline pausado tras M2. Archivos persistidos en `outputs/<req-id>/`. Para retomar M3 manualmente, ejecuta `/generar-abap outputs/<req-id>/td.md <req-id>`."
 
 ---
 
@@ -157,7 +156,7 @@ Pipeline pausado esperando tu respuesta.
 Usa la tool `Agent`:
 - `subagent_type`: `td-a-codigo`
 - `description`: `"Generar código ABAP <req-id>"`
-- `prompt`: incluye la ruta `outputs/<fecha>/<req-id>/td.md` (o la última versión `td-vN.md`), el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el TD ya fue aprobado humano post-M2. Genera el código ABAP siguiendo la plantilla de tu §5 (3 archivos para reportes: `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`; 1 archivo `codigo-clase.abap` si es clase global standalone). Ejecuta tu Pre-Output Checklist §11. Persiste en `outputs/<fecha>/<req-id>/` con `Write`."
+- `prompt`: incluye la ruta `outputs/<req-id>/td.md` (o la última versión `td-vN.md`), el `<req-id>`, e indica: "Estás siendo invocado por el orquestador `/pipeline-abap` — el TD ya fue aprobado humano post-M2. Genera el código ABAP siguiendo la plantilla de tu §5 (3 archivos para reportes: `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap`; 1 archivo `codigo-clase.abap` si es clase global standalone). Si el código depende de textos u objetos a crear a mano en SAP (símbolos de texto, textos de selección, mensajes SE91, lock objects, objetos de autorización, transacciones, roles), persiste también `textos-y-objetos.md`. Ejecuta tu Pre-Output Checklist §11. Persiste en `outputs/<req-id>/` con `Write`."
 
 ### 3.2 Procesar el resultado
 
@@ -178,18 +177,19 @@ Tras Caso C exitoso, emite:
 ```markdown
 ## 🎉 Pipeline FD→TD→Código completado
 
-### Archivos generados en `outputs/<fecha>/<req-id>/`
+### Archivos generados en `outputs/<req-id>/`
 
 - `fd.md` — FD original (trazabilidad)
 - `validacion.md` — Reporte del Validador
 - `td.md` (o última versión `td-vN.md`) — Especificación Técnica
 - Para reportes: `codigo-report.abap` + `codigo-top.abap` + `codigo-cls.abap` (más `codigo-<utilitario>.abap` si aplica)
 - Para clases globales standalone: `codigo-clase.abap`
+- `textos-y-objetos.md` — textos y objetos a crear a mano en SAP (símbolos de texto, textos de selección, mensajes SE91, objetos DDIC), si el código lo requiere
 
 ### ✅ Próximos pasos (tuyos)
 
 1. **Importa** los `.abap` en Eclipse/ADT.
-2. **Syntax check** (Ctrl+F2). Si falla, ejecuta `/generar-abap outputs/<fecha>/<req-id>/td.md <req-id>` describiendo el error.
+2. **Syntax check** (Ctrl+F2). Si falla, ejecuta `/generar-abap outputs/<req-id>/td.md <req-id>` describiendo el error.
 3. **Escribe pruebas unitarias** cubriendo: happy path, casos borde del TD §7, AUTHORITY-CHECK fallido.
 4. **Aplica el checklist de auditoría**: `docs/checklist-auditoria-codigo-ia.md`.
 5. **Coordina pruebas funcionales** con el consultor.
@@ -209,7 +209,7 @@ Tras Caso C exitoso, emite:
 - **NUNCA** continúes si M1 rechaza (Principio #2, FR-OR-03).
 - **NUNCA** generes contenido por tu cuenta — siempre delega a los sub-agentes.
 - **NUNCA** transportes ni ejecutes el código (Principios #1, #3, #6).
-- **SIEMPRE** persiste los outputs en `outputs/<fecha>/<req-id>/` para trazabilidad consolidada.
+- **SIEMPRE** persiste los outputs en `outputs/<req-id>/` para trazabilidad consolidada.
 - **SIEMPRE** imprime el resultado de cada sub-agente en chat antes del gate humano (visibilidad).
 - **Idioma**: todos los mensajes al usuario en español.
 
@@ -224,7 +224,7 @@ Tras Caso C exitoso, emite:
 ```
 
 Flujo esperado:
-1. Crear `outputs/<YYYY-MM-DD>/REQ-2026-042/`, copiar FD.
+1. Crear `outputs/REQ-2026-042/`, copiar FD.
 2. Invocar M1 → APROBADO con observaciones menores. Imprimir reporte. Persistir `validacion.md`. Gate 1/3.
 3. Usuario responde `sí`. Invocar M2 → TD generado. Persistir `td.md`. Gate 2/3.
 4. Usuario responde `sí`. Invocar M3 → código generado. Persistir los 3 archivos del reporte (`codigo-report.abap`, `codigo-top.abap`, `codigo-cls.abap`) o 1 `codigo-clase.abap` si es clase global standalone.

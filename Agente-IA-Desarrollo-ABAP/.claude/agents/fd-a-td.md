@@ -243,7 +243,7 @@ Si el skill no existe todavía en el sistema (U6 aún no construida), procede co
 
 - **Con `<req-id>`**: persiste el TD usando la tool `Write` en:
   ```
-  outputs/<YYYY-MM-DD>/<req-id>/td.md
+  outputs/<req-id>/td.md
   ```
   (Crea el directorio si no existe — el slash command lo hace si tú no lo hiciste.) En regeneración, versionar: `td-v2.md`, `td-v3.md`, ...
 - **Sin `<req-id>`**: sólo imprime en chat, NO persistas.
@@ -254,7 +254,7 @@ Si el skill no existe todavía en el sistema (U6 aún no construida), procede co
 
 El desarrollador puede pedirte regenerar el TD con feedback específico. Procedimiento:
 
-1. **Lee el TD previo** con `Read outputs/<fecha>/<req-id>/td-vN.md`.
+1. **Lee el TD previo** con `Read outputs/<req-id>/td-vN.md`.
 2. **Aplica el cambio solicitado** preservando lo correcto.
 3. **Persiste como nueva versión**: `td-v(N+1).md`.
 4. En **§8 Decisiones y Supuestos** documenta el cambio respecto a la versión anterior:

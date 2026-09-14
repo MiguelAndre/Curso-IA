@@ -13,7 +13,7 @@ Eres el front del Módulo 2 en modo directo. Tu trabajo es:
 
 1. **Parsear los argumentos**. Espera 1 ó 2:
    - `<ruta-fd-o-codigo>` (obligatorio): ruta a un archivo `.md`/`.txt` (FD) o `.abap` (código existente para reverse engineering).
-   - `<req-id>` (opcional): identificador del requerimiento. Habilita persistencia en `outputs/<fecha>/<req-id>/td.md`.
+   - `<req-id>` (opcional): identificador del requerimiento. Habilita persistencia en `outputs/<req-id>/td.md`.
 
 2. **Validar argumentos**:
    - Si no se pasó ningún argumento, responde:
@@ -26,8 +26,7 @@ Eres el front del Módulo 2 en modo directo. Tu trabajo es:
      y termina.
 
 3. **Preparar persistencia** (si se pasó `<req-id>`):
-   - Calcula la fecha actual en formato `YYYY-MM-DD`.
-   - Crea el directorio `outputs/<fecha>/<req-id>/` con `Bash mkdir -p` si no existe.
+   - Crea el directorio `outputs/<req-id>/` con `Bash mkdir -p` si no existe.
 
 4. **Invocar al sub-agente `fd-a-td`** usando la tool `Agent`:
    - `subagent_type`: `fd-a-td`
@@ -37,12 +36,12 @@ Eres el front del Módulo 2 en modo directo. Tu trabajo es:
      - El `<req-id>` si fue pasado.
      - **Instrucción explícita**: "Estás siendo invocado directamente (NO por el orquestador `/pipeline-abap`). Aplica el modo directo con AVISO al inicio del TD según tu §8 y BR-02."
      - "Si el input parece código ABAP (extensión `.abap` o keywords como `REPORT`, `CLASS ZCL_`, `METHOD`), activa modo reverse engineering según tu §9."
-     - "Si se pasó `<req-id>`, persiste el TD en `outputs/<fecha>/<req-id>/td.md` usando la tool `Write`."
+     - "Si se pasó `<req-id>`, persiste el TD en `outputs/<req-id>/td.md` usando la tool `Write`."
 
 5. **Procesar el resultado**:
    - El sub-agente devuelve el TD completo en markdown. **Imprime el TD completo en el chat**.
    - **Si el sub-agente persistió el archivo**: confirma con un mensaje:
-     > "TD persistido en `outputs/<fecha>/<req-id>/td.md`."
+     > "TD persistido en `outputs/<req-id>/td.md`."
    - **Si el sub-agente NO persistió pero había `<req-id>`**: persiste tú mismo con `Write` la respuesta del sub-agente.
 
 6. **Resumen al final** (1–2 líneas con próximos pasos):
@@ -68,7 +67,7 @@ Eres el front del Módulo 2 en modo directo. Tu trabajo es:
 
 Comportamiento esperado:
 1. Validar que `docs/ejemplos/fd-materiales-por-proveedor.md` existe.
-2. Crear `outputs/<YYYY-MM-DD>/REQ-2026-042/`.
+2. Crear `outputs/REQ-2026-042/`.
 3. Invocar `fd-a-td` con el input y `REQ-2026-042`.
 4. Sub-agente lee el FD, lo procesa, persiste `td.md`, devuelve el TD inline.
 5. Imprimir TD en chat + confirmación de persistencia.

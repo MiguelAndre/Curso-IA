@@ -216,7 +216,7 @@ Cuando ejecutes el pipeline (vía `/pipeline-abap`) o módulos sueltos (`/valida
 
 ```
 outputs/
-└── <YYYY-MM-DD>-<requerimiento_id>/
+└── <requerimiento_id>/
     ├── fd.md                     (copia del FD original)
     ├── validacion.md             (output de M1)
     ├── td.md                     (output de M2)
@@ -225,11 +225,14 @@ outputs/
     ├── codigo-top.abap           (M3 — TABLES/TYPES/data globals + pantalla de selección)
     ├── codigo-cls.abap           (M3 — CLASS cl_<verbo>_<sustantivo> DEFINITION + IMPLEMENTATION)
     ├── codigo-report-v2.abap     (regeneraciones, versionado por archivo)
+    ├── textos-y-objetos.md       (M3 — textos/objetos a crear a mano: símbolos de texto, textos de selección, mensajes SE91, objetos DDIC)
     └── decisiones.md             (consolidado opcional)
 ```
 
 Notas:
+- Un requerimiento vive en una sola carpeta `outputs/<req-id>/`. Las regeneraciones se versionan por sufijo (`-v2`, `-v3`) dentro de esa misma carpeta. Si necesitas conservar snapshots de sesiones/fechas anteriores, usa un subfolder `historico/<fecha>/` dentro del requerimiento.
 - Clases globales standalone (utilidades reusables como `ZCL_LOG`) → 1 archivo `codigo-clase.abap` en lugar de los 3 anteriores.
+- `textos-y-objetos.md` se genera SIEMPRE que el código dependa de textos u objetos que el desarrollador debe crear a mano en SAP (símbolos de texto, textos de selección, clase de mensajes SE91, lock objects, objetos de autorización, transacciones, roles). Es un único archivo vigente: NO se versiona con sufijo `-vN`; se actualiza si la regeneración cambia los textos/objetos requeridos.
 - Las regeneraciones versionan solo los archivos que cambiaron (`-v2`, `-v3`); el resto se mantiene referenciando la versión previa en el `INCLUDE:`.
 - Ver `.claude/agents/td-a-codigo.md` §8 para el esquema exacto de persistencia y versionado.
 

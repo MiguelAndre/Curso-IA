@@ -38,7 +38,7 @@ Eres el front del Módulo 1. Tu trabajo es:
    | `.docx` | Convertir a markdown vía `Bash`: `pandoc "<ruta>" -o "<ruta-tmp>.md" -t markdown`. Si pandoc no está disponible (exit code 127 o "command not found"), responde: *"No pude convertir el `.docx` automáticamente — pandoc no está instalado. Convertí el archivo manualmente a `.md` o `.pdf` y reintentá."* y termina. |
 
    **Persistencia del markdown normalizado**:
-   - Si `<req-id>` fue pasado, además guardá una copia del markdown normalizado en `outputs/<YYYY-MM-DD>/<req-id>/fd.md` con la tool `Write` (creá el directorio con `Bash mkdir -p` si no existe).
+   - Si `<req-id>` fue pasado, además guardá una copia del markdown normalizado en `outputs/<req-id>/fd.md` con la tool `Write` (creá el directorio con `Bash mkdir -p` si no existe).
    - Si NO se pasó `<req-id>`, dejá el `.md` temporal solo en memoria para el sub-agente (no persistas).
 
 4. **Invocar al sub-agente `validador-fd`** usando la tool `Agent`:
@@ -52,7 +52,7 @@ Eres el front del Módulo 1. Tu trabajo es:
 5. **Procesar el resultado**:
    - Si el sub-agente devuelve un reporte (markdown con estado APROBADO/RECHAZADO):
      - **Imprime el reporte completo en el chat**.
-     - **Si `<req-id>` fue pasado**: persiste el reporte en `outputs/<YYYY-MM-DD>/<req-id>/validacion.md` usando la tool `Write`. El archivo `fd.md` normalizado ya quedó persistido en el paso 3.
+     - **Si `<req-id>` fue pasado**: persiste el reporte en `outputs/<req-id>/validacion.md` usando la tool `Write`. El archivo `fd.md` normalizado ya quedó persistido en el paso 3.
      - **Si NO se pasó `<req-id>`**: solo muestra en chat. No persistas.
    - Si el sub-agente devuelve una **redirección** (input no es FD), retransmite ese mensaje al usuario tal cual.
 
@@ -82,7 +82,7 @@ Comportamiento: pasa directo al sub-agente (paso 3 estrategia `.md`).
 ```
 Comportamiento:
 1. Verifica que el archivo existe.
-2. Ejecuta `pandoc "C:\Users\dev\fd-pedidos.docx" -o "outputs/2026-05-20/REQ-2026-043/fd.md" -t markdown`.
+2. Ejecuta `pandoc "C:\Users\dev\fd-pedidos.docx" -o "outputs/REQ-2026-043/fd.md" -t markdown`.
 3. Si pandoc disponible: persiste `fd.md`, invoca sub-agente con esa ruta.
 4. Si pandoc NO disponible: error con instrucción para conversión manual.
 
