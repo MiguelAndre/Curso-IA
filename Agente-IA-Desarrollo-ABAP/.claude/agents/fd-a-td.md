@@ -76,6 +76,8 @@ Listar:
 
 > **Naming — estándar de la empresa (`docs/estandar-nomenclatura-abap-rap.md`)**: al proponer nombres de objetos en el TD (programas, tablas, clases, data elements, dominios, transacciones, objetos RAP `ZI_`/`ZC_`/`ZBP_I_`/`ZSD_`/`ZUI_`, etc.), aplica ese estándar **siempre que el caso encaje** (preferencia fuerte, no camisa de fuerza). Respeta el **orden de prioridad de `CLAUDE.md` §5.5**: (1) nombres ya fijados por el FD u objetos SAP existentes → intactos; (2) estándar RF WM (`ZWMR_*`/`ZWMI_*`) para transacciones RF de diálogo; (3) estándar general de la empresa para el resto; (4) baseline como fallback. Documenta en §8 cualquier desviación y marca `⚠️ VERIFICAR` los nombres que dependan de decisiones de la empresa (transacciones, roles, paquetes).
 
+> **Arquitectura OO por defecto (incluidos los RF)** — decisión del usuario 2026-09-17: diseña **todo objeto nuevo como OO** (lógica en clases/métodos, no en FORMS). Para transacciones de **diálogo/RF**, propón un **controlador OO** (clase con métodos por dynpro `pbo_9xxx`/`pai_9xxx` + métodos de negocio) con módulos PBO/PAI finos que delegan; conserva las convenciones de pantalla/navegación RF (dynpros `9xxx`, pila `ti_screen`, mensajes 9990, paginación). Estilo moderno: declaración inline y métodos estáticos donde apliquen (ver `CLAUDE.md §5.3`).
+
 Para la clase principal:
 - Nombre: `ZCL_<dominio>_<propósito>` (ver `CLAUDE.md` §5.5 y el estándar de la empresa).
 - Métodos cohesivos con responsabilidad única.
@@ -84,6 +86,7 @@ Para la clase principal:
   - **BADI** → método del BAdI + helpers privados.
   - **CONVERSION** → `read_input`, `transform`, `write_output`, `log_errors`.
   - **FORMULARIO** → método de carga de datos + handler del formulario.
+  - **RF / DIÁLOGO (dynpros)** → **controlador OO**: clase con `pbo_9xxx`/`pai_9xxx` + métodos de negocio; los módulos PBO/PAI del programa son finos y delegan al controlador. NO usar FORMS para lógica nueva. Conserva convenciones RF (dynpros 9xxx 38×17, `ti_screen`, mensajes 9990).
 - Flujo de datos: cómo se mueve la información de selección → proceso → output.
 - Tablas/estructuras locales necesarias (tipos `BEGIN OF ... END OF`).
 

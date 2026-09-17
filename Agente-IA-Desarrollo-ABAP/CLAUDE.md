@@ -139,6 +139,8 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 
 ### 5.3 Arquitectura ABAP OO
 
+- ✅ **Todo desarrollo nuevo es OO**, incluidos los programas de diálogo/RF: la lógica va en **clases y métodos**, nunca en FORMS/PERFORM. Programas de diálogo/RF → **controlador OO** (clase local `lcl_ctrl_*` o global `ZCL_*`) con los **módulos PBO/PAI finos** que delegan al controlador; solo los campos de dynpro y `ok_code` quedan globales (binding de pantalla). Esto supersede el patrón FORMS del estándar RF para **nuevos** programas, conservando el resto de convenciones RF (dynpros `9xxx`, `ti_screen`, mensajes 9990…); los programas productivos existentes se mantienen (ver §5.5 orden de prioridad de naming y la memoria `estandar-rf-wm`).
+- ✅ **Estilo moderno (ABAP 7.40+)**: declaración **inline** por defecto (`DATA(x) = NEW ...`, `VALUE #( )`, `DATA(ls) = ...`, `FIELD-SYMBOL(<fs>)`); métodos **estáticos** (`CLASS-METHODS`) cuando se requiere la clase antes de instanciarla (p. ej. `AT SELECTION-SCREEN ON VALUE-REQUEST`, value helps). Solo se cae al patrón clásico (`DATA:`+`CREATE OBJECT`) si el sistema es **< 7.40** (el usuario lo indica).
 - ✅ Implementa lógica de negocio en clases `ZCL_*` (custom) o `YCL_*`.
 - ✅ Métodos cohesivos: una responsabilidad por método.
 - ✅ Para reportes ALV: clase local `cl_<verbo>_<sustantivo>` embebida en INCLUDE `_CLS` del programa, con métodos `select_data`, `process_data`, `display_alv` como patrón base (ver Skill `template-alv` §3 y §6).
