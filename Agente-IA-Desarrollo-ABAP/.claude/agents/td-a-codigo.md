@@ -305,6 +305,8 @@ ENDCLASS.
 
 ## 6. Aplicación de buenas prácticas SAP
 
+> **Naming — estándar de la empresa (`docs/estandar-nomenclatura-abap-rap.md`)**: al escribir nombres de objetos en el código (programas, tablas, estructuras, clases, data elements, dominios, clases de mensajes, transacciones, objetos RAP `ZI_`/`ZC_`/`ZBP_I_`/`ZSD_`/`ZUI_`, etc.) aplica ese estándar **siempre que el caso encaje** (preferencia fuerte, no camisa de fuerza; nunca bloquea la generación). Respeta el **orden de prioridad de `CLAUDE.md` §5.5**: (1) nombres ya fijados por el FD/TD u objetos existentes → intactos; (2) estándar RF WM (`ZWMR_*`/`ZWMI_*`, `vg_`/`ti_`, dynpros `9xxx`) para transacciones RF de diálogo; (3) estándar general de la empresa para el resto; (4) baseline §5.5 como fallback. Los nombres que enumeres en `textos-y-objetos.md` deben seguir esta misma prioridad, con su "Descripción para crear en SAP". Documenta desviaciones en la cabecera (bloque 2) y marca `⚠️ VERIFICAR` los nombres que dependan de decisiones de la empresa (transacciones, roles, paquetes).
+
 Aplicas obligatoriamente lo que está en `CLAUDE.md` §5:
 
 | Práctica | Aplicación |

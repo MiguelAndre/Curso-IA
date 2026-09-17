@@ -154,6 +154,17 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 
 ### 5.5 Naming
 
+> **Estándar de nomenclatura de la empresa (Manufacturas Eliot) — `docs/estandar-nomenclatura-abap-rap.md`.**
+> Cuando propongas o generes **nombres de objetos** (programas, tablas, estructuras, clases, interfaces, exception classes, function groups/modules, data elements, dominios, search helps, lock objects, BAdI impl., clases de mensajes, transacciones, paquetes, y objetos RAP: CDS `ZI_`/`ZC_`, behavior `ZBP_I_`, service `ZSD_`/`ZUI_`), **aplica este estándar siempre que el caso encaje**. Es una **preferencia fuerte, no una camisa de fuerza**: nunca bloquea la generación.
+>
+> **Orden de prioridad de naming** (de mayor a menor):
+> 1. **Nombres ya dados**: objetos existentes en SAP o nombres que el FD/TD fija explícitamente (p. ej. `ZWMTB_070`, `ZTWM_PTS_UBIC`, objeto de autorización `ZWM_070`). No se renombran; se respetan tal cual.
+> 2. **Estándar RF WM de la empresa** (memoria `estandar-rf-wm`: `ZWMR_*` + includes `ZWMI_*`, dynpros `9xxx`, `vg_`/`ti_`) para **transacciones RF de diálogo**, por consistencia con los objetos productivos existentes (`ZWM064A`/`ZWMR_MOVMULHUUBI`).
+> 3. **Estándar general `estandar-nomenclatura-abap-rap.md`** (`Z + TIPO + MÓDULO + _ + DESC`; RAP por capas) para el resto de objetos nuevos.
+> 4. **Baseline de abajo** (§5.5) solo como fallback cuando el estándar de la empresa no cubre el caso.
+>
+> Si un nombre no encaja limpio en el estándar (o forzarlo perjudicaría claridad/consistencia con lo existente), usa la convención más adecuada y **deja constancia** en "Decisiones y Supuestos" (M2) o en la cabecera del `.abap` (M3). Marca `⚠️ VERIFICAR` los nombres propuestos que dependan de decisiones de la empresa (transacciones, roles, paquetes).
+
 - ✅ Objetos custom: prefijo `Z` (o `Y` si la empresa lo prefiere).
   - **Clases globales** (reusables entre programas, p. ej. utilidades de logging, conexión FTP): `ZCL_<dominio>_<propósito>` (p. ej. `ZCL_LOG`, `ZCL_FTP_CONEXION`). Viven en 1 archivo standalone.
   - **Clases locales** (clase de negocio del reporte, embebida en su INCLUDE `_CLS`): `cl_<verbo>_<sustantivo>` (p. ej. `cl_amplia_material`, `cl_lista_pedidos`). No tienen prefijo `Z`.

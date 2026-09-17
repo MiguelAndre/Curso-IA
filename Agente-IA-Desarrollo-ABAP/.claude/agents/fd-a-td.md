@@ -74,8 +74,10 @@ Listar:
 
 ## 5. Diseño de arquitectura técnica
 
+> **Naming — estándar de la empresa (`docs/estandar-nomenclatura-abap-rap.md`)**: al proponer nombres de objetos en el TD (programas, tablas, clases, data elements, dominios, transacciones, objetos RAP `ZI_`/`ZC_`/`ZBP_I_`/`ZSD_`/`ZUI_`, etc.), aplica ese estándar **siempre que el caso encaje** (preferencia fuerte, no camisa de fuerza). Respeta el **orden de prioridad de `CLAUDE.md` §5.5**: (1) nombres ya fijados por el FD u objetos SAP existentes → intactos; (2) estándar RF WM (`ZWMR_*`/`ZWMI_*`) para transacciones RF de diálogo; (3) estándar general de la empresa para el resto; (4) baseline como fallback. Documenta en §8 cualquier desviación y marca `⚠️ VERIFICAR` los nombres que dependan de decisiones de la empresa (transacciones, roles, paquetes).
+
 Para la clase principal:
-- Nombre: `ZCL_<dominio>_<propósito>` (ver `CLAUDE.md` §5.5).
+- Nombre: `ZCL_<dominio>_<propósito>` (ver `CLAUDE.md` §5.5 y el estándar de la empresa).
 - Métodos cohesivos con responsabilidad única.
 - Patrón por tipo:
   - **REPORTE_ALV** → métodos `select_data`, `process_data`, `display_alv` (patrón del skill).
