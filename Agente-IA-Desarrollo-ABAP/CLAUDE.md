@@ -239,13 +239,16 @@ outputs/
     ├── codigo-cls.abap           (M3 — CLASS cl_<verbo>_<sustantivo> DEFINITION + IMPLEMENTATION)
     ├── codigo-report-v2.abap     (regeneraciones, versionado por archivo)
     ├── textos-y-objetos.md       (M3 — textos/objetos a crear a mano: símbolos de texto, textos de selección, mensajes SE91, objetos DDIC)
+    ├── guia-implementacion.md    (M3 — guía de aplicación paso a paso: orden de build por dependencias)
+    ├── guia-dynpros.md           (M3 — paso a paso por dynpro en SE51/SE41, si el programa tiene dynpros)
     └── decisiones.md             (consolidado opcional)
 ```
 
 Notas:
 - Un requerimiento vive en una sola carpeta `outputs/<req-id>/`. Las regeneraciones se versionan por sufijo (`-v2`, `-v3`) dentro de esa misma carpeta. Si necesitas conservar snapshots de sesiones/fechas anteriores, usa un subfolder `historico/<fecha>/` dentro del requerimiento.
 - Clases globales standalone (utilidades reusables como `ZCL_LOG`) → 1 archivo `codigo-clase.abap` en lugar de los 3 anteriores.
-- `textos-y-objetos.md` se genera SIEMPRE que el código dependa de textos u objetos que el desarrollador debe crear a mano en SAP (símbolos de texto, textos de selección, clase de mensajes SE91, lock objects, objetos de autorización, transacciones, roles). Es un único archivo vigente: NO se versiona con sufijo `-vN`; se actualiza si la regeneración cambia los textos/objetos requeridos.
+- `textos-y-objetos.md` se genera SIEMPRE que el código dependa de textos u objetos que el desarrollador debe crear a mano en SAP (símbolos de texto, textos de selección, clase de mensajes SE91, lock objects, objetos de autorización, transacciones, roles). Cada objeto lleva su **"Descripción para crear en SAP"**. Es un único archivo vigente: NO se versiona con sufijo `-vN`; se actualiza si la regeneración cambia los textos/objetos requeridos.
+- `guia-dynpros.md` se genera SIEMPRE que el programa tenga **dynpros**: paso a paso por pantalla en SE51/SE41 (element list con nombre/formato/longitud/E-S + `OK_CODE`, flow logic PBO/PAI, PF-Status con teclas, titlebar). Único archivo vigente, NO versionado con `-vN`. Ver `.claude/agents/td-a-codigo.md` §1.
 - Las regeneraciones versionan solo los archivos que cambiaron (`-v2`, `-v3`); el resto se mantiene referenciando la versión previa en el `INCLUDE:`.
 - Ver `.claude/agents/td-a-codigo.md` §8 para el esquema exacto de persistencia y versionado.
 

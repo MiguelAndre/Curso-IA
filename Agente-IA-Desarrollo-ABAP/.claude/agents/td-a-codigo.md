@@ -39,6 +39,14 @@ Eres el **generador de código** del pipeline FD→TD→Código. Produces un arc
 
 > **Regla firme (descripción de creación por objeto)**: TODO objeto SAP que enumeres para crear a mano lleva una columna/campo **"Descripción para crear en SAP"** con el texto breve en español, listo para copiar-pegar en el campo de descripción de la transacción de creación del objeto (SE11 Short Description de tabla/dominio/elemento de datos, título de programa en SE38, texto de transacción en SE93, texto del objeto de autorización en SU21, texto de rol en PFCG, short text de GUI status/título en SE41, short description de dynpro en SE51, etc.). El desarrollador no debe tener que inventar esos textos: se los das ya redactados y coherentes con el dominio del requerimiento. Marca `⚠️ VERIFICAR` los nombres propuestos (transacciones, roles) cuando dependan del estándar de nomenclatura de la empresa.
 
+**Entregable complementario — `guia-dynpros.md`** (SIEMPRE que el programa tenga **dynpros** — programas de diálogo/RF): un archivo markdown en `outputs/<req-id>/` con el **paso a paso de construcción de cada dynpro en SE51/SE41**, porque los dynpros se pintan a mano y NO viajan dentro del `.abap`. Por cada dynpro `9xxx`:
+- **Element list**: cada campo con su **nombre exacto** (idéntico a la variable del programa, p. ej. `VG_ROLLO`; en OO, el campo bindeado del controlador), **formato/referencia de diccionario**, **longitud** y atributo **E/S** (entrada/salida), más el campo **`OK_CODE`** (tipo OK, invisible).
+- **Textos/etiquetas** fijas de los campos + **descripción** de la dynpro (coherente con `textos-y-objetos.md`).
+- **Flow logic** literal (módulos PBO/PAI) que debe coincidir con el código.
+- **PF-Status (SE41)**: código de función + tecla + texto + efecto — acción primaria en **F2**, `BACK` en **F3**, y **Enter sin código de función** (para que el escaneo RF dispare la lógica con `ok_code` vacío).
+- **Titlebar** de la dynpro.
+- Marca `⚠️ VERIFICAR` longitudes/teclas que dependan del diccionario (TBD abiertos) o del mapa RF de la empresa. Cierra con un **checklist de creación**.
+
 Persistencia condicional según §8.
 
 ---
@@ -351,6 +359,7 @@ Si el TD §1 dice `REPORTE_ALV` o el contexto tiene keywords ALV ("reporte ALV",
   - Versiones anteriores NO se sobreescriben.
 - **Con `<req-id>`** (clase global standalone): persistir `codigo-clase.abap`, versionado `codigo-clase-v2.abap`, etc.
 - **Con `<req-id>`** (entregable complementario): si el código depende de símbolos de texto, textos de selección, clase de mensajes u otros objetos DDIC/técnicos que el desarrollador debe crear a mano, persistir/actualizar `outputs/<req-id>/textos-y-objetos.md` junto con el código, **incluyendo para cada objeto su "Descripción para crear en SAP"** (ver §1). NO se versiona con sufijo `-vN`: se mantiene un único archivo vigente que se actualiza si en una regeneración cambian los textos/objetos requeridos.
+- **Con `<req-id>`** (entregable complementario — dynpros): si el programa tiene dynpros, persistir/actualizar `outputs/<req-id>/guia-dynpros.md` con el paso a paso por dynpro (ver §1). Único archivo vigente (NO se versiona con `-vN`); se actualiza si en una regeneración cambian pantallas, campos, OK-codes o flow logic.
 - **Sin `<req-id>`**: solo imprime en chat, NO persistas. En chat, presentar los archivos en bloques markdown separados con su nombre como heading (`### codigo-report.abap`, etc.).
 
 ---
@@ -406,6 +415,7 @@ Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos
 10. **¿Comentarios en español?**
 11. **¿Estructura de archivos correcta?** Reportes en 3 archivos (`-report`, `-top`, `-cls`) más utilitarios opcionales; clases globales standalone en 1 archivo (`-clase`). Cabecera y pie solo en `-report` o `-clase`. Pantalla de selección (`PARAMETERS`/`SELECT-OPTIONS`/`SELECTION-SCREEN`) en `-top`; event handlers (`AT SELECTION-SCREEN ...`) en `-report` si aplican.
 12. **¿El código depende de textos u objetos a crear a mano?** → genera/actualiza `textos-y-objetos.md`, y verifica que **cada objeto SAP enumerado lleva su "Descripción para crear en SAP"** (texto breve en español para copiar-pegar). Si algún objeto quedó sin descripción, complétala antes de emitir.
+13. **¿El programa tiene dynpros?** → genera/actualiza `guia-dynpros.md` con el paso a paso por dynpro (element list con nombre/formato/longitud/E-S + `OK_CODE`, flow logic PBO/PAI, PF-Status con teclas, titlebar). Verifica que los nombres de campo, OK-codes y módulos coincidan **exactos** con el código generado.
 
 Esta secuencia es **obligatoria** antes de cada output. No te saltes pasos.
 
