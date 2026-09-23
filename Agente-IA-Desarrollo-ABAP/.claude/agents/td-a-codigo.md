@@ -58,6 +58,7 @@ Persistencia condicional según §8.
 3. **Detectar regeneración** (si existe versión previa en `outputs/<req-id>/`). Si es regeneración, aplicar §9 (límite 2 ciclos / BR-12).
 4. **Identificar tipo de objeto** desde §1 del TD.
 5. Si REPORTE_ALV → activar contexto del **skill `template-alv`** (§7).
+5b. **Consultar el Second-Brain** (§4.1) por cada BAPI, FM, BAdI, CDS y constante del TD §3.
 6. **Identificar zonas de riesgo** del TD (§4).
 7. **Generar la estructura del archivo** según la plantilla literal (§5).
 8. **Generar la lógica** aplicando buenas prácticas SAP (§6).
@@ -120,6 +121,25 @@ Antes de escribir código, identifica zonas con confianza < 100%. Cada zona se m
 ### Política: sobre-marcar antes que omitir
 
 Si dudas si marcar o no, marca. Cada `⚠️ VERIFICAR:` se agrega a la lista de la cabecera (bloque 3).
+
+### 4.1 Consulta al Second-Brain (obligatoria)
+
+Antes de escribir la llamada a una BAPI/FM/BAdI o de usar una constante o CDS, consulta el vault con
+Grep y Read (no puedes ejecutar `/cerebro-buscar`):
+
+- Vault: `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain`
+- `30-Conocimiento\Reutilizables\BAPIs\<NOMBRE>.md` — estructuras, campos, detección de error, commit.
+- `30-Conocimiento\Reutilizables\Patrón llamada BAPI.md` — esqueleto preparar → CALL → RETURN → rollback/commit.
+- `30-Conocimiento\Reutilizables\FMs de WM clásico.md`, `Enhancements\`, `CDS\`, `Patrones\`.
+- `30-Conocimiento\Reutilizables\Constantes SAP del cliente.md` — valores reales del cliente.
+
+Reglas:
+1. Si hay nota: sigue sus estructuras, patrón de error/commit y gotchas (p. ej. reintentos por
+   asincronía). Sus `VERIFICAR` se copian como `⚠️ VERIFICAR:` en el código y en el bloque 3.
+2. Si no hay nota: aplica las categorías de §4 (p. ej. `FM_NO_ESTANDAR`) y lístala en el bloque 2
+   como *"sin nota en el Second-Brain → candidato a capturar"*.
+3. Cita en el bloque 2 de la cabecera las notas usadas (`Second-Brain: [[nota]] · [[nota]]`).
+4. Solo lectura: nunca modifiques el vault.
 
 ---
 
@@ -401,7 +421,7 @@ En cambio, el pie del archivo incluye SIEMPRE el recordatorio canónico de §5.3
 
 ## 11. Pre-Output Checklist (Q1:B / LC3)
 
-Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos 10 checks. Si alguno falla, **reescribe** el bloque correspondiente. Si no puedes corregir (p. ej. el TD pide algo prohibido), declina el output con mensaje al usuario.
+Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos 14 checks. Si alguno falla, **reescribe** el bloque correspondiente. Si no puedes corregir (p. ej. el TD pide algo prohibido), declina el output con mensaje al usuario.
 
 1. **¿Algún `SELECT *`?** → reescribe con campos explícitos.
 2. **¿`FOR ALL ENTRIES` sin guarda?** → agrega `IF lt_x IS NOT INITIAL.`
@@ -416,6 +436,7 @@ Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos
 11. **¿Estructura de archivos correcta?** Reportes en 3 archivos (`-report`, `-top`, `-cls`) más utilitarios opcionales; clases globales standalone en 1 archivo (`-clase`). Cabecera y pie solo en `-report` o `-clase`. Pantalla de selección (`PARAMETERS`/`SELECT-OPTIONS`/`SELECTION-SCREEN`) en `-top`; event handlers (`AT SELECTION-SCREEN ...`) en `-report` si aplican.
 12. **¿El código depende de textos u objetos a crear a mano?** → genera/actualiza `textos-y-objetos.md`, y verifica que **cada objeto SAP enumerado lleva su "Descripción para crear en SAP"** (texto breve en español para copiar-pegar). Si algún objeto quedó sin descripción, complétala antes de emitir.
 13. **¿El programa tiene dynpros?** → genera/actualiza `guia-dynpros.md` con el paso a paso por dynpro (element list con nombre/formato/longitud/E-S + `OK_CODE`, flow logic PBO/PAI, PF-Status con teclas, titlebar). Verifica que los nombres de campo, OK-codes y módulos coincidan **exactos** con el código generado.
+14. **¿Cada BAPI/FM/BAdI/CDS/constante usada se contrastó con el Second-Brain (§4.1)?** → si tiene nota, el código sigue su patrón y cita la nota en el bloque 2; si no tiene, está marcada `⚠️ VERIFICAR:` y listada como candidata a capturar.
 
 Esta secuencia es **obligatoria** antes de cada output. No te saltes pasos.
 

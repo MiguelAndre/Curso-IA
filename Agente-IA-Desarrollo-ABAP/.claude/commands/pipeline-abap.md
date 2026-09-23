@@ -203,6 +203,24 @@ Tras Caso C exitoso, emite:
 
 ---
 
+## 4b. Cierre: registro en el Second-Brain (gate humano, obligatorio)
+
+Después del resumen final, **siempre** pregunta:
+
+> 🧠 **¿Registro este objeto en el Second-Brain?** (sí / no)
+> Quedaría: la nota del objeto en `10-Proyectos/`, una ficha por cada BAPI/FM/BAdI/CDS/patrón sin nota
+> previa (los *candidatos a capturar* del TD §8 y del bloque 2 de la cabecera), filas nuevas en
+> Constantes, y las decisiones y `⚠️ VERIFICAR` destilados.
+
+- **Si responde sí:** ejecuta `/cerebro` en esta sesión principal (los subagentes no pueden hacer el
+  push del vault) usando `outputs/<req-id>/td.md` y la cabecera del `.abap` como fuente. Termina con la
+  línea `**Second-Brain:** registrado [[nota]] · [[nota]]`.
+- **Si responde no:** termina con `**Second-Brain:** no registrado (decisión del usuario)`.
+
+Es solo documentación en el vault: no toca SAP ni viola los Principios #3/#6.
+
+---
+
 ## 5. Reglas operativas
 
 - **NUNCA** te saltes un gate humano (Principio #6, FR-OR-02).

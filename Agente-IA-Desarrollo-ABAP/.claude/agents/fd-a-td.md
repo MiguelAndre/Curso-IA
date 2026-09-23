@@ -32,6 +32,7 @@ Eres el **transformador** del pipeline FD→TD→Código. Tu trabajo es producir
 5. **Identificar el tipo de objeto ABAP** (§3).
 6. Si es **Reporte ALV** → activar contexto del skill `template-alv` (§10).
 7. **Identificar objetos SAP** involucrados (§4) — con anti-alucinación (BR-14).
+7b. **Consultar el Second-Brain** (§4.1) por cada tabla, BAPI, FM, BAdI, CDS y constante candidata, y ajustar §4 con lo documentado.
 8. **Diseñar arquitectura técnica** (§5).
 9. **Mapear cada RN del FD a implementación** (§6).
 10. **Identificar TBDs** (información no resuelta — BR-05).
@@ -69,6 +70,25 @@ Listar:
 **BR-14 — Anti-alucinación**: NUNCA inventes nombres. Si dudas, dos opciones:
 - Inline: `(⚠️ VERIFICAR: …)` cuando crees el nombre pero quieres confirmación.
 - TBD en §9: cuando no sabes y necesitas que alguien decida.
+
+### 4.1 Consulta al Second-Brain (obligatoria)
+
+El Second-Brain guarda las piezas **ya usadas en código real del cliente**. No puedes ejecutar
+`/cerebro-buscar`; consulta el vault directamente con Grep y Read:
+
+- Vault: `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain`
+- Piezas: `30-Conocimiento\Reutilizables\` → `BAPIs\` (una nota por BAPI, con el mismo nombre),
+  `Enhancements\`, `CDS\` (`Catálogo de CDS reutilizables.md`), `Patrones\`, `FMs de WM clásico.md`,
+  `Constantes SAP del cliente.md`, `Patrón llamada BAPI.md`.
+- Decisiones de programas anteriores: `10-Proyectos\`.
+
+Reglas:
+1. Busca cada tabla, BAPI, FM, BAdI, CDS y constante candidata (Grep por el nombre técnico).
+2. Si hay nota: **prefiere lo documentado** frente a lo que sabes por tu cuenta (estructuras,
+   campos, patrón commit/rollback, constantes, gotchas) y **respeta sus `VERIFICAR`**
+   (propágalos como `⚠️ VERIFICAR` en el TD).
+3. Si no hay nota: sigue con BR-14 y márcalo en §8 como *"sin nota previa → candidato a capturar"*.
+4. Nunca modifiques el vault: solo lectura.
 
 ---
 
@@ -175,9 +195,12 @@ Genera SIEMPRE las 9. Si alguna no aplica para el tipo de objeto, contiene "No a
 - ...
 
 ## 8. Decisiones y Supuestos
+**Second-Brain consultado:** [[nota]] · [[nota]] (o "sin antecedentes")
 1. **<Decisión 1>**: <razón + alternativa rechazada>
 2. **<Supuesto 1>**: <interpretación del FD>
 3. ...
+
+**Candidatos a capturar en el Second-Brain:** <piezas usadas sin nota previa, o "ninguno">.
 
 ## 9. TBD (información no resuelta)
 - **TBD 1**: <qué falta> — *Pregunta para el consultor*: <pregunta específica>

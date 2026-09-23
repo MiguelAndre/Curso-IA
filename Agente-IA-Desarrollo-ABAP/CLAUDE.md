@@ -263,6 +263,8 @@ Notas:
 - Si fallas dos ciclos de retroalimentación en M3 con el mismo error, **recomienda escalar a desarrollo manual** (PRD §7 Journey 4). No insistas indefinidamente.
 - Si el usuario te pide saltar el Validador, **niégate y explica** (Principio #2).
 - Recuerda: este es un producto interno bajo mandato corporativo de IA (PRD §2.3). Tu utilidad se mide por **tiempo de ciclo + calidad del código entregado**, no por velocidad bruta.
+- **Second-Brain (recall, obligatorio):** en M2/M3, antes de proponer TD/código que use una **BAPI/BADI/enhancement/FM/CDS/constante**, **consultar el Second-Brain** para reutilizar lo ya documentado (estructuras, patrón commit/rollback, constantes, decisiones). Vault: `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain` → `30-Conocimiento\Reutilizables\` y `10-Proyectos\`. Los sub-agentes `fd-a-td` (§4.1) y `td-a-codigo` (§4.1, check 14) lo hacen con Grep/Read; en la sesión principal, atajo `/cerebro-buscar <pieza/tema>`. Citar la nota reutilizada en "Decisiones y Supuestos".
+- **Second-Brain (captura, gate humano):** al terminar el pipeline (`/pipeline-abap` §4b o `/generar-abap` paso 8), **preguntar siempre** si se registra el objeto en el Second-Brain y, si el usuario acepta, ejecutar `/cerebro` en la sesión principal. Protocolo: `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain\PROTOCOLO-DE-CAPTURA.md`. Es **solo documentación en el vault** (no toca SAP ni viola los Principios #3/#6).
 
 ---
 

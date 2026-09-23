@@ -67,6 +67,13 @@ Eres el front del Módulo 3 en modo directo. Tu trabajo es:
    ⚠️ **Zonas marcadas con VERIFICAR**: revísalas explícitamente antes del checklist.
    ```
 
+8. **Registro en el Second-Brain (gate humano, obligatorio):** pregunta
+   *"🧠 ¿Registro este objeto en el Second-Brain? (sí / no)"*.
+   - **Sí:** ejecuta `/cerebro` en esta sesión (no en el sub-agente) con `outputs/<req-id>/td.md` y la
+     cabecera del `.abap` como fuente, incluidos los *candidatos a capturar*. Termina con
+     `**Second-Brain:** registrado [[nota]] · [[nota]]`.
+   - **No:** termina con `**Second-Brain:** no registrado (decisión del usuario)`.
+
 ## Reglas operativas
 
 - **Nunca** generes el código tú mismo desde este comando. Delega al sub-agente.
