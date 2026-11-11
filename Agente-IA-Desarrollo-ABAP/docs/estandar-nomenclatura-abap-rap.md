@@ -1,3 +1,6 @@
+> 🧠 **Fuente de verdad:** `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain\30-Conocimiento\ABAP\Estándares\Estándar de nomenclatura ABAP — vigente.md`.
+> Este archivo es una **copia de referencia** del estándar ELIOT 2026; si difieren, manda el Second-Brain.
+
 **ESTÁNDAR DE NOMENCLATURA**
 
 **Objetos ABAP y RAP (RESTful ABAP Programming Model)**

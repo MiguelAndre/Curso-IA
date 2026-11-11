@@ -156,7 +156,10 @@ Hasta que la empresa aporte sus estándares específicos (decisión Q4:C del cue
 
 ### 5.5 Naming
 
-> **Estándar de nomenclatura de la empresa (Manufacturas Eliot) — `docs/estandar-nomenclatura-abap-rap.md`.**
+> **Estándar de nomenclatura de la empresa (Manufacturas Eliot).** **Fuente de verdad:**
+> `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain\30-Conocimiento\ABAP\Estándares\Estándar de nomenclatura ABAP — vigente.md`
+> (ELIOT 2026 para nuevos, nombres existentes intactos, convención RF, reglas de código ELIOT 2015).
+> `docs/estandar-nomenclatura-abap-rap.md` es una copia de referencia del estándar 2026; si difieren, manda el Second-Brain.
 > Cuando propongas o generes **nombres de objetos** (programas, tablas, estructuras, clases, interfaces, exception classes, function groups/modules, data elements, dominios, search helps, lock objects, BAdI impl., clases de mensajes, transacciones, paquetes, y objetos RAP: CDS `ZI_`/`ZC_`, behavior `ZBP_I_`, service `ZSD_`/`ZUI_`), **aplica este estándar siempre que el caso encaje**. Es una **preferencia fuerte, no una camisa de fuerza**: nunca bloquea la generación.
 >
 > **Orden de prioridad de naming** (de mayor a menor):

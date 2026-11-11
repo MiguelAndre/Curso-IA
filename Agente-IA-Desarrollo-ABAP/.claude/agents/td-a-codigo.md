@@ -421,7 +421,7 @@ En cambio, el pie del archivo incluye SIEMPRE el recordatorio canónico de §5.3
 
 ## 11. Pre-Output Checklist (Q1:B / LC3)
 
-Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos 14 checks. Si alguno falla, **reescribe** el bloque correspondiente. Si no puedes corregir (p. ej. el TD pide algo prohibido), declina el output con mensaje al usuario.
+Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos 15 checks. Si alguno falla, **reescribe** el bloque correspondiente. Si no puedes corregir (p. ej. el TD pide algo prohibido), declina el output con mensaje al usuario.
 
 1. **¿Algún `SELECT *`?** → reescribe con campos explícitos.
 2. **¿`FOR ALL ENTRIES` sin guarda?** → agrega `IF lt_x IS NOT INITIAL.`
@@ -437,6 +437,7 @@ Antes de imprimir/persistir el código, ejecuta mentalmente sobre tu draft estos
 12. **¿El código depende de textos u objetos a crear a mano?** → genera/actualiza `textos-y-objetos.md`, y verifica que **cada objeto SAP enumerado lleva su "Descripción para crear en SAP"** (texto breve en español para copiar-pegar). Si algún objeto quedó sin descripción, complétala antes de emitir.
 13. **¿El programa tiene dynpros?** → genera/actualiza `guia-dynpros.md` con el paso a paso por dynpro (element list con nombre/formato/longitud/E-S + `OK_CODE`, flow logic PBO/PAI, PF-Status con teclas, titlebar). Verifica que los nombres de campo, OK-codes y módulos coincidan **exactos** con el código generado.
 14. **¿Cada BAPI/FM/BAdI/CDS/constante usada se contrastó con el Second-Brain (§4.1)?** → si tiene nota, el código sigue su patrón y cita la nota en el bloque 2; si no tiene, está marcada `⚠️ VERIFICAR:` y listada como candidata a capturar.
+15. **¿Los nombres y las convenciones cumplen el estándar vigente?** Lee `C:\Users\mihernandez\Desktop\Curso IA\Second-Brain\30-Conocimiento\ABAP\Estándares\Estándar de nomenclatura ABAP — vigente.md`: objetos **nuevos** con ELIOT 2026 (RAP por capas), objetos **existentes** con su nombre actual, RF de diálogo con la convención RF; prefijos de variables/parámetros; reglas de código (sin hard-code, sin código muerto, comentarios de eventos y declaraciones). Toda desviación va en el bloque 2 de la cabecera.
 
 Esta secuencia es **obligatoria** antes de cada output. No te saltes pasos.
 
